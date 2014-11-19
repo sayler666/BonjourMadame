@@ -143,6 +143,7 @@ public class CircularReveal extends View implements ValueAnimator.AnimatorUpdate
         canvas.drawOval(fullCircle, barPaint);
         break;
     }
+
   }
 
   public void resetCount() {
@@ -176,7 +177,7 @@ public class CircularReveal extends View implements ValueAnimator.AnimatorUpdate
   public void setProgress(int i) {
     //value animator
     progress = i;
-    invalidate();
+    postInvalidateOnAnimation();
   }
 
   public void hide(boolean withAnimation) {

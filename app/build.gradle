@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-  compileSdkVersion 'android-L'
+  compileSdkVersion 21
   buildToolsVersion "20.0.0"
 
   defaultConfig {
     applicationId "com.sayler.lpreview"
-    minSdkVersion 'L'
-    targetSdkVersion 'L'
+    minSdkVersion 21
+    targetSdkVersion 21
     versionCode 1
     versionName "1.0"
   }
@@ -20,8 +20,8 @@ android {
 }
 
 dependencies {
-  compile 'com.android.support:support-v4:19.1.0'
-  compile 'com.android.support:appcompat-v7:19.1.0'
+  compile 'com.android.support:support-v4:21.0.+'
+  compile 'com.android.support:appcompat-v7:21.0.+'
   compile 'com.nineoldandroids:library:2.4.0'
   compile fileTree(dir: 'libs', include: ['*.jar'])
 }

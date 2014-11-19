@@ -6,6 +6,7 @@ import android.animation.AnimatorSet;
 import android.animation.LayoutTransition;
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.res.Resources;
 import android.graphics.Outline;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
@@ -13,6 +14,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewOutlineProvider;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.OvershootInterpolator;
@@ -31,6 +33,9 @@ public class Main extends Activity {
           .add(R.id.container, new PlaceholderFragment())
           .commit();
     }
+
+//    getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+//    getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
   }
 
   @Override
@@ -54,16 +59,21 @@ public class Main extends Activity {
 
       final ImageButton addButton = (ImageButton) rootView.findViewById(R.id.add_button);
       final ImageButton addButton1 = (ImageButton) rootView.findViewById(R.id.add_button_1);
-      final int diameter = getResources().getDimensionPixelSize(R.dimen.diameter);
       final CircularReveal progress_bar = (CircularReveal) rootView.findViewById(R.id.progress_bar);
-      Outline outline = new Outline();
-      outline.setOval(0, 0, diameter, diameter);
-      addButton.setOutline(outline);
-      addButton.setClipToOutline(true);
-      addButton1.setOutline(outline);
-      addButton1.setClipToOutline(true);
 
-      LayoutTransition layoutTransition = ((RelativeLayout) rootView).getLayoutTransition();
+      final ViewOutlineProvider viewOutlineProvider = new ViewOutlineProvider() {
+        @Override
+        public void getOutline(View view, Outline outline) {
+          int size = getResources().getDimensionPixelSize(R.dimen.diameter);
+          outline.setOval(0, 0, size, size);
+          view.setClipToOutline(true);
+        }
+      };
+      addButton.setOutlineProvider(viewOutlineProvider);
+
+      RelativeLayout mainContainer = (RelativeLayout) rootView.findViewById(R.id.mainContainer);
+      mainContainer.setPadding(0, 0, 0, getNavigationBarHeigth());
+      LayoutTransition layoutTransition = mainContainer.getLayoutTransition();
       layoutTransition.enableTransitionType(LayoutTransition.CHANGING);
       layoutTransition.setDuration(1000);
       layoutTransition.setInterpolator(LayoutTransition.CHANGING, new OvershootInterpolator());
@@ -142,5 +152,15 @@ public class Main extends Activity {
       progress_bar.reveal(false);
       return rootView;
     }
+
+    int getNavigationBarHeigth() {
+      Resources resources = Main.this.getResources();
+      int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
+      if (resourceId > 0) {
+        return resources.getDimensionPixelSize(resourceId);
+      }
+      return 0;
+    }
+
   }
 }
