@@ -5,21 +5,16 @@
         android:repeatMode="restart"
         >
     <objectAnimator
+            android:startOffset="500"
             android:duration="500"
             android:propertyName="backgroundColor"
-            android:valueFrom="#FF0000"
-            android:valueTo="#00FF00"/>
+            android:valueFrom="@color/amberLight"
+            android:valueTo="@color/amberLight2"/>
     <objectAnimator
             android:startOffset="500"
             android:duration="500"
             android:propertyName="backgroundColor"
-            android:valueFrom="#00FF00"
-            android:valueTo="#0000FF"/>
-    <objectAnimator
-            android:startOffset="1000"
-            android:duration="500"
-            android:propertyName="backgroundColor"
-            android:valueFrom="#0000FF"
-            android:valueTo="#FF0000"/>
+            android:valueFrom="@color/amberLight2"
+            android:valueTo="@color/amberLight"/>
 
 </set>

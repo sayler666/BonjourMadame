@@ -11,7 +11,7 @@
             android:id="@+id/progress_bar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            Circle:barColor="#78909C"
+            Circle:barColor="@color/abmerBackground"
             />
 
     <RelativeLayout
@@ -19,37 +19,40 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:animateLayoutChanges="true"
-            android:fitsSystemWindows="false">
-        <ImageButton
-                android:id="@+id/add_button"
-                android:layout_width="@dimen/diameter"
-                android:layout_height="@dimen/diameter"
+            >
+        <RelativeLayout
+                android:id="@+id/button_container"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentBottom="true"
                 android:layout_centerInParent="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/add_button_margin"
                 android:layout_marginEnd="@dimen/add_button_margin"
-                android:src="@android:drawable/ic_input_add"
-                android:tint="@android:color/white"
-                android:background="@drawable/oval"
-                android:elevation="@dimen/elevation_low"
-                android:stateListAnimator="@anim/button_elevation"/>
-        <ImageButton
-                android:id="@+id/add_button_1"
-                android:layout_width="@dimen/diameter"
-                android:layout_height="@dimen/diameter"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentBottom="true"
-                android:layout_centerInParent="true"
-                android:layout_marginBottom="@dimen/add_button_margin"
-                android:layout_marginEnd="@dimen/add_button_margin"
-                android:layout_toLeftOf="@id/add_button"
-                android:src="@android:drawable/ic_input_add"
-                android:tint="@android:color/white"
-                android:background="@drawable/oval"
-                android:elevation="0dp"
-                android:visibility="invisible"
-                android:stateListAnimator="@anim/button_elevation"
-                />
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:padding="10dp">
+            <ImageButton
+                    android:id="@+id/add_button"
+                    android:layout_centerInParent="true"
+                    android:layout_width="@dimen/diameter"
+                    android:layout_height="@dimen/diameter"
+                    android:src="@android:drawable/ic_input_add"
+                    android:tint="@android:color/white"
+                    android:background="@drawable/oval"
+                    android:elevation="@dimen/elevation_low"
+                    android:stateListAnimator="@anim/button_elevation"/>
+            <ProgressBar
+                    android:id="@+id/progress_bar_circle"
+                    android:visibility="gone"
+                    android:layout_centerInParent="true"
+                    android:layout_width="@dimen/diameter"
+                    android:layout_height="@dimen/diameter"
+                    android:elevation="3dp"
+                    android:translationZ="5dp"
+                    style="@style/Base.Widget.AppCompat.ProgressBar"
+                    />
+        </RelativeLayout>
     </RelativeLayout>
+
 </FrameLayout>

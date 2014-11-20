@@ -8,8 +8,6 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.res.Resources;
 import android.graphics.Outline;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +17,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.OvershootInterpolator;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 public class Main extends Activity {
@@ -53,13 +52,14 @@ public class Main extends Activity {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
       final View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
+      final RelativeLayout buttonContainer = (RelativeLayout) rootView.findViewById(R.id.button_container);
       final ImageButton addButton = (ImageButton) rootView.findViewById(R.id.add_button);
-      final ImageButton addButton1 = (ImageButton) rootView.findViewById(R.id.add_button_1);
       final CircularReveal progress_bar = (CircularReveal) rootView.findViewById(R.id.progress_bar);
+      final ProgressBar progressBarCircle = (ProgressBar) rootView.findViewById(R.id.progress_bar_circle);
 
       final ViewOutlineProvider viewOutlineProvider = new ViewOutlineProvider() {
         @Override
@@ -72,14 +72,17 @@ public class Main extends Activity {
       addButton.setOutlineProvider(viewOutlineProvider);
 
       RelativeLayout mainContainer = (RelativeLayout) rootView.findViewById(R.id.mainContainer);
-      mainContainer.setPadding(0, 0, 0, getNavigationBarHeigth());
+
       LayoutTransition layoutTransition = mainContainer.getLayoutTransition();
       layoutTransition.enableTransitionType(LayoutTransition.CHANGING);
       layoutTransition.setDuration(1000);
       layoutTransition.setInterpolator(LayoutTransition.CHANGING, new OvershootInterpolator());
 
-      Animation actionButtonAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.reveal);
-      addButton.startAnimation(actionButtonAnimation);
+      final Animation actionButtonAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.reveal);
+      buttonContainer.startAnimation(actionButtonAnimation);
+
+      final Animation zoomButtonAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.zoom_in);
+      final Animation zoomOutButtonAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.zoom_out);
 
       colorChange = (AnimatorSet) AnimatorInflater.loadAnimator(getActivity(), R.animator.color);
       colorChange.setTarget(addButton);
@@ -88,38 +91,35 @@ public class Main extends Activity {
         @Override
         public void onClick(View v) {
 
-          RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) addButton.getLayoutParams();
-          RelativeLayout.LayoutParams layoutParams1 = (RelativeLayout.LayoutParams) addButton1.getLayoutParams();
+          RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) buttonContainer.getLayoutParams();
 
           if (center) {
+            center = false;
+            actionButtonAnimation.cancel();
+            progressBarCircle.setVisibility(View.GONE);
             layoutParams.removeRule(RelativeLayout.CENTER_IN_PARENT);
             layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
             layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-            layoutParams1.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
             rootView.setBackground(getDrawable(android.R.color.transparent));
             progress_bar.reveal(true);
-            center = false;
-            colorChange.removeAllListeners();
-            addButton.startAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.rotate));
-            Drawable[] layers = new Drawable[2];
-            layers[0] = getDrawable(android.R.color.transparent);
-            layers[1] = getDrawable(android.R.drawable.ic_delete);
-            TransitionDrawable transition = new TransitionDrawable(layers);
-            addButton.setImageDrawable(transition);
-            transition.startTransition(500);
+            colorChange.cancel();
+
+            buttonContainer.startAnimation(zoomOutButtonAnimation);
+            addButton.setBackground(getResources().getDrawable(R.drawable.oval, getTheme()));
+            addButton.setImageDrawable(getDrawable(android.R.drawable.ic_input_add));
+
           } else {
+            center = true;
+            progressBarCircle.setVisibility(View.VISIBLE);
             layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
             layoutParams.removeRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
             layoutParams.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-            layoutParams1.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
             progress_bar.hide(true);
-            center = true;
-            addButton.startAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.loader));
+
             colorChange.start();
             colorChange.addListener(new Animator.AnimatorListener() {
               @Override
               public void onAnimationStart(Animator animator) {
-
               }
 
               @Override
@@ -129,23 +129,17 @@ public class Main extends Activity {
 
               @Override
               public void onAnimationCancel(Animator animator) {
-
               }
 
               @Override
               public void onAnimationRepeat(Animator animator) {
-
               }
-
             });
-            Drawable[] layers = new Drawable[2];
-            layers[0] = getDrawable(android.R.color.transparent);
-            layers[1] = getDrawable(android.R.drawable.ic_dialog_info);
-            TransitionDrawable transition = new TransitionDrawable(layers);
-            addButton.setImageDrawable(transition);
-            transition.startTransition(500);
+
+            buttonContainer.startAnimation(zoomButtonAnimation);
+            addButton.setImageDrawable(getDrawable(android.R.color.transparent));
           }
-          addButton.setLayoutParams(layoutParams);
+          buttonContainer.setLayoutParams(layoutParams);
 
         }
       });
