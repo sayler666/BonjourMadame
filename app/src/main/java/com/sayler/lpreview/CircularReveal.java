@@ -19,6 +19,7 @@ import com.nineoldandroids.animation.ValueAnimator;
 
 public class CircularReveal extends View implements ValueAnimator.AnimatorUpdateListener, Animator.AnimatorListener {
 
+  public static final float STROKE_WIDTH_FACTOR = 1.3f;
   private Mode MODE = Mode.HIDE;
 
   private int durationReveal = 3000;
@@ -53,7 +54,7 @@ public class CircularReveal extends View implements ValueAnimator.AnimatorUpdate
       invalidate();
     }
   };
-  private long toClear;
+  private long toClear=-1;
 
   /**
    * The constructor for the ProgressWheel
@@ -94,7 +95,7 @@ public class CircularReveal extends View implements ValueAnimator.AnimatorUpdate
 
     circlePaint.setColor(barColor);
     circlePaint.setAntiAlias(true);
-    circlePaint.setStrokeWidth(longerSide*1.5f);
+    circlePaint.setStrokeWidth(longerSide * STROKE_WIDTH_FACTOR);
     circlePaint.setStyle(Style.STROKE);
 
     clearPaint = new Paint();
@@ -147,8 +148,11 @@ public class CircularReveal extends View implements ValueAnimator.AnimatorUpdate
         if (toClear > 0) {
           canvas.drawColor(barColor);
           toClear--;
-        } else {
+        } else if(toClear==0){
+          circlePaint.setStrokeWidth(circlePaint.getStrokeWidth() - getProgress());
           canvas.drawArc(fullCircle, 0, 360, false, circlePaint);
+        }else{
+          canvas.drawColor(0x00FFFFFF);
         }
         break;
       case HIDE:
@@ -192,6 +196,7 @@ public class CircularReveal extends View implements ValueAnimator.AnimatorUpdate
         case REVEAL:
           animation.setDuration(durationReveal);
           toClear = 2;
+          circlePaint.setStrokeWidth(longerSide * STROKE_WIDTH_FACTOR);
           break;
         case HIDE:
           animation.setDuration(durationHide);
