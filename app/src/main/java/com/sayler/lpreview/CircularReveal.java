@@ -21,30 +21,31 @@ public class CircularReveal extends View implements ValueAnimator.AnimatorUpdate
 
   private Mode MODE = Mode.HIDE;
 
-  private int duration = 2000;
-  private int progress = 100;
-
+  private int durationReveal = 3000;
+  private int durationHide = 2500;
+  private float progress = 100f;
   //Sizes (with defaults)
   private int layoutHeight = 0;
+
   private int layoutWidth = 0;
   private int longerSide;
-
   //Colors (with defaults)
   private int barColor = 0xAA000000;
 
   //Paints
   private Paint barPaint = new Paint();
+  private Paint circlePaint = new Paint();
+
   private Paint fillPaint;
   private Paint clearPaint;
   private Paint defaultPaint;
-
   //rect
   private RectF fullCircle = new RectF();
 
   //bitmaps canvas
   private Bitmap tmpBitmap;
-  private Canvas tmpCanvas;
 
+  private Canvas tmpCanvas;
   private Handler spinHandler = new Handler() {
 
     @Override
@@ -52,6 +53,7 @@ public class CircularReveal extends View implements ValueAnimator.AnimatorUpdate
       invalidate();
     }
   };
+  private long toClear;
 
   /**
    * The constructor for the ProgressWheel
@@ -66,8 +68,6 @@ public class CircularReveal extends View implements ValueAnimator.AnimatorUpdate
         R.styleable.CircularReveal));
   }
 
-  //----------------------------------
-  //Setting up stuff
   //----------------------------------
 
   @Override
@@ -92,8 +92,14 @@ public class CircularReveal extends View implements ValueAnimator.AnimatorUpdate
     barPaint.setAntiAlias(true);
     barPaint.setStyle(Style.FILL);
 
+    circlePaint.setColor(barColor);
+    circlePaint.setAntiAlias(true);
+    circlePaint.setStrokeWidth(longerSide*1.5f);
+    circlePaint.setStyle(Style.STROKE);
+
     clearPaint = new Paint();
-    clearPaint.setAntiAlias(true);
+    clearPaint.setAntiAlias(false);
+    clearPaint.setColor(0xFFFFFFFF);
     clearPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
 
     fillPaint = new Paint();
@@ -135,9 +141,15 @@ public class CircularReveal extends View implements ValueAnimator.AnimatorUpdate
     switch (MODE) {
       case REVEAL:
 
-        tmpCanvas.drawRect(0, 0, tmpCanvas.getWidth(), tmpCanvas.getHeight(), fillPaint);
-        tmpCanvas.drawOval(fullCircle, clearPaint);
-        canvas.drawBitmap(tmpBitmap, 0, 0, defaultPaint);
+        //tmpCanvas.drawRect(0, 0, tmpCanvas.getWidth(), tmpCanvas.getHeight(), fillPaint);
+        // tmpCanvas.drawOval(fullCircle, clearPaint);
+        // canvas.drawBitmap(tmpBitmap, 0, 0, defaultPaint);
+        if (toClear > 0) {
+          canvas.drawColor(barColor);
+          toClear--;
+        } else {
+          canvas.drawArc(fullCircle, 0, 360, false, circlePaint);
+        }
         break;
       case HIDE:
         canvas.drawOval(fullCircle, barPaint);
@@ -156,25 +168,7 @@ public class CircularReveal extends View implements ValueAnimator.AnimatorUpdate
     spinHandler.removeMessages(0);
   }
 
-  /**
-   * Puts the view on spin MODE
-   */
-  public void spin() {
-    spinHandler.sendEmptyMessage(0);
-  }
-
-  /**
-   * Increment the progress by 1 (of 360)
-   */
-  public void incrementProgress() {
-    setProgress(getProgress() + 1);
-    if (getProgress() > 360) {
-      setProgress(0);
-    }
-    spinHandler.sendEmptyMessage(0);
-  }
-
-  public void setProgress(int i) {
+  public void setProgress(float i) {
     //value animator
     progress = i;
     postInvalidateOnAnimation();
@@ -192,8 +186,18 @@ public class CircularReveal extends View implements ValueAnimator.AnimatorUpdate
 
   private void startAnimation(boolean withAnimation) {
     if (withAnimation) {
-      ValueAnimator animation = ValueAnimator.ofInt(0, 100);
-      animation.setDuration(duration);
+      ValueAnimator animation = ValueAnimator.ofFloat(0f, 100f);
+
+      switch (MODE) {
+        case REVEAL:
+          animation.setDuration(durationReveal);
+          toClear = 2;
+          break;
+        case HIDE:
+          animation.setDuration(durationHide);
+          break;
+      }
+
       animation.start();
       animation.setInterpolator(new OvershootInterpolator());
       animation.addUpdateListener(this);
@@ -204,7 +208,7 @@ public class CircularReveal extends View implements ValueAnimator.AnimatorUpdate
 
   @Override
   public void onAnimationUpdate(ValueAnimator valueAnimator) {
-    setProgress((Integer) valueAnimator.getAnimatedValue());
+    setProgress((Float) valueAnimator.getAnimatedValue());
     spinHandler.sendEmptyMessage(0);
   }
 
@@ -228,12 +232,30 @@ public class CircularReveal extends View implements ValueAnimator.AnimatorUpdate
 
   }
 
-  public int getProgress() {
+  public float getProgress() {
     return progress;
   }
 
-  public enum Mode {
-    REVEAL, HIDE;
+
+  public int getDurationReveal() {
+    return durationReveal;
   }
 
+  public void setDurationReveal(int durationReveal) {
+    this.durationReveal = durationReveal;
+  }
+
+  public int getDurationHide() {
+    return durationHide;
+  }
+
+  public void setDurationHide(int durationHide) {
+    this.durationHide = durationHide;
+  }
+
+
+  public enum Mode {
+    REVEAL, HIDE;
+
+  }
 }

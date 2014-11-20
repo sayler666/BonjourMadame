@@ -7,11 +7,20 @@
              tools:context=".Main$PlaceholderFragment"
 
         >
+    <Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/abc_action_bar_default_height_material"
+            android:background="@color/amber"
+            android:translationZ="5dp"
+            android:elevation="5dp"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark">
+    </Toolbar>
     <com.sayler.lpreview.CircularReveal
             android:id="@+id/progress_bar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            Circle:barColor="@color/abmerBackground"
+            Circle:barColor="@color/amberBackground"
             />
 
     <RelativeLayout
@@ -48,8 +57,8 @@
                     android:layout_centerInParent="true"
                     android:layout_width="@dimen/diameter"
                     android:layout_height="@dimen/diameter"
-                    android:elevation="3dp"
-                    android:translationZ="5dp"
+                    android:elevation="@dimen/elevation_high"
+                    android:translationZ="1dp"
                     style="@style/Base.Widget.AppCompat.ProgressBar"
                     />
         </RelativeLayout>

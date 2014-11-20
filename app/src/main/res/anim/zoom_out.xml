@@ -6,9 +6,9 @@
      android:interpolator="@android:interpolator/overshoot"
         >
     <scale
-            android:duration="1000"
-            android:fromXScale="130%"
-            android:fromYScale="130%"
+            android:duration="1500"
+            android:fromXScale="150%"
+            android:fromYScale="150%"
             android:toXScale="100%"
             android:toYScale="100%"
             android:pivotX="50%"

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="abmerBackground">#FFCA28</color>
+    <color name="amberBackground">#FFCA28</color>
     <color name="amber">#FF6F00</color>
-    <color name="amberLight">#FFE082</color>
-    <color name="amberLight2">#FFECB3</color>
+    <color name="amberAccent">#ffdf6700</color>
+    <color name="amberLight">#FFFFE082</color>
+    <color name="amberLight2">#FFFFECB3</color>
 </resources>
