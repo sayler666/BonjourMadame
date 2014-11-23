@@ -3,7 +3,7 @@
  *
  * Copyright 2014 MiQUiDO <http://www.miquido.com/>. All rights reserved.
  */
-package com.sayler.lpreview;
+package com.sayler.bonjourmadame;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -22,7 +22,7 @@ public class CircularReveal extends View implements ValueAnimator.AnimatorUpdate
   public static final float STROKE_WIDTH_FACTOR = 1.3f;
   private Mode MODE = Mode.HIDE;
 
-  private int durationReveal = 3000;
+  private int durationReveal = 2200;
   private int durationHide = 2500;
   private float progress = 100f;
   //Sizes (with defaults)
@@ -43,10 +43,6 @@ public class CircularReveal extends View implements ValueAnimator.AnimatorUpdate
   //rect
   private RectF fullCircle = new RectF();
 
-  //bitmaps canvas
-  private Bitmap tmpBitmap;
-
-  private Canvas tmpCanvas;
   private Handler spinHandler = new Handler() {
 
     @Override
@@ -54,7 +50,7 @@ public class CircularReveal extends View implements ValueAnimator.AnimatorUpdate
       invalidate();
     }
   };
-  private long toClear=-1;
+  private long toClear = -1;
 
   /**
    * The constructor for the ProgressWheel
@@ -110,8 +106,6 @@ public class CircularReveal extends View implements ValueAnimator.AnimatorUpdate
     defaultPaint = new Paint();
     defaultPaint.setAntiAlias(true);
 
-    tmpBitmap = Bitmap.createBitmap(layoutWidth, layoutHeight, Bitmap.Config.ARGB_8888);
-    tmpCanvas = new Canvas(tmpBitmap);
   }
 
   /**
@@ -142,34 +136,30 @@ public class CircularReveal extends View implements ValueAnimator.AnimatorUpdate
     switch (MODE) {
       case REVEAL:
 
-        //tmpCanvas.drawRect(0, 0, tmpCanvas.getWidth(), tmpCanvas.getHeight(), fillPaint);
-        // tmpCanvas.drawOval(fullCircle, clearPaint);
-        // canvas.drawBitmap(tmpBitmap, 0, 0, defaultPaint);
+        // fix double buffer
         if (toClear > 0) {
           canvas.drawColor(barColor);
           toClear--;
-        } else if(toClear==0){
+        } else if (toClear == 0) {
           circlePaint.setStrokeWidth(circlePaint.getStrokeWidth() - getProgress());
           canvas.drawArc(fullCircle, 0, 360, false, circlePaint);
-        }else{
-          canvas.drawColor(0x00FFFFFF);
+        } else {
+          canvas.drawColor(android.R.color.transparent);
         }
         break;
       case HIDE:
-        canvas.drawOval(fullCircle, barPaint);
+        // fix double buffer
+        if (toClear > 0) {
+          canvas.drawColor(android.R.color.transparent);
+          toClear--;
+        } else if (toClear == 0) {
+          canvas.drawOval(fullCircle, barPaint);
+        } else {
+          canvas.drawColor(barColor);
+        }
         break;
     }
 
-  }
-
-  public void resetCount() {
-    setProgress(0);
-    invalidate();
-  }
-
-  public void stopSpinning() {
-    setProgress(0);
-    spinHandler.removeMessages(0);
   }
 
   public void setProgress(float i) {
@@ -188,6 +178,16 @@ public class CircularReveal extends View implements ValueAnimator.AnimatorUpdate
     startAnimation(withAnimation);
   }
 
+  public void toggle(boolean withAnimation) {
+    if (MODE == Mode.HIDE) {
+      MODE = Mode.REVEAL;
+    } else {
+      MODE = Mode.HIDE;
+    }
+
+    startAnimation(withAnimation);
+  }
+
   private void startAnimation(boolean withAnimation) {
     if (withAnimation) {
       ValueAnimator animation = ValueAnimator.ofFloat(0f, 100f);
@@ -200,6 +200,7 @@ public class CircularReveal extends View implements ValueAnimator.AnimatorUpdate
           break;
         case HIDE:
           animation.setDuration(durationHide);
+          toClear = 2;
           break;
       }
 

@@ -4,7 +4,6 @@
              android:layout_width="match_parent"
              android:layout_height="match_parent"
              android:id="@+id/scene_base"
-             tools:context=".Main$PlaceholderFragment"
 
         >
     <Toolbar
@@ -16,8 +15,8 @@
             android:elevation="5dp"
             android:theme="@style/ThemeOverlay.AppCompat.Dark">
     </Toolbar>
-    <com.sayler.lpreview.CircularReveal
-            android:id="@+id/progress_bar"
+    <com.sayler.bonjourmadame.CircularReveal
+            android:id="@+id/circural_reveal"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             Circle:barColor="@color/amberBackground"
@@ -42,7 +41,7 @@
                 android:clipToPadding="false"
                 android:padding="10dp">
             <ImageButton
-                    android:id="@+id/add_button"
+                    android:id="@+id/action_button"
                     android:layout_centerInParent="true"
                     android:layout_width="@dimen/diameter"
                     android:layout_height="@dimen/diameter"

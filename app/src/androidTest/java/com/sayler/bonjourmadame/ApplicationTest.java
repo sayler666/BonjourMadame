@@ -1,4 +1,4 @@
-package com.sayler.lpreview;
+package com.sayler.bonjourmadame;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
