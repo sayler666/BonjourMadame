@@ -1,7 +1,8 @@
-package com.sayler.bonjourmadame;
+package com.sayler.bonjourmadame.activity;
 
 import android.app.Activity;
 import android.os.Bundle;
+import com.sayler.bonjourmadame.R;
 import com.sayler.bonjourmadame.fragment.LoadingFragment;
 
 public class MainActivity extends Activity {

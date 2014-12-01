@@ -3,7 +3,7 @@
  *
  * Copyright 2014 MiQUiDO <http://www.miquido.com/>. All rights reserved.
  */
-package com.sayler.bonjourmadame;
+package com.sayler.bonjourmadame.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.animation.OvershootInterpolator;
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.ValueAnimator;
+import com.sayler.bonjourmadame.R;
 
 public class CircularReveal extends View implements ValueAnimator.AnimatorUpdateListener, Animator.AnimatorListener {
 

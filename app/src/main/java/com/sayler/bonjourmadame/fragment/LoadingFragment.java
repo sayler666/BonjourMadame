@@ -17,7 +17,7 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toolbar;
-import com.sayler.bonjourmadame.CircularReveal;
+import com.sayler.bonjourmadame.widget.CircularReveal;
 import com.sayler.bonjourmadame.R;
 
 

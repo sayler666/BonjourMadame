@@ -15,7 +15,7 @@
             android:elevation="5dp"
             android:theme="@style/ThemeOverlay.AppCompat.Dark">
     </Toolbar>
-    <com.sayler.bonjourmadame.CircularReveal
+    <com.sayler.bonjourmadame.widget.CircularReveal
             android:id="@+id/circural_reveal"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
