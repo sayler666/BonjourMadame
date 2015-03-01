@@ -17,25 +17,27 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toolbar;
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnClick;
 import com.sayler.bonjourmadame.widget.CircularReveal;
 import com.sayler.bonjourmadame.R;
 
-
 public class LoadingFragment extends Fragment {
 
-  private boolean isLoading = true;
-  private View rootView;
-  private Toolbar toolbar;
-  private RelativeLayout buttonContainer;
-  private ImageButton actionButton;
-  private CircularReveal circularReveal;
-  private ProgressBar progressBarCircle;
+  @InjectView(R.id.toolbar) Toolbar toolbar;
+  @InjectView(R.id.button_container) RelativeLayout buttonContainer;
+  @InjectView(R.id.action_button) ImageButton actionButton;
+  @InjectView(R.id.circural_reveal) CircularReveal circularReveal;
+  @InjectView(R.id.progress_bar_circle) ProgressBar progressBarCircle;
+  @InjectView(R.id.mainContainer) RelativeLayout mainContainer;
   private Animation actionButtonZoomInAnimation;
   private Animation actionButtonZoomOutAnimation;
   private Animation toolbarDropOutAnimation;
   private Animation toolbarDropInAnimation;
   private Animation actionButtonRevealAnimation;
   private ObjectAnimator actionButtonLoadingColorAnimator;
+  private boolean isLoading = true;
   private Handler finishLoadingHandler = new Handler() {
     @Override
     public void handleMessage(Message msg) {
@@ -50,20 +52,19 @@ public class LoadingFragment extends Fragment {
   @Override
   public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                            Bundle savedInstanceState) {
-    rootView = inflater.inflate(R.layout.f_loading, container, false);
+    View rootView = inflater.inflate(R.layout.f_loading, container, false);
 
-    setupToolbar();
+    ButterKnife.inject(this, rootView);
     setupViews();
 
     return rootView;
   }
 
   private void setupViews() {
-    buttonContainer = (RelativeLayout) rootView.findViewById(R.id.button_container);
-    actionButton = (ImageButton) rootView.findViewById(R.id.action_button);
-    circularReveal = (CircularReveal) rootView.findViewById(R.id.circural_reveal);
-    progressBarCircle = (ProgressBar) rootView.findViewById(R.id.progress_bar_circle);
-    RelativeLayout mainContainer = (RelativeLayout) rootView.findViewById(R.id.mainContainer);
+    /**
+     * toolbar setup
+     */
+    setupToolbar();
 
     /**
      * layout transition for action button animation
@@ -81,17 +82,17 @@ public class LoadingFragment extends Fragment {
     setupAnimation();
 
     /**
-     * on action button click listener
-     */
-    actionButton.setOnClickListener(actionButtonClickListener);
-
-    /**
      * start loading on enter app
      */
     startLoading();
 
     //TODO delete it (mock loading time)
     finishLoadingHandler.sendEmptyMessageDelayed(1, 3000);
+  }
+
+  private void setupToolbar() {
+    toolbar.setTitle(R.string.app_name);
+    getActivity().setActionBar(toolbar);
   }
 
   private void startLoading() {
@@ -105,7 +106,6 @@ public class LoadingFragment extends Fragment {
   }
 
   private void onLoadingFinish() {
-
     /**
      * reveal main content
      */
@@ -149,23 +149,15 @@ public class LoadingFragment extends Fragment {
     layoutTransition.setInterpolator(LayoutTransition.CHANGING, new OvershootInterpolator());
   }
 
-  private void setupToolbar() {
-    toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
-    toolbar.setTitle(R.string.app_name);
-    getActivity().setActionBar(toolbar);
-  }
-
-  private View.OnClickListener actionButtonClickListener = new View.OnClickListener() {
-    @Override
-    public void onClick(View v) {
-      if (isLoading) {
-        loadingFinishAnimations();
-      } else {
-        loadingStartAnimations();
-      }
-      isLoading = !isLoading;
+  @OnClick(R.id.action_button)
+  public void onActionButtonClick() {
+    if (isLoading) {
+      loadingFinishAnimations();
+    } else {
+      loadingStartAnimations();
     }
-  };
+    isLoading = !isLoading;
+  }
 
   private void loadingStartAnimations() {
     setActionButtonPosition(buttonContainer, ActionButtonLocation.CENTER);
