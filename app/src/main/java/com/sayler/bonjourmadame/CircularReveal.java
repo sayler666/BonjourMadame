@@ -20,37 +20,34 @@ import com.nineoldandroids.animation.ValueAnimator;
 public class CircularReveal extends View implements ValueAnimator.AnimatorUpdateListener, Animator.AnimatorListener {
 
   public static final float STROKE_WIDTH_FACTOR = 1.3f;
-  private Mode MODE = Mode.HIDE;
-
+  //Durations
   private int durationReveal = 2200;
   private int durationHide = 2500;
-  private float progress = 100f;
-  //Sizes (with defaults)
+  //Sizes
   private int layoutHeight = 0;
-
   private int layoutWidth = 0;
   private int longerSide;
-  //Colors (with defaults)
-  private int barColor = 0xAA000000;
-
+  //Colors
+  private int fillColor = 0xAA000000;
   //Paints
-  private Paint barPaint = new Paint();
-  private Paint circlePaint = new Paint();
-
-  private Paint fillPaint;
-  private Paint clearPaint;
-  private Paint defaultPaint;
-  //rect
+  private Paint fullCirclePaint = new Paint();
+  private Paint strokeCirclePaint = new Paint();
+  //Rectangle
   private RectF fullCircle = new RectF();
+  //Others
+  private Mode animationMode = Mode.HIDE;
+  private long timesToClear = -1;
+  private float progress = 100f;
+  //Handlers
+  private Handler spinHandler = new Handler(new IncomingHandlerCallback());
 
-  private Handler spinHandler = new Handler() {
-
+  private class IncomingHandlerCallback implements Handler.Callback {
     @Override
-    public void handleMessage(Message msg) {
+    public boolean handleMessage(Message message) {
       invalidate();
+      return true;
     }
-  };
-  private long toClear = -1;
+  }
 
   /**
    * The constructor for the ProgressWheel
@@ -64,8 +61,6 @@ public class CircularReveal extends View implements ValueAnimator.AnimatorUpdate
     parseAttributes(context.obtainStyledAttributes(attrs,
         R.styleable.CircularReveal));
   }
-
-  //----------------------------------
 
   @Override
   protected void onSizeChanged(int w, int h, int oldw, int oldh) {
@@ -85,27 +80,14 @@ public class CircularReveal extends View implements ValueAnimator.AnimatorUpdate
   }
 
   private void setupPaints() {
-    barPaint.setColor(barColor);
-    barPaint.setAntiAlias(true);
-    barPaint.setStyle(Style.FILL);
+    fullCirclePaint.setColor(fillColor);
+    fullCirclePaint.setAntiAlias(true);
+    fullCirclePaint.setStyle(Style.FILL);
 
-    circlePaint.setColor(barColor);
-    circlePaint.setAntiAlias(true);
-    circlePaint.setStrokeWidth(longerSide * STROKE_WIDTH_FACTOR);
-    circlePaint.setStyle(Style.STROKE);
-
-    clearPaint = new Paint();
-    clearPaint.setAntiAlias(false);
-    clearPaint.setColor(0xFFFFFFFF);
-    clearPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-
-    fillPaint = new Paint();
-    fillPaint.setAntiAlias(true);
-    fillPaint.setColor(barPaint.getColor());
-
-    defaultPaint = new Paint();
-    defaultPaint.setAntiAlias(true);
-
+    strokeCirclePaint.setColor(fillColor);
+    strokeCirclePaint.setAntiAlias(true);
+    strokeCirclePaint.setStrokeWidth(longerSide * STROKE_WIDTH_FACTOR);
+    strokeCirclePaint.setStyle(Style.STROKE);
   }
 
   /**
@@ -121,9 +103,7 @@ public class CircularReveal extends View implements ValueAnimator.AnimatorUpdate
    * @param a the attributes to parse
    */
   private void parseAttributes(TypedArray a) {
-
-    barColor = a.getColor(R.styleable.CircularReveal_barColor, barColor);
-
+    fillColor = a.getColor(R.styleable.CircularReveal_barColor, fillColor);
     a.recycle();
   }
 
@@ -133,29 +113,28 @@ public class CircularReveal extends View implements ValueAnimator.AnimatorUpdate
     fullCircle.top = layoutHeight / 2 - longerSide * (getProgress() / 100f);
     fullCircle.right = layoutWidth / 2 + longerSide * (getProgress() / 100f);
     fullCircle.bottom = layoutHeight / 2 + longerSide * (getProgress() / 100f);
-    switch (MODE) {
+    switch (animationMode) {
       case REVEAL:
-
         // fix double buffer
-        if (toClear > 0) {
-          canvas.drawColor(barColor);
-          toClear--;
-        } else if (toClear == 0) {
-          circlePaint.setStrokeWidth(circlePaint.getStrokeWidth() - getProgress());
-          canvas.drawArc(fullCircle, 0, 360, false, circlePaint);
+        if (timesToClear > 0) {
+          canvas.drawColor(fillColor);
+          timesToClear--;
+        } else if (timesToClear == 0) {
+          strokeCirclePaint.setStrokeWidth(strokeCirclePaint.getStrokeWidth() - getProgress());
+          canvas.drawArc(fullCircle, 0, 360, false, strokeCirclePaint);
         } else {
           canvas.drawColor(android.R.color.transparent);
         }
         break;
       case HIDE:
         // fix double buffer
-        if (toClear > 0) {
+        if (timesToClear > 0) {
           canvas.drawColor(android.R.color.transparent);
-          toClear--;
-        } else if (toClear == 0) {
-          canvas.drawOval(fullCircle, barPaint);
+          timesToClear--;
+        } else if (timesToClear == 0) {
+          canvas.drawOval(fullCircle, fullCirclePaint);
         } else {
-          canvas.drawColor(barColor);
+          canvas.drawColor(fillColor);
         }
         break;
     }
@@ -169,20 +148,20 @@ public class CircularReveal extends View implements ValueAnimator.AnimatorUpdate
   }
 
   public void hide(boolean withAnimation) {
-    MODE = Mode.HIDE;
+    animationMode = Mode.HIDE;
     startAnimation(withAnimation);
   }
 
   public void reveal(boolean withAnimation) {
-    MODE = Mode.REVEAL;
+    animationMode = Mode.REVEAL;
     startAnimation(withAnimation);
   }
 
   public void toggle(boolean withAnimation) {
-    if (MODE == Mode.HIDE) {
-      MODE = Mode.REVEAL;
+    if (animationMode == Mode.HIDE) {
+      animationMode = Mode.REVEAL;
     } else {
-      MODE = Mode.HIDE;
+      animationMode = Mode.HIDE;
     }
 
     startAnimation(withAnimation);
@@ -192,15 +171,14 @@ public class CircularReveal extends View implements ValueAnimator.AnimatorUpdate
     if (withAnimation) {
       ValueAnimator animation = ValueAnimator.ofFloat(0f, 100f);
 
-      switch (MODE) {
+      timesToClear = 2;
+      switch (animationMode) {
         case REVEAL:
           animation.setDuration(durationReveal);
-          toClear = 2;
-          circlePaint.setStrokeWidth(longerSide * STROKE_WIDTH_FACTOR);
+          strokeCirclePaint.setStrokeWidth(longerSide * STROKE_WIDTH_FACTOR);
           break;
         case HIDE:
           animation.setDuration(durationHide);
-          toClear = 2;
           break;
       }
 
@@ -242,7 +220,6 @@ public class CircularReveal extends View implements ValueAnimator.AnimatorUpdate
     return progress;
   }
 
-
   public int getDurationReveal() {
     return durationReveal;
   }
@@ -259,9 +236,7 @@ public class CircularReveal extends View implements ValueAnimator.AnimatorUpdate
     this.durationHide = durationHide;
   }
 
-
   public enum Mode {
     REVEAL, HIDE;
-
   }
 }
