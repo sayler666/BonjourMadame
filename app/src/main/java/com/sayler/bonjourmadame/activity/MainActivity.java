@@ -2,14 +2,27 @@ package com.sayler.bonjourmadame.activity;
 
 import android.app.Activity;
 import android.os.Bundle;
+import com.sayler.bonjourmadame.BonjourMadameApplication;
 import com.sayler.bonjourmadame.R;
 import com.sayler.bonjourmadame.fragment.LoadingFragment;
+import com.sayler.bonjourmadame.network.BonjourMadameAPI;
 
-public class MainActivity extends Activity {
+import javax.inject.Inject;
+
+public class MainActivity extends BaseActivity {
+
+  @Inject
+  BonjourMadameAPI bonjourMadameAPI;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+
+    BonjourMadameApplication bonjourMadameApplication = BonjourMadameApplication.get(this);
+
+    bonjourMadameApplication.getApplicationComponent().inject(this);
+    bonjourMadameApplication.getNetworkComponent().inject(this);
+
     /**
      * set activity's in animation
      */

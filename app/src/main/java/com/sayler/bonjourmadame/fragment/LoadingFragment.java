@@ -1,6 +1,9 @@
 package com.sayler.bonjourmadame.fragment;
 
-import android.animation.*;
+import android.animation.ArgbEvaluator;
+import android.animation.LayoutTransition;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.app.Fragment;
 import android.graphics.Outline;
 import android.os.Bundle;
@@ -20,8 +23,8 @@ import android.widget.Toolbar;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
-import com.sayler.bonjourmadame.widget.CircularReveal;
 import com.sayler.bonjourmadame.R;
+import com.sayler.bonjourmadame.widget.CircularReveal;
 
 public class LoadingFragment extends Fragment {
 
@@ -42,7 +45,9 @@ public class LoadingFragment extends Fragment {
     @Override
     public void handleMessage(Message msg) {
       super.handleMessage(msg);
-      onLoadingFinish();
+      if (getActivity() != null) {
+        onLoadingFinish();
+      }
     }
   };
 
@@ -55,9 +60,15 @@ public class LoadingFragment extends Fragment {
     View rootView = inflater.inflate(R.layout.f_loading, container, false);
 
     ButterKnife.inject(this, rootView);
-    setupViews();
 
     return rootView;
+  }
+
+  @Override
+  public void onActivityCreated(Bundle savedInstanceState) {
+    super.onActivityCreated(savedInstanceState);
+
+    setupViews();
   }
 
   private void setupViews() {
