@@ -23,7 +23,6 @@ public class BonjourMadameApplication extends Application {
         .build();
 
     networkComponent = Dagger_NetworkComponent.builder()
-        .applicationComponent(applicationComponent)
         .build();
 
   }

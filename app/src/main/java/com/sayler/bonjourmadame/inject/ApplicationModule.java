@@ -5,9 +5,7 @@ import com.sayler.bonjourmadame.BonjourMadameApplication;
 import dagger.Module;
 import dagger.Provides;
 
-@Module(
-    library = true
-)
+@Module
 public class ApplicationModule {
 
   private final BonjourMadameApplication application;
