@@ -1,6 +1,5 @@
 package com.sayler.bonjourmadame.activity;
 
-import android.app.Activity;
 import android.os.Bundle;
 import com.sayler.bonjourmadame.BonjourMadameApplication;
 import com.sayler.bonjourmadame.R;
@@ -10,9 +9,12 @@ import com.sayler.bonjourmadame.network.BonjourMadameAPI;
 import javax.inject.Inject;
 
 public class MainActivity extends BaseActivity {
-
   @Inject
   BonjourMadameAPI bonjourMadameAPI;
+
+  public BonjourMadameAPI getBonjourMadameAPI() {
+    return bonjourMadameAPI;
+  }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {

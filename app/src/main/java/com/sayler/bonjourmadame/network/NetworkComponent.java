@@ -16,4 +16,5 @@ import dagger.Component;
 public interface NetworkComponent {
 
   void inject(MainActivity mainActivity);
+
 }

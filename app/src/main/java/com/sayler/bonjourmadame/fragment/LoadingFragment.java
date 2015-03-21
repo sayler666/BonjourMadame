@@ -4,11 +4,9 @@ import android.animation.ArgbEvaluator;
 import android.animation.LayoutTransition;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
-import android.app.Fragment;
 import android.graphics.Outline;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,10 +22,17 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 import com.sayler.bonjourmadame.R;
+import com.sayler.bonjourmadame.activity.MainActivity;
+import com.sayler.bonjourmadame.network.model.BaseParseResponse;
+import com.sayler.bonjourmadame.network.model.MadameDto;
 import com.sayler.bonjourmadame.widget.CircularReveal;
+import rx.android.app.AppObservable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
-public class LoadingFragment extends Fragment {
+public class LoadingFragment extends BaseFragment {
 
+  private static final String TAG = "LoadingFragment";
   @InjectView(R.id.toolbar) Toolbar toolbar;
   @InjectView(R.id.button_container) RelativeLayout buttonContainer;
   @InjectView(R.id.action_button) ImageButton actionButton;
@@ -41,15 +46,6 @@ public class LoadingFragment extends Fragment {
   private Animation actionButtonRevealAnimation;
   private ObjectAnimator actionButtonLoadingColorAnimator;
   private boolean isLoading = true;
-  private Handler finishLoadingHandler = new Handler() {
-    @Override
-    public void handleMessage(Message msg) {
-      super.handleMessage(msg);
-      if (getActivity() != null) {
-        onLoadingFinish();
-      }
-    }
-  };
 
   public LoadingFragment() {
   }
@@ -97,8 +93,6 @@ public class LoadingFragment extends Fragment {
      */
     startLoading();
 
-    //TODO delete it (mock loading time)
-    finishLoadingHandler.sendEmptyMessageDelayed(1, 3000);
   }
 
   private void setupToolbar() {
@@ -113,7 +107,22 @@ public class LoadingFragment extends Fragment {
     circularReveal.hide(true);
     loadingStartAnimations();
 
+    AppObservable.bindFragment(this, ((MainActivity) getBaseActivity()).getBonjourMadameAPI().getRandomMadame())
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(this::onLoadingFinish, this::onErrorLoading);
+
     isLoading = true;
+  }
+
+  private void onErrorLoading(Throwable throwable) {
+    Log.e(TAG, throwable.toString(), throwable);
+    onLoadingFinish();
+  }
+
+  private void onLoadingFinish(BaseParseResponse<MadameDto> baseParseResponse) {
+    Log.d(TAG, baseParseResponse.getResult().url);
+    onLoadingFinish();
   }
 
   private void onLoadingFinish() {
@@ -162,10 +171,8 @@ public class LoadingFragment extends Fragment {
 
   @OnClick(R.id.action_button)
   public void onActionButtonClick() {
-    if (isLoading) {
-      loadingFinishAnimations();
-    } else {
-      loadingStartAnimations();
+    if (!isLoading) {
+      startLoading();
     }
     isLoading = !isLoading;
   }

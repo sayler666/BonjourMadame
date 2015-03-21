@@ -12,7 +12,7 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author sayler666
  */
-public abstract class BaseParseResponse<T extends Object> {
+public class BaseParseResponse<T extends Object> {
 
   @SerializedName("result")
   private T result;

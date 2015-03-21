@@ -13,8 +13,12 @@ import com.google.gson.annotations.SerializedName;
  * @author sayler666
  */
 
-public abstract class Madame {
+public class MadameDto {
+  @SerializedName("__type")
+  public String type;
+  @SerializedName("name")
   public String name;
+  @SerializedName("url")
   public String url;
 
 }

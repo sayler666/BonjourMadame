@@ -29,6 +29,6 @@ dependencies {
 
   compile 'com.google.dagger:dagger:2.0-SNAPSHOT'
 
-  compile project(':network')
+
   compile fileTree(dir: 'libs', include: ['*.jar'])
 }
