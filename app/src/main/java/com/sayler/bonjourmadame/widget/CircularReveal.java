@@ -1,14 +1,16 @@
 /**
  * Created by Lukasz Chromy on 13.01.14.
- *
+ * <p>
  * Copyright 2014 MiQUiDO <http://www.miquido.com/>. All rights reserved.
  */
 package com.sayler.bonjourmadame.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.*;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.Paint.Style;
+import android.graphics.RectF;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
@@ -28,8 +30,10 @@ public class CircularReveal extends View implements ValueAnimator.AnimatorUpdate
   private int layoutHeight = 0;
   private int layoutWidth = 0;
   private int longerSide;
+
   //Colors
   private int fillColor = 0xAA000000;
+
   //Paints
   private Paint fullCirclePaint = new Paint();
   private Paint strokeCirclePaint = new Paint();
@@ -43,6 +47,7 @@ public class CircularReveal extends View implements ValueAnimator.AnimatorUpdate
   private Handler spinHandler = new Handler(new IncomingHandlerCallback());
 
   private class IncomingHandlerCallback implements Handler.Callback {
+
     @Override
     public boolean handleMessage(Message message) {
       invalidate();
@@ -61,6 +66,15 @@ public class CircularReveal extends View implements ValueAnimator.AnimatorUpdate
 
     parseAttributes(context.obtainStyledAttributes(attrs,
         R.styleable.CircularReveal));
+  }
+
+  public int getFillColor() {
+    return fillColor;
+  }
+
+  public void setFillColor(int fillColor) {
+    this.fillColor = fillColor;
+    setupPaints();
   }
 
   @Override

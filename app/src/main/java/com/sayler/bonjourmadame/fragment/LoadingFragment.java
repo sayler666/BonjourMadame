@@ -4,20 +4,16 @@ import android.animation.ArgbEvaluator;
 import android.animation.LayoutTransition;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.graphics.Bitmap;
 import android.graphics.Outline;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewOutlineProvider;
+import android.view.*;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.OvershootInterpolator;
-import android.widget.ImageButton;
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
-import android.widget.Toolbar;
+import android.widget.*;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
@@ -26,9 +22,15 @@ import com.sayler.bonjourmadame.activity.MainActivity;
 import com.sayler.bonjourmadame.network.model.BaseParseResponse;
 import com.sayler.bonjourmadame.network.model.MadameDto;
 import com.sayler.bonjourmadame.widget.CircularReveal;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
+import org.michaelevans.colorart.library.ColorArt;
+import rx.Observable;
 import rx.android.app.AppObservable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+
+import java.util.concurrent.TimeUnit;
 
 public class LoadingFragment extends BaseFragment {
 
@@ -39,6 +41,7 @@ public class LoadingFragment extends BaseFragment {
   @InjectView(R.id.circural_reveal) CircularReveal circularReveal;
   @InjectView(R.id.progress_bar_circle) ProgressBar progressBarCircle;
   @InjectView(R.id.mainContainer) RelativeLayout mainContainer;
+  @InjectView(R.id.loadedMadameImageView) ImageView loadedMadameImageView;
   private Animation actionButtonZoomInAnimation;
   private Animation actionButtonZoomOutAnimation;
   private Animation toolbarDropOutAnimation;
@@ -122,7 +125,44 @@ public class LoadingFragment extends BaseFragment {
 
   private void onLoadingFinish(BaseParseResponse<MadameDto> baseParseResponse) {
     Log.d(TAG, baseParseResponse.getResult().url);
-    onLoadingFinish();
+    Picasso.with(getBaseActivity()).load(baseParseResponse.getResult().url).into(imageDownloadTarget);
+
+  }
+
+  private Target imageDownloadTarget = new Target() {
+    @Override
+    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+
+      updateThemeColorsFromBitmap(bitmap);
+
+      loadedMadameImageView.setImageBitmap(bitmap);
+      Observable<Integer> messageObservable = Observable.just(1);
+      AppObservable.bindFragment(LoadingFragment.this, messageObservable)
+          .delay(500, TimeUnit.MILLISECONDS)
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(s -> onLoadingFinish());
+    }
+
+    @Override
+    public void onBitmapFailed(Drawable errorDrawable) {
+      //not used
+    }
+
+    @Override
+    public void onPrepareLoad(Drawable placeHolderDrawable) {
+      //not used
+    }
+  };
+
+  private void updateThemeColorsFromBitmap(Bitmap bitmap) {
+    ColorArt colorArt = new ColorArt(bitmap);
+    toolbar.setBackgroundColor(colorArt.getBackgroundColor());
+    Window window = getBaseActivity().getWindow();
+    window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+    window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+    window.setStatusBarColor(colorArt.getBackgroundColor());
+
+    circularReveal.setFillColor(colorArt.getSecondaryColor());
   }
 
   private void onLoadingFinish() {
