@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/add_button_margin"
+        android:layout_marginEnd="@dimen/add_button_margin"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:padding="10dp" tools:showIn="@layout/f_loading">
+    <ImageButton
+            android:id="@+id/action_button"
+            android:layout_centerInParent="true"
+            android:layout_width="@dimen/diameter"
+            android:layout_height="@dimen/diameter"
+            android:src="@android:drawable/ic_input_add"
+            android:tint="@android:color/white"
+            android:background="@drawable/oval"
+            android:elevation="@dimen/elevation_low"
+            android:stateListAnimator="@anim/button_elevation"/>
+    <ProgressBar
+            android:id="@+id/progress_bar_circle"
+            android:visibility="gone"
+            android:layout_centerInParent="true"
+            android:layout_width="@dimen/diameter"
+            android:layout_height="@dimen/diameter"
+            android:elevation="@dimen/elevation_high"
+            android:translationZ="1dp"
+            style="@style/Base.Widget.AppCompat.ProgressBar"
+            />
+</RelativeLayout>

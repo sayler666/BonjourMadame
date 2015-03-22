@@ -21,6 +21,9 @@
         <attr name="startLineColor" format="color"/>
     </declare-styleable>
 
-
+    <declare-styleable name="ActionButton">
+        <attr name="actionIcon" format="integer"/>
+        <attr name="actionBackground" format="integer"/>
+    </declare-styleable>
 
 </resources>

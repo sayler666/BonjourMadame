@@ -15,7 +15,7 @@ public class ActionButtonHelper {
    * @param buttonContainer action button
    * @param location        location to be set
    */
-  public static void setActionButtonPosition(View buttonContainer, ActionButtonLocationEmum location) {
+  public static void setActionButtonPosition(View buttonContainer, ActionButtonLocationEnum location) {
     RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) buttonContainer.getLayoutParams();
 
     /**
@@ -36,5 +36,26 @@ public class ActionButtonHelper {
      * set layout params
      */
     buttonContainer.setLayoutParams(layoutParams);
+  }
+
+  public enum ActionButtonLocationEnum {
+    BOTTOM_RIGHT(new int[]{RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.ALIGN_PARENT_RIGHT}, new int[]{RelativeLayout.CENTER_IN_PARENT}),
+    CENTER(new int[]{RelativeLayout.CENTER_IN_PARENT}, new int[]{RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.ALIGN_PARENT_RIGHT});
+
+    final private int[] rulesToAdd;
+    final private int[] rulesToRemove;
+
+    public int[] getRulesToRemove() {
+      return rulesToRemove.clone();
+    }
+
+    public int[] getRulesToAdd() {
+      return rulesToAdd.clone();
+    }
+
+    ActionButtonLocationEnum(int[] rulesToAdd, int[] rulesToRemove) {
+      this.rulesToAdd = rulesToAdd;
+      this.rulesToRemove = rulesToRemove;
+    }
   }
 }

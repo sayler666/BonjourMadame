@@ -9,7 +9,7 @@
         <item name="android:backgroundDimEnabled">false</item>
         <item name="android:colorPrimary">@android:color/white</item>
         <item name="android:colorAccent">@android:color/white</item>
-        <item name="android:statusBarColor">@color/amberAccent</item>
+        <item name="android:statusBarColor">@color/mainAccent</item>
     </style>
 
 </resources>
