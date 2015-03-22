@@ -33,10 +33,11 @@
             android:layout_height="match_parent"
             android:animateLayoutChanges="true"
             >
-        <com.sayler.bonjourmadame.widget.ActionButton
+        <com.sayler.bonjourmadame.widget.MainActionButton
                 android:id="@+id/actionButton"
                 ActionButton:actionIcon="@android:drawable/ic_input_add"
                 ActionButton:actionBackground="@drawable/oval"
+                ActionButton:diameter="@dimen/diameter"
                 style="@style/actionButtonStyle"/>
     </RelativeLayout>
 

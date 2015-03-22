@@ -20,8 +20,8 @@ import com.sayler.bonjourmadame.activity.MainActivity;
 import com.sayler.bonjourmadame.network.model.BaseParseResponse;
 import com.sayler.bonjourmadame.network.model.MadameDto;
 import com.sayler.bonjourmadame.util.ActionButtonHelper;
-import com.sayler.bonjourmadame.widget.ActionButton;
 import com.sayler.bonjourmadame.widget.CircularReveal;
+import com.sayler.bonjourmadame.widget.MainActionButton;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 import org.michaelevans.colorart.library.ColorArt;
@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 public class LoadingFragment extends BaseFragment {
 
   private static final String TAG = "LoadingFragment";
-  @InjectView(R.id.actionButton) ActionButton mainActionButton;
+  @InjectView(R.id.actionButton) MainActionButton mainActionButton;
   @InjectView(R.id.toolbar) Toolbar toolbar;
   @InjectView(R.id.circural_reveal) CircularReveal circularReveal;
   @InjectView(R.id.mainContainer) RelativeLayout mainContainer;
@@ -65,15 +65,10 @@ public class LoadingFragment extends BaseFragment {
   }
 
   private void setupViews() {
-
     setupToolbar();
-
     setupLayoutTransition(mainContainer);
-
     setupAnimation();
-
     startLoading();
-
   }
 
   private void setupToolbar() {
@@ -136,6 +131,7 @@ public class LoadingFragment extends BaseFragment {
 
   private void onLoadingFinishFailure() {
     //TODO handle exception
+    isLoading = false;
     circularReveal.reveal(true);
     loadingFinishAnimations();
   }
@@ -159,6 +155,7 @@ public class LoadingFragment extends BaseFragment {
   private void updateThemeColorsFromBitmap(Bitmap bitmap) {
     ColorArt colorArt = new ColorArt(bitmap);
     toolbar.setBackgroundColor(colorArt.getBackgroundColor());
+    toolbar.setTitleTextColor(colorArt.getDetailColor());
     Window window = getBaseActivity().getWindow();
     window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
     window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -179,19 +176,15 @@ public class LoadingFragment extends BaseFragment {
 
   private void loadingStartAnimations() {
     circularReveal.hide(true);
-
     ActionButtonHelper.setActionButtonPosition(mainActionButton, ActionButtonHelper.ActionButtonLocationEnum.CENTER);
     mainActionButton.loadingStartAnimation();
-
     toolbar.startAnimation(toolbarDropOutAnimation);
   }
 
   private void loadingFinishAnimations() {
     circularReveal.reveal(true);
-
     ActionButtonHelper.setActionButtonPosition(mainActionButton, ActionButtonHelper.ActionButtonLocationEnum.BOTTOM_RIGHT);
     mainActionButton.loadingFinishAnimation();
-
     toolbar.startAnimation(toolbarDropInAnimation);
   }
 }

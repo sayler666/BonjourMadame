@@ -24,6 +24,7 @@
     <declare-styleable name="ActionButton">
         <attr name="actionIcon" format="integer"/>
         <attr name="actionBackground" format="integer"/>
+        <attr name="diameter" format="dimension"/>
     </declare-styleable>
 
 </resources>
