@@ -2,10 +2,13 @@ package com.sayler.bonjourmadame.fragment;
 
 import android.animation.LayoutTransition;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.OvershootInterpolator;
@@ -154,12 +157,23 @@ public class LoadingFragment extends BaseFragment {
 
   private void updateThemeColorsFromBitmap(Bitmap bitmap) {
     ColorArt colorArt = new ColorArt(bitmap);
+    int color = darkenColor(colorArt);
+
     toolbar.setBackgroundColor(colorArt.getBackgroundColor());
     toolbar.setTitleTextColor(colorArt.getDetailColor());
-    Window window = getBaseActivity().getWindow();
-    window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-    window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-    window.setStatusBarColor(colorArt.getBackgroundColor());
+    mainActionButton.setDefaultColor(color);
+
+    getBaseActivity().animateStatusBarColor(color, 1000);
+  }
+
+  private int darkenColor(ColorArt colorArt) {
+    float[] hsv = new float[3];
+    int color = colorArt.getBackgroundColor();
+    Color.colorToHSV(color, hsv);
+    hsv[2] *= 0.8f;
+    hsv[1] *= 1.4f;
+    color = Color.HSVToColor(hsv);
+    return color;
   }
 
   private void setupAnimation() {

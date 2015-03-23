@@ -11,19 +11,18 @@
     <ImageButton
             android:id="@+id/action_button"
             android:layout_centerInParent="true"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
             android:src="@android:drawable/ic_input_add"
             android:tint="@android:color/white"
-            android:background="@drawable/oval"
             android:elevation="@dimen/elevation_low"
             android:stateListAnimator="@anim/button_elevation"/>
     <ProgressBar
             android:id="@+id/progress_bar_circle"
             android:visibility="gone"
             android:layout_centerInParent="true"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
             android:elevation="@dimen/elevation_high"
             android:translationZ="1dp"
             style="@style/Base.Widget.AppCompat.ProgressBar"

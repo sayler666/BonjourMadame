@@ -45,7 +45,7 @@ public class ActionButton extends RelativeLayout {
   protected void parseAttributes(TypedArray a) {
     actionIcon = a.getDrawable(R.styleable.ActionButton_actionIcon);
     actionBackground = a.getDrawable(R.styleable.ActionButton_actionBackground);
-    diameter = (int) a.getDimension(R.styleable.ActionButton_diameter, 48);
+    diameter = (int) a.getDimension(R.styleable.ActionButton_diameter, 56);
     a.recycle();
   }
 

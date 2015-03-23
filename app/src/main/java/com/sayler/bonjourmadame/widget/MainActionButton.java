@@ -27,6 +27,11 @@ public class MainActionButton extends ActionButton {
   private Animation zoomOutAnimation;
   private ObjectAnimator loadingColorAnimator;
 
+  private int defaultColor;
+  private int loadingColor1 = R.color.mainLight;
+  private int loadingColor2 = R.color.mainLight2;
+  private ObjectAnimator colorAnimator;
+
   public MainActionButton(Context context, AttributeSet attrs) {
     super(context, attrs);
 
@@ -43,10 +48,17 @@ public class MainActionButton extends ActionButton {
     /**
      * action button loading state color animation
      */
-    loadingColorAnimator = ObjectAnimator.ofArgb(getImageButton(), "backgroundColor", getResources().getColor(R.color.mainLight), getResources().getColor(R.color.mainLight2), getResources().getColor(R.color.mainLight));
+    loadingColorAnimator = ObjectAnimator.ofArgb(getImageButton(), "backgroundColor", getResources().getColor(loadingColor1), getResources().getColor(loadingColor2), getResources().getColor(loadingColor1));
     loadingColorAnimator.setEvaluator(new ArgbEvaluator());
     loadingColorAnimator.setDuration(1500);
     loadingColorAnimator.setRepeatCount(ValueAnimator.INFINITE);
+  }
+
+  private void setupColorChangeAnimation() {
+    colorAnimator = ObjectAnimator.ofArgb(getImageButton(), "backgroundColor", getResources().getColor(loadingColor1), defaultColor);
+    colorAnimator.setEvaluator(new ArgbEvaluator());
+    colorAnimator.setDuration(1000);
+    colorAnimator.setRepeatCount(0);
   }
 
   public void loadingStartAnimation() {
@@ -61,9 +73,19 @@ public class MainActionButton extends ActionButton {
     getProgressBarCircle().setVisibility(View.GONE);
     revealAnimation.cancel();
     loadingColorAnimator.end();
-    getImageButton().setBackground(getContext().getDrawable(R.drawable.oval));
+    if (colorAnimator != null) {
+      colorAnimator.start();
+    }
     getImageButton().setElevation(getResources().getDimension(R.dimen.elevation_low));
     this.startAnimation(zoomOutAnimation);
     getImageButton().setImageDrawable(getContext().getDrawable(android.R.drawable.ic_input_add));
+  }
+
+
+  /*---------------------------------------------- GETTERS AND SETTERS -----------------------------------------------*/
+
+  public void setDefaultColor(int defaultColor) {
+    this.defaultColor = defaultColor;
+    setupColorChangeAnimation();
   }
 }

@@ -5,7 +5,10 @@
  */
 package com.sayler.bonjourmadame.activity;
 
+import android.animation.ValueAnimator;
 import android.app.Activity;
+import android.view.Window;
+import android.view.WindowManager;
 import com.sayler.bonjourmadame.inject.ActivityComponent;
 
 /**
@@ -21,4 +24,14 @@ public class BaseActivity extends Activity {
     return activityComponent;
   }
 
+  public void animateStatusBarColor(int color, int duration) {
+    Window window = getWindow();
+    window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+    window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+    ValueAnimator valueAnimator = ValueAnimator.ofArgb(window.getStatusBarColor(), color);
+    valueAnimator.setDuration(duration);
+    valueAnimator.addUpdateListener(animation -> window.setStatusBarColor((int) animation.getAnimatedValue()));
+    valueAnimator.start();
+  }
 }
