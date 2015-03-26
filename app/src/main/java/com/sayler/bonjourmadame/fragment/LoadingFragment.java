@@ -2,10 +2,13 @@ package com.sayler.bonjourmadame.fragment;
 
 import android.animation.LayoutTransition;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.OvershootInterpolator;
@@ -35,11 +38,16 @@ import java.util.concurrent.TimeUnit;
 public class LoadingFragment extends BaseFragment {
 
   private static final String TAG = "LoadingFragment";
-  @InjectView(R.id.actionButton) MainActionButton mainActionButton;
-  @InjectView(R.id.toolbar) Toolbar toolbar;
-  @InjectView(R.id.circural_reveal) CircularReveal circularReveal;
-  @InjectView(R.id.mainContainer) RelativeLayout mainContainer;
-  @InjectView(R.id.loadedMadameImageView) ImageView loadedMadameImageView;
+  @InjectView(R.id.actionButton)
+  MainActionButton mainActionButton;
+  @InjectView(R.id.toolbar)
+  Toolbar toolbar;
+  @InjectView(R.id.circural_reveal)
+  CircularReveal circularReveal;
+  @InjectView(R.id.mainContainer)
+  RelativeLayout mainContainer;
+  @InjectView(R.id.loadedMadameImageView)
+  ImageView loadedMadameImageView;
   private Animation toolbarDropOutAnimation;
   private Animation toolbarDropInAnimation;
   private boolean isLoading = true;
@@ -154,12 +162,22 @@ public class LoadingFragment extends BaseFragment {
 
   private void updateThemeColorsFromBitmap(Bitmap bitmap) {
     ColorArt colorArt = new ColorArt(bitmap);
+    int darkenColor = darkenColor(colorArt.getBackgroundColor());
+
     toolbar.setBackgroundColor(colorArt.getBackgroundColor());
     toolbar.setTitleTextColor(colorArt.getDetailColor());
-    Window window = getBaseActivity().getWindow();
-    window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-    window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-    window.setStatusBarColor(colorArt.getBackgroundColor());
+    mainActionButton.setDefaultColor(darkenColor);
+
+    getBaseActivity().animateStatusBarColor(darkenColor, 1000);
+  }
+
+  private int darkenColor(int color) {
+    float[] hsv = new float[3];
+    Color.colorToHSV(color, hsv);
+    hsv[2] *= 0.8f;
+    hsv[1] *= 1.4f;
+    color = Color.HSVToColor(hsv);
+    return color;
   }
 
   private void setupAnimation() {
