@@ -9,7 +9,7 @@ import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.graphics.drawable.AnimationDrawable;
+import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.util.AttributeSet;
@@ -102,5 +102,11 @@ public class MainActionButton extends ActionButton {
   public void setDefaultColor(int defaultColor) {
     this.defaultColor = defaultColor;
     setupColorChangeAnimation();
+  }
+
+  @Override
+  public void setTint(int tintColor) {
+    ColorStateList tintColorStateList = new ColorStateList(new int[][]{EMPTY_STATE_SET}, new int[]{tintColor});
+    getImageButton().setImageTintList(tintColorStateList);
   }
 }

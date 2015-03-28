@@ -38,6 +38,7 @@
                 ActionButton:actionIcon="@android:drawable/ic_input_add"
                 ActionButton:actionBackground="@drawable/oval"
                 ActionButton:diameter="@dimen/diameter"
+                ActionButton:tint="@android:color/white"
                 style="@style/actionButtonStyle"/>
     </RelativeLayout>
 

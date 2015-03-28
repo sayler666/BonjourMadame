@@ -38,16 +38,11 @@ import java.util.concurrent.TimeUnit;
 public class LoadingFragment extends BaseFragment {
 
   private static final String TAG = "LoadingFragment";
-  @InjectView(R.id.actionButton)
-  MainActionButton mainActionButton;
-  @InjectView(R.id.toolbar)
-  Toolbar toolbar;
-  @InjectView(R.id.circural_reveal)
-  CircularReveal circularReveal;
-  @InjectView(R.id.mainContainer)
-  RelativeLayout mainContainer;
-  @InjectView(R.id.loadedMadameImageView)
-  ImageView loadedMadameImageView;
+  @InjectView(R.id.actionButton) MainActionButton mainActionButton;
+  @InjectView(R.id.toolbar) Toolbar toolbar;
+  @InjectView(R.id.circural_reveal) CircularReveal circularReveal;
+  @InjectView(R.id.mainContainer) RelativeLayout mainContainer;
+  @InjectView(R.id.loadedMadameImageView) ImageView loadedMadameImageView;
   private Animation toolbarDropOutAnimation;
   private Animation toolbarDropInAnimation;
   private boolean isLoading = true;
@@ -167,8 +162,10 @@ public class LoadingFragment extends BaseFragment {
     toolbar.setBackgroundColor(colorArt.getBackgroundColor());
     toolbar.setTitleTextColor(colorArt.getDetailColor());
     mainActionButton.setDefaultColor(darkenColor);
-
+    mainActionButton.setTint(colorArt.getDetailColor());
+    
     getBaseActivity().animateStatusBarColor(darkenColor, 1000);
+    getBaseActivity().animateNavigationBarColor(darkenColor, 1000);
   }
 
   private int darkenColor(int color) {

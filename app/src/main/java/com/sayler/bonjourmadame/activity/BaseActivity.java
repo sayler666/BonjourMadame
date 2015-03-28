@@ -26,12 +26,25 @@ public class BaseActivity extends Activity {
 
   public void animateStatusBarColor(int color, int duration) {
     Window window = getWindow();
+
     window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
     window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 
     ValueAnimator valueAnimator = ValueAnimator.ofArgb(window.getStatusBarColor(), color);
     valueAnimator.setDuration(duration);
     valueAnimator.addUpdateListener(animation -> window.setStatusBarColor((int) animation.getAnimatedValue()));
+    valueAnimator.start();
+  }
+
+  public void animateNavigationBarColor(int color, int duration) {
+    Window window = getWindow();
+
+    window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+    window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+    ValueAnimator valueAnimator = ValueAnimator.ofArgb(window.getStatusBarColor(), color);
+    valueAnimator.setDuration(duration);
+    valueAnimator.addUpdateListener(animation -> window.setNavigationBarColor((int) animation.getAnimatedValue()));
     valueAnimator.start();
   }
 }

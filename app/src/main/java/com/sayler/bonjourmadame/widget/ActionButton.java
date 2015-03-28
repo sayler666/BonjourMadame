@@ -6,6 +6,7 @@
 package com.sayler.bonjourmadame.widget;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Outline;
 import android.graphics.drawable.Drawable;
@@ -30,6 +31,7 @@ public class ActionButton extends RelativeLayout {
   private Drawable actionBackground;
   private Drawable actionIcon;
   private int diameter;
+  private int tint;
 
   public ActionButton(Context context, AttributeSet attrs) {
     super(context, attrs);
@@ -46,6 +48,7 @@ public class ActionButton extends RelativeLayout {
     actionIcon = a.getDrawable(R.styleable.ActionButton_actionIcon);
     actionBackground = a.getDrawable(R.styleable.ActionButton_actionBackground);
     diameter = (int) a.getDimension(R.styleable.ActionButton_diameter, 56);
+    tint = a.getColor(R.styleable.ActionButton_tint, 0xffffffff);
     a.recycle();
   }
 
@@ -70,6 +73,8 @@ public class ActionButton extends RelativeLayout {
   protected void updateViewState() {
     imageButton.setImageDrawable(actionIcon);
     imageButton.setBackground(actionBackground);
+    ColorStateList tintColorStateList = new ColorStateList(new int[][]{EMPTY_STATE_SET}, new int[]{tint});
+    imageButton.setImageTintList(tintColorStateList);
   }
 
   private void setupOvalOutline(ImageButton actionButton, final int size) {
@@ -92,6 +97,11 @@ public class ActionButton extends RelativeLayout {
 
   public void setActionBackground(Drawable actionBackground) {
     this.actionBackground = actionBackground;
+    updateViewState();
+  }
+
+  public void setTint(int tint) {
+    this.tint = tint;
     updateViewState();
   }
 
