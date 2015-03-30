@@ -3,14 +3,16 @@
              xmlns:ActionButton="http://schemas.android.com/apk/res-auto"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
-             android:id="@+id/scene_base">
+             android:id="@+id/scene_base"
+             android:clipChildren="false"
+             android:clipToPadding="false">
     <ImageView
             android:id="@+id/loadedMadameImageView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"/>
     <com.sayler.bonjourmadame.widget.CircularReveal
-            android:id="@+id/circural_reveal"
+            android:id="@+id/circuralReveal"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             Circle:barColor="@color/backgroundColor"
@@ -19,13 +21,39 @@
             android:id="@+id/mainContainer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:animateLayoutChanges="true">
-        <com.sayler.bonjourmadame.widget.MainActionButton
-                android:id="@+id/actionButton"
+            android:animateLayoutChanges="true"
+            android:clipChildren="false"
+            android:clipToPadding="false">
+        <com.sayler.bonjourmadame.widget.RefreshActionButton
+                android:id="@+id/refreshActionButton"
+                ActionButton:actionIcon="@android:drawable/ic_popup_sync"
+                ActionButton:actionBackground="@drawable/oval"
+                ActionButton:diameter="@dimen/diameter"
+                ActionButton:tint="@android:color/white"
+                android:elevation="2dp"
+                style="@style/refreshActionButtonStyle"/>
+
+        <com.sayler.bonjourmadame.widget.ActionButton
+                android:id="@+id/setWallpaperActionButton"
                 ActionButton:actionIcon="@android:drawable/ic_input_add"
                 ActionButton:actionBackground="@drawable/oval"
                 ActionButton:diameter="@dimen/diameter"
                 ActionButton:tint="@android:color/white"
-                style="@style/actionButtonStyle"/>
+                android:layout_marginBottom="-32dp"
+                android:elevation="1dp"
+                android:layout_above="@id/refreshActionButton"
+                style="@style/setWallpaperActionButtonStyle"/>
+
+        <com.sayler.bonjourmadame.widget.ActionButton
+                android:id="@+id/shareImageActionButton"
+                ActionButton:actionIcon="@drawable/ic_action_share_dark"
+                ActionButton:actionBackground="@drawable/oval"
+                ActionButton:diameter="@dimen/diameter"
+                ActionButton:tint="@android:color/white"
+                android:layout_marginBottom="-32dp"
+                android:elevation="1dp"
+                android:layout_above="@id/setWallpaperActionButton"
+                style="@style/setWallpaperActionButtonStyle"/>
+
     </RelativeLayout>
 </FrameLayout>

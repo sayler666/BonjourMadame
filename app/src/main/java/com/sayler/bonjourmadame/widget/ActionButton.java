@@ -32,6 +32,7 @@ public class ActionButton extends RelativeLayout {
   private Drawable actionIcon;
   private int diameter;
   private int tint;
+  private Integer actionBackgroundColor;
 
   public ActionButton(Context context, AttributeSet attrs) {
     super(context, attrs);
@@ -75,6 +76,9 @@ public class ActionButton extends RelativeLayout {
     imageButton.setBackground(actionBackground);
     ColorStateList tintColorStateList = new ColorStateList(new int[][]{EMPTY_STATE_SET}, new int[]{tint});
     imageButton.setImageTintList(tintColorStateList);
+    if (actionBackgroundColor != null) {
+      imageButton.setBackgroundColor(actionBackgroundColor);
+    }
   }
 
   private void setupOvalOutline(ImageButton actionButton, final int size) {
@@ -97,6 +101,11 @@ public class ActionButton extends RelativeLayout {
 
   public void setActionBackground(Drawable actionBackground) {
     this.actionBackground = actionBackground;
+    updateViewState();
+  }
+
+  public void setActionBackgroundColor(int color) {
+    actionBackgroundColor = color;
     updateViewState();
   }
 

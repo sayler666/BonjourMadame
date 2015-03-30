@@ -1,6 +1,7 @@
 package com.sayler.bonjourmadame.fragment;
 
 import android.animation.LayoutTransition;
+import android.animation.ObjectAnimator;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -20,8 +21,10 @@ import com.sayler.bonjourmadame.activity.MainActivity;
 import com.sayler.bonjourmadame.network.model.BaseParseResponse;
 import com.sayler.bonjourmadame.network.model.MadameDto;
 import com.sayler.bonjourmadame.util.ActionButtonHelper;
+import com.sayler.bonjourmadame.util.ActionButtonLocation;
+import com.sayler.bonjourmadame.widget.ActionButton;
 import com.sayler.bonjourmadame.widget.CircularReveal;
-import com.sayler.bonjourmadame.widget.MainActionButton;
+import com.sayler.bonjourmadame.widget.RefreshActionButton;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 import org.michaelevans.colorart.library.ColorArt;
@@ -35,8 +38,10 @@ import java.util.concurrent.TimeUnit;
 public class LoadingFragment extends BaseFragment {
 
   private static final String TAG = "LoadingFragment";
-  @InjectView(R.id.actionButton) MainActionButton mainActionButton;
-  @InjectView(R.id.circural_reveal) CircularReveal circularReveal;
+  @InjectView(R.id.refreshActionButton) RefreshActionButton refreshActionButton;
+  @InjectView(R.id.setWallpaperActionButton) ActionButton setWallpaperActionButton;
+  @InjectView(R.id.shareImageActionButton) ActionButton shareImageActionButton;
+  @InjectView(R.id.circuralReveal) CircularReveal circularReveal;
   @InjectView(R.id.mainContainer) RelativeLayout mainContainer;
   @InjectView(R.id.loadedMadameImageView) ImageView loadedMadameImageView;
   private boolean isLoading = true;
@@ -148,8 +153,12 @@ public class LoadingFragment extends BaseFragment {
 
     mainActivity.getToolbar().setBackgroundColor(colorArt.getBackgroundColor());
     mainActivity.getToolbar().setTitleTextColor(colorArt.getDetailColor());
-    mainActionButton.setDefaultColor(darkenColor);
-    mainActionButton.setTint(colorArt.getDetailColor());
+    refreshActionButton.setBackgroundColorAfterFinishLoading(darkenColor);
+    refreshActionButton.setTint(colorArt.getDetailColor());
+    setWallpaperActionButton.setTint(colorArt.getDetailColor());
+    setWallpaperActionButton.setActionBackgroundColor(darkenColor);
+    shareImageActionButton.setTint(colorArt.getDetailColor());
+    shareImageActionButton.setActionBackgroundColor(darkenColor);
 
     getBaseActivity().animateStatusBarColor(darkenColor, 1000);
     getBaseActivity().animateNavigationBarColor(darkenColor, 1000);
@@ -173,15 +182,39 @@ public class LoadingFragment extends BaseFragment {
 
   private void loadingStartAnimations() {
     circularReveal.hide(true);
-    ActionButtonHelper.setActionButtonPosition(mainActionButton, ActionButtonHelper.ActionButtonLocationEnum.CENTER);
-    mainActionButton.loadingStartAnimation();
+    refreshActionButton.loadingStartAnimation();
     mainActivity.hideToolbar();
+
+    ObjectAnimator.ofFloat(setWallpaperActionButton.getImageButton(), "alpha", 1, 0).setDuration(500).start();
+    ObjectAnimator.ofFloat(shareImageActionButton.getImageButton(), "alpha", 1, 0).setDuration(500).start();
+
+    ActionButtonLocation actionButtonLocation = new com.sayler.bonjourmadame.util.ActionButtonLocation.ActionButtonLocationBuilder()
+        .addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, null)
+        .removeRule(RelativeLayout.ABOVE).build();
+
+    ActionButtonHelper.setActionButtonPosition(refreshActionButton, ActionButtonHelper.ActionButtonLocationEnum.CENTER);
+    ActionButtonHelper.setActionButtonPosition(setWallpaperActionButton, actionButtonLocation);
+    ActionButtonHelper.setActionButtonPosition(shareImageActionButton, actionButtonLocation);
   }
 
   private void loadingFinishAnimations() {
     circularReveal.reveal(true);
-    ActionButtonHelper.setActionButtonPosition(mainActionButton, ActionButtonHelper.ActionButtonLocationEnum.BOTTOM_RIGHT);
-    mainActionButton.loadingFinishAnimation();
+    refreshActionButton.loadingFinishAnimation();
     mainActivity.showToolbar();
+
+    ObjectAnimator.ofFloat(setWallpaperActionButton.getImageButton(), "alpha", 0, 1).setDuration(500).start();
+    ObjectAnimator.ofFloat(shareImageActionButton.getImageButton(), "alpha", 0, 1).setDuration(500).start();
+
+    ActionButtonLocation setWallpaperLocation = new com.sayler.bonjourmadame.util.ActionButtonLocation.ActionButtonLocationBuilder()
+        .addRule(RelativeLayout.ABOVE, refreshActionButton.getId())
+        .removeRule(RelativeLayout.ALIGN_PARENT_BOTTOM).build();
+
+    ActionButtonLocation shareImageLocation = new com.sayler.bonjourmadame.util.ActionButtonLocation.ActionButtonLocationBuilder()
+        .addRule(RelativeLayout.ABOVE, setWallpaperActionButton.getId())
+        .removeRule(RelativeLayout.ALIGN_PARENT_BOTTOM).build();
+
+    ActionButtonHelper.setActionButtonPosition(refreshActionButton, ActionButtonHelper.ActionButtonLocationEnum.BOTTOM_RIGHT);
+    ActionButtonHelper.setActionButtonPosition(setWallpaperActionButton, setWallpaperLocation);
+    ActionButtonHelper.setActionButtonPosition(shareImageActionButton, shareImageLocation);
   }
 }

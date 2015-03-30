@@ -23,21 +23,21 @@ import com.sayler.bonjourmadame.R;
  *
  * @author sayler666
  */
-public class MainActionButton extends ActionButton {
+public class RefreshActionButton extends ActionButton {
 
   private Animation revealAnimation;
   private Animation zoomInAnimation;
   private Animation zoomOutAnimation;
   private ObjectAnimator loadingColorAnimator;
 
-  private int defaultColor;
+  private int backgroundColor;
   private int loadingColor1 = R.color.mainLight;
   private int loadingColor2 = R.color.mainLight2;
-  private ObjectAnimator colorAnimator;
+  private ObjectAnimator backgroundColorAnimator;
   private Animation fadeOut;
   private Animation fadeIn;
 
-  public MainActionButton(Context context, AttributeSet attrs) {
+  public RefreshActionButton(Context context, AttributeSet attrs) {
     super(context, attrs);
 
     setupAnimation(context);
@@ -61,11 +61,11 @@ public class MainActionButton extends ActionButton {
     loadingColorAnimator.setRepeatCount(ValueAnimator.INFINITE);
   }
 
-  private void setupColorChangeAnimation() {
-    colorAnimator = ObjectAnimator.ofArgb(getImageButton(), "backgroundColor", getResources().getColor(loadingColor1), defaultColor);
-    colorAnimator.setEvaluator(new ArgbEvaluator());
-    colorAnimator.setDuration(1000);
-    colorAnimator.setRepeatCount(0);
+  private void setupBackgroundColorAnimation() {
+    backgroundColorAnimator = ObjectAnimator.ofArgb(getImageButton(), "backgroundColor", getResources().getColor(loadingColor1), backgroundColor);
+    backgroundColorAnimator.setEvaluator(new ArgbEvaluator());
+    backgroundColorAnimator.setDuration(1000);
+    backgroundColorAnimator.setRepeatCount(0);
   }
 
   public void loadingStartAnimation() {
@@ -82,15 +82,15 @@ public class MainActionButton extends ActionButton {
     getProgressBarCircle().setVisibility(View.GONE);
     revealAnimation.cancel();
     loadingColorAnimator.end();
-    if (colorAnimator != null) {
-      colorAnimator.start();
+    if (backgroundColorAnimator != null) {
+      backgroundColorAnimator.start();
     }
     getImageButton().setElevation(getResources().getDimension(R.dimen.elevation_low));
     this.startAnimation(zoomOutAnimation);
 
     Drawable backgrounds[] = new Drawable[2];
     backgrounds[0] = getImageButton().getDrawable();
-    backgrounds[1] = getContext().getDrawable(android.R.drawable.ic_input_add);
+    backgrounds[1] = getContext().getDrawable(android.R.drawable.ic_popup_sync);
     TransitionDrawable transitionDrawable = new TransitionDrawable(backgrounds);
 
     getImageButton().setImageDrawable(transitionDrawable);
@@ -99,9 +99,9 @@ public class MainActionButton extends ActionButton {
 
   /*---------------------------------------------- GETTERS AND SETTERS -----------------------------------------------*/
 
-  public void setDefaultColor(int defaultColor) {
-    this.defaultColor = defaultColor;
-    setupColorChangeAnimation();
+  public void setBackgroundColorAfterFinishLoading(int defaultColor) {
+    this.backgroundColor = defaultColor;
+    setupBackgroundColorAnimation();
   }
 
   @Override
