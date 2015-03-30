@@ -9,12 +9,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.Toolbar;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
@@ -39,52 +36,32 @@ public class LoadingFragment extends BaseFragment {
 
   private static final String TAG = "LoadingFragment";
   @InjectView(R.id.actionButton) MainActionButton mainActionButton;
-  @InjectView(R.id.toolbar) Toolbar toolbar;
   @InjectView(R.id.circural_reveal) CircularReveal circularReveal;
   @InjectView(R.id.mainContainer) RelativeLayout mainContainer;
   @InjectView(R.id.loadedMadameImageView) ImageView loadedMadameImageView;
-  private Animation toolbarDropOutAnimation;
-  private Animation toolbarDropInAnimation;
   private boolean isLoading = true;
+  private MainActivity mainActivity;
 
-  public LoadingFragment() {
-  }
+  /* ---------------------------------------------- LIFECYCLE METHODS ------------------------------------------------*/
 
   @Override
   public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                            Bundle savedInstanceState) {
     View rootView = inflater.inflate(R.layout.f_loading, container, false);
-
     ButterKnife.inject(this, rootView);
-
     return rootView;
   }
 
   @Override
   public void onActivityCreated(Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
-
+    mainActivity = (MainActivity) getActivity();
     setupViews();
-  }
-
-  private void setupViews() {
-    setupToolbar();
-    setupLayoutTransition(mainContainer);
-    setupAnimation();
     startLoading();
   }
 
-  private void setupToolbar() {
-    toolbar.setTitle(R.string.app_name);
-    getActivity().setActionBar(toolbar);
-  }
-
-  @OnClick(R.id.action_button)
-  public void onActionButtonClick() {
-    if (!isLoading) {
-      startLoading();
-    }
-    isLoading = !isLoading;
+  private void setupViews() {
+    setupLayoutTransition(mainContainer);
   }
 
   private void startLoading() {
@@ -98,6 +75,16 @@ public class LoadingFragment extends BaseFragment {
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(this::onImageRequestFinishSuccessful, this::onErrorLoading);
+  }
+
+  /* ------------------------------------ ON CLICK CALLBACKS ---------------------------------------------------------*/
+
+  @OnClick(R.id.action_button)
+  public void onActionButtonClick() {
+    if (!isLoading) {
+      startLoading();
+      isLoading = !isLoading;
+    }
   }
 
   /* ------------------------------------ REQUEST CALLBACKS ----------------------------------------------------------*/
@@ -159,11 +146,11 @@ public class LoadingFragment extends BaseFragment {
     ColorArt colorArt = new ColorArt(bitmap);
     int darkenColor = darkenColor(colorArt.getBackgroundColor());
 
-    toolbar.setBackgroundColor(colorArt.getBackgroundColor());
-    toolbar.setTitleTextColor(colorArt.getDetailColor());
+    mainActivity.getToolbar().setBackgroundColor(colorArt.getBackgroundColor());
+    mainActivity.getToolbar().setTitleTextColor(colorArt.getDetailColor());
     mainActionButton.setDefaultColor(darkenColor);
     mainActionButton.setTint(colorArt.getDetailColor());
-    
+
     getBaseActivity().animateStatusBarColor(darkenColor, 1000);
     getBaseActivity().animateNavigationBarColor(darkenColor, 1000);
   }
@@ -177,11 +164,6 @@ public class LoadingFragment extends BaseFragment {
     return color;
   }
 
-  private void setupAnimation() {
-    toolbarDropOutAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.drop_out);
-    toolbarDropInAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.drop_in);
-  }
-
   private void setupLayoutTransition(RelativeLayout mainContainer) {
     LayoutTransition layoutTransition = mainContainer.getLayoutTransition();
     layoutTransition.enableTransitionType(LayoutTransition.CHANGING);
@@ -193,13 +175,13 @@ public class LoadingFragment extends BaseFragment {
     circularReveal.hide(true);
     ActionButtonHelper.setActionButtonPosition(mainActionButton, ActionButtonHelper.ActionButtonLocationEnum.CENTER);
     mainActionButton.loadingStartAnimation();
-    toolbar.startAnimation(toolbarDropOutAnimation);
+    mainActivity.hideToolbar();
   }
 
   private void loadingFinishAnimations() {
     circularReveal.reveal(true);
     ActionButtonHelper.setActionButtonPosition(mainActionButton, ActionButtonHelper.ActionButtonLocationEnum.BOTTOM_RIGHT);
     mainActionButton.loadingFinishAnimation();
-    toolbar.startAnimation(toolbarDropInAnimation);
+    mainActivity.showToolbar();
   }
 }

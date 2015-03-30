@@ -3,4 +3,14 @@
              android:id="@+id/container"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
-             tools:ignore="MergeRootFrame"/>
+             tools:ignore="MergeRootFrame">
+    <Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/abc_action_bar_default_height_material"
+            android:background="@color/mainColor"
+            android:translationZ="5dp"
+            android:elevation="5dp"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark">
+    </Toolbar>
+</FrameLayout>
