@@ -185,8 +185,8 @@ public class LoadingFragment extends BaseFragment {
     refreshActionButton.loadingStartAnimation();
     mainActivity.hideToolbar();
 
-    ObjectAnimator.ofFloat(setWallpaperActionButton.getImageButton(), "alpha", 1, 0).setDuration(500).start();
-    ObjectAnimator.ofFloat(shareImageActionButton.getImageButton(), "alpha", 1, 0).setDuration(500).start();
+    ObjectAnimator.ofFloat(setWallpaperActionButton, "alpha", 1, 0).setDuration(500).start();
+    ObjectAnimator.ofFloat(shareImageActionButton, "alpha", 1, 0).setDuration(500).start();
 
     ActionButtonLocation actionButtonLocation = new com.sayler.bonjourmadame.util.ActionButtonLocation.ActionButtonLocationBuilder()
         .addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, null)
@@ -202,8 +202,8 @@ public class LoadingFragment extends BaseFragment {
     refreshActionButton.loadingFinishAnimation();
     mainActivity.showToolbar();
 
-    ObjectAnimator.ofFloat(setWallpaperActionButton.getImageButton(), "alpha", 0, 1).setDuration(500).start();
-    ObjectAnimator.ofFloat(shareImageActionButton.getImageButton(), "alpha", 0, 1).setDuration(500).start();
+    ObjectAnimator.ofFloat(setWallpaperActionButton, "alpha", 0, 1).setDuration(500).start();
+    ObjectAnimator.ofFloat(shareImageActionButton, "alpha", 0, 1).setDuration(500).start();
 
     ActionButtonLocation setWallpaperLocation = new com.sayler.bonjourmadame.util.ActionButtonLocation.ActionButtonLocationBuilder()
         .addRule(RelativeLayout.ABOVE, refreshActionButton.getId())

@@ -33,6 +33,8 @@ public class ActionButton extends RelativeLayout {
   private int diameter;
   private int tint;
   private Integer actionBackgroundColor;
+  private int diameterStroke;
+  private ImageButton imageButtonStroke;
 
   public ActionButton(Context context, AttributeSet attrs) {
     super(context, attrs);
@@ -49,14 +51,17 @@ public class ActionButton extends RelativeLayout {
     actionIcon = a.getDrawable(R.styleable.ActionButton_actionIcon);
     actionBackground = a.getDrawable(R.styleable.ActionButton_actionBackground);
     diameter = (int) a.getDimension(R.styleable.ActionButton_diameter, 56);
+    diameterStroke = (int) a.getDimension(R.styleable.ActionButton_diameterStroke, 60);
     tint = a.getColor(R.styleable.ActionButton_tint, 0xffffffff);
     a.recycle();
   }
 
   protected void setupViews() {
     imageButton = (ImageButton) this.findViewById(R.id.action_button);
+    imageButtonStroke = (ImageButton) this.findViewById(R.id.action_button_stroke);
     progressBarCircle = (ProgressBar) this.findViewById(R.id.progress_bar_circle);
     setupOvalOutline(imageButton, diameter);
+    setupOvalOutline(imageButtonStroke, diameterStroke);
     initSize();
     updateViewState();
   }
@@ -66,9 +71,13 @@ public class ActionButton extends RelativeLayout {
     imageButtonLayoutParams.height = imageButtonLayoutParams.width = diameter;
     imageButton.setLayoutParams(imageButtonLayoutParams);
 
-    LayoutParams progressLayoutParams = (LayoutParams) imageButton.getLayoutParams();
+    LayoutParams progressLayoutParams = (LayoutParams) progressBarCircle.getLayoutParams();
     progressLayoutParams.height = progressLayoutParams.width = diameter;
-    imageButton.setLayoutParams(progressLayoutParams);
+    progressBarCircle.setLayoutParams(progressLayoutParams);
+
+    LayoutParams imageButtonStrokeLayoutParams = (LayoutParams) imageButtonStroke.getLayoutParams();
+    imageButtonStrokeLayoutParams.height = imageButtonStrokeLayoutParams.width = diameterStroke;
+    imageButtonStroke.setLayoutParams(imageButtonStrokeLayoutParams);
   }
 
   protected void updateViewState() {

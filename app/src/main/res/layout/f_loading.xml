@@ -29,6 +29,7 @@
                 ActionButton:actionIcon="@android:drawable/ic_popup_sync"
                 ActionButton:actionBackground="@drawable/oval"
                 ActionButton:diameter="@dimen/diameter"
+                ActionButton:diameterStroke="@dimen/diameterStroke"
                 ActionButton:tint="@android:color/white"
                 android:elevation="2dp"
                 style="@style/refreshActionButtonStyle"/>
@@ -38,6 +39,7 @@
                 ActionButton:actionIcon="@android:drawable/ic_input_add"
                 ActionButton:actionBackground="@drawable/oval"
                 ActionButton:diameter="@dimen/diameter"
+                ActionButton:diameterStroke="@dimen/diameterStroke"
                 ActionButton:tint="@android:color/white"
                 android:layout_marginBottom="-32dp"
                 android:elevation="1dp"
@@ -49,6 +51,7 @@
                 ActionButton:actionIcon="@drawable/ic_action_share_dark"
                 ActionButton:actionBackground="@drawable/oval"
                 ActionButton:diameter="@dimen/diameter"
+                ActionButton:diameterStroke="@dimen/diameterStroke"
                 ActionButton:tint="@android:color/white"
                 android:layout_marginBottom="-32dp"
                 android:elevation="1dp"

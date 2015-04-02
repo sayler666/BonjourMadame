@@ -25,6 +25,7 @@
         <attr name="actionIcon" format="integer"/>
         <attr name="actionBackground" format="integer"/>
         <attr name="diameter" format="dimension"/>
+        <attr name="diameterStroke" format="dimension"/>
         <attr name="tint" format="color"/>
     </declare-styleable>
 
