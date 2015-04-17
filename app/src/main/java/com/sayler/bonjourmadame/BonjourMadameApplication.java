@@ -5,8 +5,8 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import com.sayler.bonjourmadame.inject.ApplicationComponent;
 import com.sayler.bonjourmadame.inject.ApplicationModule;
-import com.sayler.bonjourmadame.inject.Dagger_ApplicationComponent;
-import com.sayler.bonjourmadame.network.Dagger_NetworkComponent;
+import com.sayler.bonjourmadame.inject.DaggerApplicationComponent;
+import com.sayler.bonjourmadame.network.DaggerNetworkComponent;
 import com.sayler.bonjourmadame.network.NetworkComponent;
 
 public class BonjourMadameApplication extends Application {
@@ -18,11 +18,11 @@ public class BonjourMadameApplication extends Application {
   public void onCreate() {
     super.onCreate();
 
-    applicationComponent = Dagger_ApplicationComponent.builder()
+    applicationComponent = DaggerApplicationComponent.builder()
         .applicationModule(new ApplicationModule(this))
         .build();
 
-    networkComponent = Dagger_NetworkComponent.builder()
+    networkComponent = DaggerNetworkComponent.builder()
         .build();
 
   }

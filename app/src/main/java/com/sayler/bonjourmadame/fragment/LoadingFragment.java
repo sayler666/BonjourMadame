@@ -157,8 +157,10 @@ public class LoadingFragment extends BaseFragment {
     refreshActionButton.setTint(colorArt.getDetailColor());
     setWallpaperActionButton.setTint(colorArt.getDetailColor());
     setWallpaperActionButton.setActionBackgroundColor(darkenColor);
+    setWallpaperActionButton.setStrokeColor(colorArt.getDetailColor());
     shareImageActionButton.setTint(colorArt.getDetailColor());
     shareImageActionButton.setActionBackgroundColor(darkenColor);
+    shareImageActionButton.setStrokeColor(colorArt.getDetailColor());
 
     getBaseActivity().animateStatusBarColor(darkenColor, 1000);
     getBaseActivity().animateNavigationBarColor(darkenColor, 1000);

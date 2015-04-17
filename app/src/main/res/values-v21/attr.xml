@@ -26,6 +26,7 @@
         <attr name="actionBackground" format="integer"/>
         <attr name="diameter" format="dimension"/>
         <attr name="diameterStroke" format="dimension"/>
+        <attr name="strokeColor" format="color"/>
         <attr name="tint" format="color"/>
     </declare-styleable>
 
