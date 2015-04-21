@@ -186,7 +186,7 @@ public class CircularReveal extends View implements ValueAnimator.AnimatorUpdate
     if (withAnimation) {
       ValueAnimator animation = ValueAnimator.ofFloat(0f, 100f);
 
-      timesToClear = 2;
+      timesToClear = 5;
       switch (animationMode) {
         case REVEAL:
           animation.setDuration(durationReveal);
