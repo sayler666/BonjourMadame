@@ -10,6 +10,7 @@ import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Outline;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,6 +37,7 @@ public class ActionButton extends RelativeLayout {
   private int diameterStroke;
   private ImageButton imageButtonStroke;
   private int strokeColor;
+  private GradientDrawable strokeGradinet;
 
   public ActionButton(Context context, AttributeSet attrs) {
     super(context, attrs);
@@ -88,6 +90,9 @@ public class ActionButton extends RelativeLayout {
     imageButtonStroke.setBackgroundColor(strokeColor);
     ColorStateList tintColorStateList = new ColorStateList(new int[][]{EMPTY_STATE_SET}, new int[]{tint});
     imageButton.setImageTintList(tintColorStateList);
+    if(strokeGradinet!=null){
+      getImageButtonStroke().setBackground(strokeGradinet);
+    }
     if (actionBackgroundColor != null) {
       imageButton.setBackgroundColor(actionBackgroundColor);
     }
@@ -128,6 +133,20 @@ public class ActionButton extends RelativeLayout {
 
   public void setTint(int tint) {
     this.tint = tint;
+    updateViewState();
+  }
+
+  public GradientDrawable prepareStrokeGradient(int topColor, int bottomColor) {
+    GradientDrawable strokeGradient = new GradientDrawable(
+        GradientDrawable.Orientation.TOP_BOTTOM,
+        new int[]{topColor, bottomColor});
+    strokeGradient.setCornerRadius(0f);
+
+    return strokeGradient;
+  }
+
+  public void setStrokeGradient(GradientDrawable strokeGradinet) {
+    this.strokeGradinet = strokeGradinet;
     updateViewState();
   }
 

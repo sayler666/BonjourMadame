@@ -167,14 +167,17 @@ public class LoadingFragment extends BaseFragment {
     refreshActionButton.setBackgroundColorAfterFinishLoading(darkenColor);
     refreshActionButton.setTint(colorArt.getDetailColor());
     refreshActionButton.setStrokeColorAfterFinishLoading(colorArt.getDetailColor());
+    refreshActionButton.setStrokeGradientAfterFinishLoading(colorArt.getDetailColor(), darkenColor);
 
     setWallpaperActionButton.setTint(colorArt.getDetailColor());
     setWallpaperActionButton.setActionBackgroundColor(darkenColor);
     setWallpaperActionButton.setStrokeColor(colorArt.getDetailColor());
+    setWallpaperActionButton.setStrokeGradient(setWallpaperActionButton.prepareStrokeGradient(colorArt.getDetailColor(), darkenColor));
 
     shareImageActionButton.setTint(colorArt.getDetailColor());
     shareImageActionButton.setActionBackgroundColor(darkenColor);
     shareImageActionButton.setStrokeColor(colorArt.getDetailColor());
+    shareImageActionButton.setStrokeGradient(shareImageActionButton.prepareStrokeGradient(colorArt.getDetailColor(), darkenColor));
   }
 
   private void setupLayoutTransition(RelativeLayout mainContainer) {

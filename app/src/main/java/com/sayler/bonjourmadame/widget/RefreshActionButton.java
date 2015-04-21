@@ -11,6 +11,7 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.util.AttributeSet;
 import android.view.View;
@@ -36,7 +37,8 @@ public class RefreshActionButton extends ActionButton {
   private ObjectAnimator backgroundColorAnimator;
   private Animation fadeOut;
   private Animation fadeIn;
-  private int strokeColor;
+  private Integer strokeColor;
+  private GradientDrawable strokeGradient;
 
   public RefreshActionButton(Context context, AttributeSet attrs) {
     super(context, attrs);
@@ -76,9 +78,11 @@ public class RefreshActionButton extends ActionButton {
     this.startAnimation(zoomInAnimation);
     getImageButton().setImageDrawable(getContext().getDrawable(android.R.color.transparent));
     getImageButton().setElevation(getResources().getDimension(R.dimen.elevation_high));
+    getImageButtonStroke().setVisibility(GONE);
   }
 
   public void loadingFinishAnimation() {
+    getImageButtonStroke().setVisibility(VISIBLE);
     getProgressBarCircle().startAnimation(fadeIn);
     getProgressBarCircle().setVisibility(View.GONE);
     revealAnimation.cancel();
@@ -96,7 +100,12 @@ public class RefreshActionButton extends ActionButton {
 
     getImageButton().setImageDrawable(transitionDrawable);
     transitionDrawable.startTransition(1000);
-    setStrokeColor(strokeColor);
+    if (strokeColor != null) {
+      setStrokeColor(strokeColor);
+    }
+    if (strokeGradient != null) {
+      setStrokeGradient(strokeGradient);
+    }
   }
 
   /*---------------------------------------------- GETTERS AND SETTERS -----------------------------------------------*/
@@ -106,10 +115,6 @@ public class RefreshActionButton extends ActionButton {
     setupBackgroundColorAnimation();
   }
 
-  public void setStrokeColorAfterFinishLoading(int strokeColor) {
-    this.strokeColor = strokeColor;
-  }
-
   @Override
   public void setTint(int tintColor) {
     ColorStateList tintColorStateList = new ColorStateList(new int[][]{EMPTY_STATE_SET}, new int[]{tintColor});
@@ -117,7 +122,21 @@ public class RefreshActionButton extends ActionButton {
   }
 
   @Override
-  public void setStrokeColor(int strokeColor){
+  public void setStrokeColor(int strokeColor) {
     getImageButtonStroke().setBackgroundColor(strokeColor);
   }
+
+  @Override
+  public void setStrokeGradient(GradientDrawable strokeGradient) {
+    getImageButtonStroke().setBackground(strokeGradient);
+  }
+
+  public void setStrokeGradientAfterFinishLoading(int topColor, int bottomColor) {
+    strokeGradient = prepareStrokeGradient(topColor, bottomColor);
+  }
+
+  public void setStrokeColorAfterFinishLoading(int strokeColor) {
+    this.strokeColor = strokeColor;
+  }
+
 }
