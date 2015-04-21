@@ -10,6 +10,7 @@ import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Outline;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +34,10 @@ public class ActionButton extends RelativeLayout {
   private int diameter;
   private int tint;
   private Integer actionBackgroundColor;
+  private int diameterStroke;
+  private ImageButton imageButtonStroke;
+  private int strokeColor;
+  private GradientDrawable strokeGradinet;
 
   public ActionButton(Context context, AttributeSet attrs) {
     super(context, attrs);
@@ -49,14 +54,18 @@ public class ActionButton extends RelativeLayout {
     actionIcon = a.getDrawable(R.styleable.ActionButton_actionIcon);
     actionBackground = a.getDrawable(R.styleable.ActionButton_actionBackground);
     diameter = (int) a.getDimension(R.styleable.ActionButton_diameter, 56);
+    diameterStroke = (int) a.getDimension(R.styleable.ActionButton_diameterStroke, 60);
     tint = a.getColor(R.styleable.ActionButton_tint, 0xffffffff);
+    strokeColor = a.getColor(R.styleable.ActionButton_strokeColor, 0xffffffff);
     a.recycle();
   }
 
   protected void setupViews() {
     imageButton = (ImageButton) this.findViewById(R.id.action_button);
+    imageButtonStroke = (ImageButton) this.findViewById(R.id.action_button_stroke);
     progressBarCircle = (ProgressBar) this.findViewById(R.id.progress_bar_circle);
     setupOvalOutline(imageButton, diameter);
+    setupOvalOutline(imageButtonStroke, diameterStroke);
     initSize();
     updateViewState();
   }
@@ -66,16 +75,24 @@ public class ActionButton extends RelativeLayout {
     imageButtonLayoutParams.height = imageButtonLayoutParams.width = diameter;
     imageButton.setLayoutParams(imageButtonLayoutParams);
 
-    LayoutParams progressLayoutParams = (LayoutParams) imageButton.getLayoutParams();
+    LayoutParams progressLayoutParams = (LayoutParams) progressBarCircle.getLayoutParams();
     progressLayoutParams.height = progressLayoutParams.width = diameter;
-    imageButton.setLayoutParams(progressLayoutParams);
+    progressBarCircle.setLayoutParams(progressLayoutParams);
+
+    LayoutParams imageButtonStrokeLayoutParams = (LayoutParams) imageButtonStroke.getLayoutParams();
+    imageButtonStrokeLayoutParams.height = imageButtonStrokeLayoutParams.width = diameterStroke;
+    imageButtonStroke.setLayoutParams(imageButtonStrokeLayoutParams);
   }
 
   protected void updateViewState() {
     imageButton.setImageDrawable(actionIcon);
     imageButton.setBackground(actionBackground);
+    imageButtonStroke.setBackgroundColor(strokeColor);
     ColorStateList tintColorStateList = new ColorStateList(new int[][]{EMPTY_STATE_SET}, new int[]{tint});
     imageButton.setImageTintList(tintColorStateList);
+    if(strokeGradinet!=null){
+      getImageButtonStroke().setBackground(strokeGradinet);
+    }
     if (actionBackgroundColor != null) {
       imageButton.setBackgroundColor(actionBackgroundColor);
     }
@@ -104,6 +121,11 @@ public class ActionButton extends RelativeLayout {
     updateViewState();
   }
 
+  public void setStrokeColor(int color) {
+    strokeColor = color;
+    updateViewState();
+  }
+
   public void setActionBackgroundColor(int color) {
     actionBackgroundColor = color;
     updateViewState();
@@ -111,6 +133,20 @@ public class ActionButton extends RelativeLayout {
 
   public void setTint(int tint) {
     this.tint = tint;
+    updateViewState();
+  }
+
+  public GradientDrawable prepareStrokeGradient(int topColor, int bottomColor) {
+    GradientDrawable strokeGradient = new GradientDrawable(
+        GradientDrawable.Orientation.TOP_BOTTOM,
+        new int[]{topColor, bottomColor});
+    strokeGradient.setCornerRadius(0f);
+
+    return strokeGradient;
+  }
+
+  public void setStrokeGradient(GradientDrawable strokeGradinet) {
+    this.strokeGradinet = strokeGradinet;
     updateViewState();
   }
 
@@ -122,4 +158,7 @@ public class ActionButton extends RelativeLayout {
     return imageButton;
   }
 
+  public ImageButton getImageButtonStroke() {
+    return imageButtonStroke;
+  }
 }

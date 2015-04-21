@@ -22,6 +22,7 @@ import com.sayler.bonjourmadame.network.model.BaseParseResponse;
 import com.sayler.bonjourmadame.network.model.MadameDto;
 import com.sayler.bonjourmadame.util.ActionButtonHelper;
 import com.sayler.bonjourmadame.util.ActionButtonLocation;
+import com.sayler.bonjourmadame.util.ColorUtils;
 import com.sayler.bonjourmadame.widget.ActionButton;
 import com.sayler.bonjourmadame.widget.CircularReveal;
 import com.sayler.bonjourmadame.widget.RefreshActionButton;
@@ -38,12 +39,18 @@ import java.util.concurrent.TimeUnit;
 public class LoadingFragment extends BaseFragment {
 
   private static final String TAG = "LoadingFragment";
-  @InjectView(R.id.refreshActionButton) RefreshActionButton refreshActionButton;
-  @InjectView(R.id.setWallpaperActionButton) ActionButton setWallpaperActionButton;
-  @InjectView(R.id.shareImageActionButton) ActionButton shareImageActionButton;
-  @InjectView(R.id.circuralReveal) CircularReveal circularReveal;
-  @InjectView(R.id.mainContainer) RelativeLayout mainContainer;
-  @InjectView(R.id.loadedMadameImageView) ImageView loadedMadameImageView;
+  @InjectView(R.id.refreshActionButton)
+  RefreshActionButton refreshActionButton;
+  @InjectView(R.id.setWallpaperActionButton)
+  ActionButton setWallpaperActionButton;
+  @InjectView(R.id.shareImageActionButton)
+  ActionButton shareImageActionButton;
+  @InjectView(R.id.circuralReveal)
+  CircularReveal circularReveal;
+  @InjectView(R.id.mainContainer)
+  RelativeLayout mainContainer;
+  @InjectView(R.id.loadedMadameImageView)
+  ImageView loadedMadameImageView;
   private boolean isLoading = true;
   private MainActivity mainActivity;
 
@@ -149,28 +156,28 @@ public class LoadingFragment extends BaseFragment {
 
   private void updateThemeColorsFromBitmap(Bitmap bitmap) {
     ColorArt colorArt = new ColorArt(bitmap);
-    int darkenColor = darkenColor(colorArt.getBackgroundColor());
-
-    mainActivity.getToolbar().setBackgroundColor(colorArt.getBackgroundColor());
-    mainActivity.getToolbar().setTitleTextColor(colorArt.getDetailColor());
-    refreshActionButton.setBackgroundColorAfterFinishLoading(darkenColor);
-    refreshActionButton.setTint(colorArt.getDetailColor());
-    setWallpaperActionButton.setTint(colorArt.getDetailColor());
-    setWallpaperActionButton.setActionBackgroundColor(darkenColor);
-    shareImageActionButton.setTint(colorArt.getDetailColor());
-    shareImageActionButton.setActionBackgroundColor(darkenColor);
+    int darkenColor = ColorUtils.darkenColor(colorArt.getBackgroundColor());
 
     getBaseActivity().animateStatusBarColor(darkenColor, 1000);
     getBaseActivity().animateNavigationBarColor(darkenColor, 1000);
-  }
 
-  private int darkenColor(int color) {
-    float[] hsv = new float[3];
-    Color.colorToHSV(color, hsv);
-    hsv[2] *= 0.8f;
-    hsv[1] *= 1.4f;
-    color = Color.HSVToColor(hsv);
-    return color;
+    mainActivity.getToolbar().setBackgroundColor(colorArt.getBackgroundColor());
+    mainActivity.getToolbar().setTitleTextColor(colorArt.getDetailColor());
+
+    refreshActionButton.setBackgroundColorAfterFinishLoading(darkenColor);
+    refreshActionButton.setTint(colorArt.getDetailColor());
+    refreshActionButton.setStrokeColorAfterFinishLoading(colorArt.getDetailColor());
+    refreshActionButton.setStrokeGradientAfterFinishLoading(colorArt.getDetailColor(), darkenColor);
+
+    setWallpaperActionButton.setTint(colorArt.getDetailColor());
+    setWallpaperActionButton.setActionBackgroundColor(darkenColor);
+    setWallpaperActionButton.setStrokeColor(colorArt.getDetailColor());
+    setWallpaperActionButton.setStrokeGradient(setWallpaperActionButton.prepareStrokeGradient(colorArt.getDetailColor(), darkenColor));
+
+    shareImageActionButton.setTint(colorArt.getDetailColor());
+    shareImageActionButton.setActionBackgroundColor(darkenColor);
+    shareImageActionButton.setStrokeColor(colorArt.getDetailColor());
+    shareImageActionButton.setStrokeGradient(shareImageActionButton.prepareStrokeGradient(colorArt.getDetailColor(), darkenColor));
   }
 
   private void setupLayoutTransition(RelativeLayout mainContainer) {
@@ -185,10 +192,10 @@ public class LoadingFragment extends BaseFragment {
     refreshActionButton.loadingStartAnimation();
     mainActivity.hideToolbar();
 
-    ObjectAnimator.ofFloat(setWallpaperActionButton.getImageButton(), "alpha", 1, 0).setDuration(500).start();
-    ObjectAnimator.ofFloat(shareImageActionButton.getImageButton(), "alpha", 1, 0).setDuration(500).start();
+    ObjectAnimator.ofFloat(setWallpaperActionButton, "alpha", 1, 0).setDuration(500).start();
+    ObjectAnimator.ofFloat(shareImageActionButton, "alpha", 1, 0).setDuration(500).start();
 
-    ActionButtonLocation actionButtonLocation = new com.sayler.bonjourmadame.util.ActionButtonLocation.ActionButtonLocationBuilder()
+    ActionButtonLocation actionButtonLocation = new ActionButtonLocation.ActionButtonLocationBuilder()
         .addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, null)
         .removeRule(RelativeLayout.ABOVE).build();
 
@@ -202,14 +209,14 @@ public class LoadingFragment extends BaseFragment {
     refreshActionButton.loadingFinishAnimation();
     mainActivity.showToolbar();
 
-    ObjectAnimator.ofFloat(setWallpaperActionButton.getImageButton(), "alpha", 0, 1).setDuration(500).start();
-    ObjectAnimator.ofFloat(shareImageActionButton.getImageButton(), "alpha", 0, 1).setDuration(500).start();
+    ObjectAnimator.ofFloat(setWallpaperActionButton, "alpha", 0, 1).setDuration(500).start();
+    ObjectAnimator.ofFloat(shareImageActionButton, "alpha", 0, 1).setDuration(500).start();
 
-    ActionButtonLocation setWallpaperLocation = new com.sayler.bonjourmadame.util.ActionButtonLocation.ActionButtonLocationBuilder()
+    ActionButtonLocation setWallpaperLocation = new ActionButtonLocation.ActionButtonLocationBuilder()
         .addRule(RelativeLayout.ABOVE, refreshActionButton.getId())
         .removeRule(RelativeLayout.ALIGN_PARENT_BOTTOM).build();
 
-    ActionButtonLocation shareImageLocation = new com.sayler.bonjourmadame.util.ActionButtonLocation.ActionButtonLocationBuilder()
+    ActionButtonLocation shareImageLocation = new ActionButtonLocation.ActionButtonLocationBuilder()
         .addRule(RelativeLayout.ABOVE, setWallpaperActionButton.getId())
         .removeRule(RelativeLayout.ALIGN_PARENT_BOTTOM).build();
 

@@ -11,7 +11,7 @@ import retrofit.RestAdapter;
 import retrofit.converter.Converter;
 
 /**
- * TODO Add class description...
+ * Network module for Parse API
  *
  * @author sayler666
  */
