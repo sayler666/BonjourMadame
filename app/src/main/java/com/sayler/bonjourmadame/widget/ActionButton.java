@@ -139,4 +139,7 @@ public class ActionButton extends RelativeLayout {
     return imageButton;
   }
 
+  public ImageButton getImageButtonStroke() {
+    return imageButtonStroke;
+  }
 }

@@ -12,7 +12,7 @@ import android.view.WindowManager;
 import com.sayler.bonjourmadame.inject.ActivityComponent;
 
 /**
- * TODO Add class description...
+ * Base activity class
  *
  * @author sayler666
  */

@@ -36,6 +36,7 @@ public class RefreshActionButton extends ActionButton {
   private ObjectAnimator backgroundColorAnimator;
   private Animation fadeOut;
   private Animation fadeIn;
+  private int strokeColor;
 
   public RefreshActionButton(Context context, AttributeSet attrs) {
     super(context, attrs);
@@ -95,6 +96,7 @@ public class RefreshActionButton extends ActionButton {
 
     getImageButton().setImageDrawable(transitionDrawable);
     transitionDrawable.startTransition(1000);
+    setStrokeColor(strokeColor);
   }
 
   /*---------------------------------------------- GETTERS AND SETTERS -----------------------------------------------*/
@@ -104,9 +106,18 @@ public class RefreshActionButton extends ActionButton {
     setupBackgroundColorAnimation();
   }
 
+  public void setStrokeColorAfterFinishLoading(int strokeColor) {
+    this.strokeColor = strokeColor;
+  }
+
   @Override
   public void setTint(int tintColor) {
     ColorStateList tintColorStateList = new ColorStateList(new int[][]{EMPTY_STATE_SET}, new int[]{tintColor});
     getImageButton().setImageTintList(tintColorStateList);
+  }
+
+  @Override
+  public void setStrokeColor(int strokeColor){
+    getImageButtonStroke().setBackgroundColor(strokeColor);
   }
 }

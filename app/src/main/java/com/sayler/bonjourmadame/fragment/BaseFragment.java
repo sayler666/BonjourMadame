@@ -9,7 +9,7 @@ import android.app.Fragment;
 import com.sayler.bonjourmadame.activity.BaseActivity;
 
 /**
- * TODO Add class description...
+ * Base fragment class
  *
  * @author sayler666
  */
