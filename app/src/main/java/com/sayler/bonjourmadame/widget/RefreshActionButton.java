@@ -5,6 +5,7 @@
  */
 package com.sayler.bonjourmadame.widget;
 
+import android.animation.Animator;
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
@@ -12,6 +13,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.RippleDrawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.util.AttributeSet;
 import android.view.View;
@@ -39,6 +41,7 @@ public class RefreshActionButton extends ActionButton {
   private Animation fadeIn;
   private Integer strokeColor;
   private GradientDrawable strokeGradient;
+  private RippleDrawable rippleDrawable;
 
   public RefreshActionButton(Context context, AttributeSet attrs) {
     super(context, attrs);
@@ -75,43 +78,73 @@ public class RefreshActionButton extends ActionButton {
     getProgressBarCircle().startAnimation(fadeIn);
     getProgressBarCircle().setVisibility(View.VISIBLE);
     loadingColorAnimator.start();
-    this.startAnimation(zoomInAnimation);
+    startAnimation(zoomInAnimation);
     getImageButton().setImageDrawable(getContext().getDrawable(android.R.color.transparent));
     getImageButton().setElevation(getResources().getDimension(R.dimen.elevation_high));
     getImageButtonStroke().setVisibility(GONE);
   }
 
   public void loadingFinishAnimation() {
-    getImageButtonStroke().setVisibility(VISIBLE);
-    getProgressBarCircle().startAnimation(fadeIn);
+    getProgressBarCircle().startAnimation(fadeOut);
     getProgressBarCircle().setVisibility(View.GONE);
     revealAnimation.cancel();
     loadingColorAnimator.end();
     if (backgroundColorAnimator != null) {
       backgroundColorAnimator.start();
+      backgroundColorAnimator.addListener(new Animator.AnimatorListener() {
+        @Override
+        public void onAnimationStart(Animator animation) {
+          //not used
+        }
+
+        @Override
+        public void onAnimationEnd(Animator animation) {
+          setUpColors();
+          getImageButtonStroke().setVisibility(VISIBLE);
+        }
+
+        @Override
+        public void onAnimationCancel(Animator animation) {
+          //not used
+        }
+
+        @Override
+        public void onAnimationRepeat(Animator animation) {
+          //not used
+        }
+      });
+    } else {
+      setUpColors();
+      getImageButtonStroke().setVisibility(VISIBLE);
     }
+
     getImageButton().setElevation(getResources().getDimension(R.dimen.elevation_low));
-    this.startAnimation(zoomOutAnimation);
+    startAnimation(zoomOutAnimation);
 
     Drawable backgrounds[] = new Drawable[2];
     backgrounds[0] = getImageButton().getDrawable();
     backgrounds[1] = getContext().getDrawable(android.R.drawable.ic_popup_sync);
     TransitionDrawable transitionDrawable = new TransitionDrawable(backgrounds);
-
     getImageButton().setImageDrawable(transitionDrawable);
     transitionDrawable.startTransition(1000);
+  }
+
+  private void setUpColors() {
     if (strokeColor != null) {
       setStrokeColor(strokeColor);
     }
     if (strokeGradient != null) {
       setStrokeGradient(strokeGradient);
     }
+    if (rippleDrawable != null) {
+      setActionBackground(rippleDrawable);
+    }
   }
 
   /*---------------------------------------------- GETTERS AND SETTERS -----------------------------------------------*/
 
-  public void setBackgroundColorAfterFinishLoading(int defaultColor) {
-    this.backgroundColor = defaultColor;
+  public void setBackgroundColorAfterFinishLoading(int color) {
+    backgroundColor = color;
     setupBackgroundColorAnimation();
   }
 
@@ -131,12 +164,21 @@ public class RefreshActionButton extends ActionButton {
     getImageButtonStroke().setBackground(strokeGradient);
   }
 
+  @Override
+  public void setActionBackground(Drawable actionBackground) {
+    getImageButton().setBackground(actionBackground);
+  }
+
   public void setStrokeGradientAfterFinishLoading(int topColor, int bottomColor) {
     strokeGradient = prepareStrokeGradient(topColor, bottomColor);
   }
 
-  public void setStrokeColorAfterFinishLoading(int strokeColor) {
-    this.strokeColor = strokeColor;
+  public void setStrokeColorAfterFinishLoading(int color) {
+    strokeColor = color;
+  }
+
+  public void setRippleDrawableAfterFinishLoading(int normalColor, int pressedColor) {
+    rippleDrawable = prepareRippleDrawable(normalColor, pressedColor);
   }
 
 }

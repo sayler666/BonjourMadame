@@ -9,8 +9,10 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Outline;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.RippleDrawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -90,7 +92,7 @@ public class ActionButton extends RelativeLayout {
     imageButtonStroke.setBackgroundColor(strokeColor);
     ColorStateList tintColorStateList = new ColorStateList(new int[][]{EMPTY_STATE_SET}, new int[]{tint});
     imageButton.setImageTintList(tintColorStateList);
-    if(strokeGradinet!=null){
+    if (strokeGradinet != null) {
       getImageButtonStroke().setBackground(strokeGradinet);
     }
     if (actionBackgroundColor != null) {
@@ -116,6 +118,11 @@ public class ActionButton extends RelativeLayout {
     updateViewState();
   }
 
+  public void setActionBackgroundColor(int color) {
+    actionBackgroundColor = color;
+    updateViewState();
+  }
+
   public void setActionBackground(Drawable actionBackground) {
     this.actionBackground = actionBackground;
     updateViewState();
@@ -126,13 +133,13 @@ public class ActionButton extends RelativeLayout {
     updateViewState();
   }
 
-  public void setActionBackgroundColor(int color) {
-    actionBackgroundColor = color;
+  public void setTint(int tint) {
+    this.tint = tint;
     updateViewState();
   }
 
-  public void setTint(int tint) {
-    this.tint = tint;
+  public void setStrokeGradient(GradientDrawable strokeGradient) {
+    this.strokeGradinet = strokeGradient;
     updateViewState();
   }
 
@@ -145,9 +152,15 @@ public class ActionButton extends RelativeLayout {
     return strokeGradient;
   }
 
-  public void setStrokeGradient(GradientDrawable strokeGradinet) {
-    this.strokeGradinet = strokeGradinet;
-    updateViewState();
+  public RippleDrawable prepareRippleDrawable(int normalColor, int pressedColor) {
+    return new RippleDrawable(getPressedColorSelector(pressedColor), new ColorDrawable(normalColor), null);
+  }
+
+  public ColorStateList getPressedColorSelector(int pressedColor) {
+    return new ColorStateList(
+        new int[][]{new int[]{}},
+        new int[]{pressedColor}
+    );
   }
 
   public ProgressBar getProgressBarCircle() {
