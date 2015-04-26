@@ -30,10 +30,9 @@ public class RefreshActionButton extends ActionButton {
   private Animation zoomInAnimation;
   private Animation zoomOutAnimation;
   private ObjectAnimator loadingColorAnimator;
-
   private int backgroundColor;
-  private int loadingColor1 = R.color.mainLight;
-  private int loadingColor2 = R.color.mainLight2;
+  private int loadingColor1 = getResources().getColor(R.color.mainLight);
+  private int loadingColor2 = getResources().getColor(R.color.mainLight2);
   private ObjectAnimator backgroundColorAnimator;
   private Animation fadeOut;
   private Animation fadeIn;
@@ -42,7 +41,6 @@ public class RefreshActionButton extends ActionButton {
 
   public RefreshActionButton(Context context, AttributeSet attrs) {
     super(context, attrs);
-
     setupAnimation(context);
   }
 
@@ -53,27 +51,66 @@ public class RefreshActionButton extends ActionButton {
     zoomInAnimation = AnimationUtils.loadAnimation(context, R.anim.zoom_in);
     zoomOutAnimation = AnimationUtils.loadAnimation(context, R.anim.zoom_out);
     fadeIn = AnimationUtils.loadAnimation(context, R.anim.fade_in);
-    fadeOut = AnimationUtils.loadAnimation(context, R.anim.fade_out);
+    fadeIn.setFillEnabled(true);
+    fadeIn.setFillAfter(true);
+    fadeIn.setAnimationListener(new Animation.AnimationListener() {
+      @Override
+      public void onAnimationStart(Animation animation) {
+        getProgressBarCircle().setVisibility(View.VISIBLE);
+      }
 
+      @Override
+      public void onAnimationEnd(Animation animation) {
+
+      }
+
+      @Override
+      public void onAnimationRepeat(Animation animation) {
+
+      }
+    });
+    fadeOut = AnimationUtils.loadAnimation(context, R.anim.fade_out);
+    fadeOut.setFillEnabled(true);
+    fadeOut.setFillAfter(true);
+    fadeOut.setAnimationListener(new Animation.AnimationListener() {
+      @Override
+      public void onAnimationStart(Animation animation) {
+
+      }
+
+      @Override
+      public void onAnimationEnd(Animation animation) {
+        getProgressBarCircle().setVisibility(GONE);
+      }
+
+      @Override
+      public void onAnimationRepeat(Animation animation) {
+
+      }
+    });
+    setupLoadingColorAnimation();
+  }
+
+  private void setupLoadingColorAnimation() {
     /**
      * action button loading state color animation
      */
-    loadingColorAnimator = ObjectAnimator.ofArgb(getImageButton(), "backgroundColor", getResources().getColor(loadingColor1), getResources().getColor(loadingColor2), getResources().getColor(loadingColor1));
+    loadingColorAnimator = ObjectAnimator.ofArgb(getImageButton(), "backgroundColor", loadingColor1, loadingColor2, loadingColor1);
     loadingColorAnimator.setEvaluator(new ArgbEvaluator());
-    loadingColorAnimator.setDuration(1500);
+    loadingColorAnimator.setDuration(2000);
     loadingColorAnimator.setRepeatCount(ValueAnimator.INFINITE);
   }
 
   private void setupBackgroundColorAnimation() {
-    backgroundColorAnimator = ObjectAnimator.ofArgb(getImageButton(), "backgroundColor", getResources().getColor(loadingColor1), backgroundColor);
+    backgroundColorAnimator = ObjectAnimator.ofArgb(getImageButton(), "backgroundColor", loadingColor1, backgroundColor);
     backgroundColorAnimator.setEvaluator(new ArgbEvaluator());
-    backgroundColorAnimator.setDuration(1000);
+    backgroundColorAnimator.setDuration(2000);
     backgroundColorAnimator.setRepeatCount(0);
   }
 
   public void loadingStartAnimation() {
     getProgressBarCircle().startAnimation(fadeIn);
-    getProgressBarCircle().setVisibility(View.VISIBLE);
+    setupLoadingColorAnimation();
     loadingColorAnimator.start();
     this.startAnimation(zoomInAnimation);
     getImageButton().setImageDrawable(getContext().getDrawable(android.R.color.transparent));
@@ -83,8 +120,7 @@ public class RefreshActionButton extends ActionButton {
 
   public void loadingFinishAnimation() {
     getImageButtonStroke().setVisibility(VISIBLE);
-    getProgressBarCircle().startAnimation(fadeIn);
-    getProgressBarCircle().setVisibility(View.GONE);
+    getProgressBarCircle().startAnimation(fadeOut);
     revealAnimation.cancel();
     loadingColorAnimator.end();
     if (backgroundColorAnimator != null) {
@@ -99,7 +135,7 @@ public class RefreshActionButton extends ActionButton {
     TransitionDrawable transitionDrawable = new TransitionDrawable(backgrounds);
 
     getImageButton().setImageDrawable(transitionDrawable);
-    transitionDrawable.startTransition(1000);
+    transitionDrawable.startTransition(2000);
     if (strokeColor != null) {
       setStrokeColor(strokeColor);
     }
@@ -137,6 +173,11 @@ public class RefreshActionButton extends ActionButton {
 
   public void setStrokeColorAfterFinishLoading(int strokeColor) {
     this.strokeColor = strokeColor;
+  }
+
+  public void setLoadingColors(int loadingColor1, int loadingColor2) {
+    this.loadingColor1 = loadingColor1;
+    this.loadingColor2 = loadingColor2;
   }
 
 }

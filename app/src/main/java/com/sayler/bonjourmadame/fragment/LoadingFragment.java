@@ -157,8 +157,8 @@ public class LoadingFragment extends BaseFragment {
     ColorArt colorArt = new ColorArt(bitmap);
     int darkenColor = ColorUtils.darkenColor(colorArt.getBackgroundColor());
 
-    getBaseActivity().animateStatusBarColor(darkenColor, 1000);
-    getBaseActivity().animateNavigationBarColor(darkenColor, 1000);
+    getBaseActivity().animateStatusBarColor(darkenColor, 1500);
+    getBaseActivity().animateNavigationBarColor(darkenColor, 1500);
 
     mainActivity.getToolbar().setBackgroundColor(colorArt.getBackgroundColor());
     mainActivity.getToolbar().setTitleTextColor(colorArt.getDetailColor());
@@ -167,6 +167,7 @@ public class LoadingFragment extends BaseFragment {
     refreshActionButton.setTint(colorArt.getDetailColor());
     refreshActionButton.setStrokeColorAfterFinishLoading(colorArt.getDetailColor());
     refreshActionButton.setStrokeGradientAfterFinishLoading(colorArt.getDetailColor(), darkenColor);
+    refreshActionButton.setLoadingColors(darkenColor,colorArt.getBackgroundColor());
 
     setWallpaperActionButton.setTint(colorArt.getDetailColor());
     setWallpaperActionButton.setActionBackgroundColor(darkenColor);
@@ -184,7 +185,7 @@ public class LoadingFragment extends BaseFragment {
   private void setupLayoutTransition(RelativeLayout mainContainer) {
     LayoutTransition layoutTransition = mainContainer.getLayoutTransition();
     layoutTransition.enableTransitionType(LayoutTransition.CHANGING);
-    layoutTransition.setDuration(1000);
+    layoutTransition.setDuration(1500);
     layoutTransition.setInterpolator(LayoutTransition.CHANGING, new OvershootInterpolator());
   }
 
