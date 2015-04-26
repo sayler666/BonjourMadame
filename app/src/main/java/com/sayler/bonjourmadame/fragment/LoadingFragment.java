@@ -3,7 +3,6 @@ package com.sayler.bonjourmadame.fragment;
 import android.animation.LayoutTransition;
 import android.animation.ObjectAnimator;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -134,7 +133,7 @@ public class LoadingFragment extends BaseFragment {
   private void onLoadingFinishFailure() {
     //TODO handle exception
     isLoading = false;
-    circularReveal.reveal(true);
+    circularReveal.reveal(true, false);
     loadingFinishAnimations();
   }
 
@@ -178,6 +177,8 @@ public class LoadingFragment extends BaseFragment {
     shareImageActionButton.setActionBackgroundColor(darkenColor);
     shareImageActionButton.setStrokeColor(colorArt.getDetailColor());
     shareImageActionButton.setStrokeGradient(shareImageActionButton.prepareStrokeGradient(colorArt.getDetailColor(), darkenColor));
+
+    circularReveal.setFillColorAfterFinishAnimation(colorArt.getBackgroundColor());
   }
 
   private void setupLayoutTransition(RelativeLayout mainContainer) {
@@ -188,7 +189,7 @@ public class LoadingFragment extends BaseFragment {
   }
 
   private void loadingStartAnimations() {
-    circularReveal.hide(true);
+    circularReveal.hide(true,true);
     refreshActionButton.loadingStartAnimation();
     mainActivity.hideToolbar();
 
@@ -205,7 +206,7 @@ public class LoadingFragment extends BaseFragment {
   }
 
   private void loadingFinishAnimations() {
-    circularReveal.reveal(true);
+    circularReveal.reveal(true, false);
     refreshActionButton.loadingFinishAnimation();
     mainActivity.showToolbar();
 
