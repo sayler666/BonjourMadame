@@ -3,7 +3,6 @@ package com.sayler.bonjourmadame.fragment;
 import android.animation.LayoutTransition;
 import android.animation.ObjectAnimator;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -134,7 +133,7 @@ public class LoadingFragment extends BaseFragment {
   private void onLoadingFinishFailure() {
     //TODO handle exception
     isLoading = false;
-    circularReveal.reveal(true);
+    circularReveal.reveal(true, false);
     loadingFinishAnimations();
   }
 
@@ -158,8 +157,8 @@ public class LoadingFragment extends BaseFragment {
     ColorArt colorArt = new ColorArt(bitmap);
     int darkenColor = ColorUtils.darkenColor(colorArt.getBackgroundColor());
 
-    getBaseActivity().animateStatusBarColor(darkenColor, 1000);
-    getBaseActivity().animateNavigationBarColor(darkenColor, 1000);
+    getBaseActivity().animateStatusBarColor(darkenColor, 1500);
+    getBaseActivity().animateNavigationBarColor(darkenColor, 1500);
 
     mainActivity.getToolbar().setBackgroundColor(colorArt.getBackgroundColor());
     mainActivity.getToolbar().setTitleTextColor(colorArt.getDetailColor());
@@ -168,6 +167,7 @@ public class LoadingFragment extends BaseFragment {
     refreshActionButton.setBackgroundColorAfterFinishLoading(darkenColor);
     refreshActionButton.setRippleDrawableAfterFinishLoading(darkenColor, colorArt.getDetailColor());
     refreshActionButton.setStrokeGradientAfterFinishLoading(colorArt.getDetailColor(), darkenColor);
+    refreshActionButton.setLoadingColors(darkenColor,colorArt.getBackgroundColor());
 
     setWallpaperActionButton.setTint(colorArt.getDetailColor());
     setWallpaperActionButton.setActionBackground(setWallpaperActionButton.prepareRippleDrawable(darkenColor, colorArt.getDetailColor()));
@@ -176,17 +176,19 @@ public class LoadingFragment extends BaseFragment {
     shareImageActionButton.setTint(colorArt.getDetailColor());
     shareImageActionButton.setActionBackground(shareImageActionButton.prepareRippleDrawable(darkenColor, colorArt.getDetailColor()));
     shareImageActionButton.setStrokeGradient(shareImageActionButton.prepareStrokeGradient(colorArt.getDetailColor(), darkenColor));
+
+    circularReveal.setFillColorAfterFinishAnimation(colorArt.getBackgroundColor());
   }
 
   private void setupLayoutTransition(RelativeLayout mainContainer) {
     LayoutTransition layoutTransition = mainContainer.getLayoutTransition();
     layoutTransition.enableTransitionType(LayoutTransition.CHANGING);
-    layoutTransition.setDuration(1000);
+    layoutTransition.setDuration(1500);
     layoutTransition.setInterpolator(LayoutTransition.CHANGING, new OvershootInterpolator());
   }
 
   private void loadingStartAnimations() {
-    circularReveal.hide(true);
+    circularReveal.hide(true,true);
     refreshActionButton.loadingStartAnimation();
     mainActivity.hideToolbar();
 
@@ -203,7 +205,7 @@ public class LoadingFragment extends BaseFragment {
   }
 
   private void loadingFinishAnimations() {
-    circularReveal.reveal(true);
+    circularReveal.reveal(true, false);
     refreshActionButton.loadingFinishAnimation();
     mainActivity.showToolbar();
 
