@@ -118,11 +118,10 @@ public class RefreshActionButton extends ActionButton {
     startAnimation(zoomInAnimation);
     getImageButton().setImageDrawable(getContext().getDrawable(android.R.color.transparent));
     getImageButton().setElevation(getResources().getDimension(R.dimen.elevation_high));
-    getImageButtonStroke().setVisibility(GONE);
+    getImageButtonStroke().setVisibility(INVISIBLE);
   }
 
   public void loadingFinishAnimation() {
-    getImageButtonStroke().setVisibility(VISIBLE);
     getProgressBarCircle().startAnimation(fadeOut);
     revealAnimation.cancel();
     loadingColorAnimator.end();
@@ -217,9 +216,6 @@ public class RefreshActionButton extends ActionButton {
 
   public void setRippleDrawableAfterFinishLoading(int normalColor, int pressedColor) {
     rippleDrawable = prepareRippleDrawable(normalColor, pressedColor);
-  }
-  public void setStrokeColorAfterFinishLoading(int strokeColor) {
-    this.strokeColor = strokeColor;
   }
 
   public void setLoadingColors(int loadingColor1, int loadingColor2) {
