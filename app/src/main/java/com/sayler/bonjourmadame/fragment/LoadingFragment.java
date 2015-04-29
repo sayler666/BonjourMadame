@@ -32,6 +32,7 @@ import rx.Observable;
 import rx.android.app.AppObservable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import uk.co.senab.photoview.PhotoViewAttacher;
 
 import java.util.concurrent.TimeUnit;
 
@@ -52,6 +53,7 @@ public class LoadingFragment extends BaseFragment {
   ImageView loadedMadameImageView;
   private boolean isLoading = true;
   private MainActivity mainActivity;
+  private PhotoViewAttacher photoViewAttacher;
 
   /* ---------------------------------------------- LIFECYCLE METHODS ------------------------------------------------*/
 
@@ -72,7 +74,29 @@ public class LoadingFragment extends BaseFragment {
   }
 
   private void setupViews() {
+    setupPhotoView();
     setupLayoutTransition(mainContainer);
+  }
+
+  private void setupPhotoView() {
+    photoViewAttacher = new PhotoViewAttacher(loadedMadameImageView);
+    photoViewAttacher.setScaleType(ImageView.ScaleType.CENTER_CROP);
+    photoViewAttacher.setOnTouchDownListener(this::startMovingPhoto);
+    photoViewAttacher.setOnTouchUpListener(this::finishMovingPhoto);
+  }
+
+  private void startMovingPhoto() {
+    ((MainActivity) getActivity()).hideToolbar();
+    ObjectAnimator.ofFloat(setWallpaperActionButton, "alpha", 1, 0).setDuration(500).start();
+    ObjectAnimator.ofFloat(shareImageActionButton, "alpha", 1, 0).setDuration(500).start();
+    ObjectAnimator.ofFloat(refreshActionButton, "alpha", 1, 0).setDuration(500).start();
+  }
+
+  private void finishMovingPhoto() {
+    ((MainActivity) getActivity()).showToolbar();
+    ObjectAnimator.ofFloat(setWallpaperActionButton, "alpha", 0, 1).setDuration(500).start();
+    ObjectAnimator.ofFloat(shareImageActionButton, "alpha", 0, 1).setDuration(500).start();
+    ObjectAnimator.ofFloat(refreshActionButton, "alpha", 0, 1).setDuration(500).start();
   }
 
   private void startLoading() {
@@ -143,6 +167,7 @@ public class LoadingFragment extends BaseFragment {
      */
     isLoading = false;
     loadedMadameImageView.setImageBitmap(bitmap);
+    photoViewAttacher.update();
 
     Observable<Integer> messageObservable = Observable.just(1);
     AppObservable.bindFragment(LoadingFragment.this, messageObservable)
@@ -167,7 +192,7 @@ public class LoadingFragment extends BaseFragment {
     refreshActionButton.setBackgroundColorAfterFinishLoading(darkenColor);
     refreshActionButton.setRippleDrawableAfterFinishLoading(darkenColor, colorArt.getDetailColor());
     refreshActionButton.setStrokeGradientAfterFinishLoading(colorArt.getDetailColor(), darkenColor);
-    refreshActionButton.setLoadingColors(darkenColor,colorArt.getBackgroundColor());
+    refreshActionButton.setLoadingColors(darkenColor, colorArt.getBackgroundColor());
 
     setWallpaperActionButton.setTint(colorArt.getDetailColor());
     setWallpaperActionButton.setActionBackground(setWallpaperActionButton.prepareRippleDrawable(darkenColor, colorArt.getDetailColor()));
@@ -178,6 +203,8 @@ public class LoadingFragment extends BaseFragment {
     shareImageActionButton.setStrokeGradient(shareImageActionButton.prepareStrokeGradient(colorArt.getDetailColor(), darkenColor));
 
     circularReveal.setFillColorAfterFinishAnimation(colorArt.getBackgroundColor());
+
+    loadedMadameImageView.setBackgroundColor(colorArt.getDetailColor());
   }
 
   private void setupLayoutTransition(RelativeLayout mainContainer) {
@@ -188,7 +215,7 @@ public class LoadingFragment extends BaseFragment {
   }
 
   private void loadingStartAnimations() {
-    circularReveal.hide(true,true);
+    circularReveal.hide(true, true);
     refreshActionButton.loadingStartAnimation();
     mainActivity.hideToolbar();
 
