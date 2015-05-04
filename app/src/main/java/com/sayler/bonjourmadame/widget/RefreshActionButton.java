@@ -163,7 +163,6 @@ public class RefreshActionButton extends ActionButton {
     TransitionDrawable transitionDrawable = new TransitionDrawable(backgrounds);
     getImageButton().setImageDrawable(transitionDrawable);
     transitionDrawable.startTransition(2000);
-    transitionDrawable.startTransition(1000);
   }
 
   private void setUpColors() {

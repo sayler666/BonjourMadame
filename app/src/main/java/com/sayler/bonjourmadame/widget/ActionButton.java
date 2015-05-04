@@ -39,7 +39,7 @@ public class ActionButton extends RelativeLayout {
   private int diameterStroke;
   private ImageButton imageButtonStroke;
   private int strokeColor;
-  private GradientDrawable strokeGradinet;
+  private GradientDrawable strokeGradient;
 
   public ActionButton(Context context, AttributeSet attrs) {
     super(context, attrs);
@@ -56,7 +56,7 @@ public class ActionButton extends RelativeLayout {
     actionIcon = a.getDrawable(R.styleable.ActionButton_actionIcon);
     actionBackground = a.getDrawable(R.styleable.ActionButton_actionBackground);
     diameter = (int) a.getDimension(R.styleable.ActionButton_diameter, 56);
-    diameterStroke = (int) a.getDimension(R.styleable.ActionButton_diameterStroke, 60);
+    diameterStroke = diameter + (int) a.getDimension(R.styleable.ActionButton_diameterStroke, 2);
     tint = a.getColor(R.styleable.ActionButton_tint, 0xffffffff);
     strokeColor = a.getColor(R.styleable.ActionButton_strokeColor, 0xffffffff);
     a.recycle();
@@ -92,8 +92,8 @@ public class ActionButton extends RelativeLayout {
     imageButtonStroke.setBackgroundColor(strokeColor);
     ColorStateList tintColorStateList = new ColorStateList(new int[][]{EMPTY_STATE_SET}, new int[]{tint});
     imageButton.setImageTintList(tintColorStateList);
-    if (strokeGradinet != null) {
-      getImageButtonStroke().setBackground(strokeGradinet);
+    if (strokeGradient != null) {
+      getImageButtonStroke().setBackground(strokeGradient);
     }
     if (actionBackgroundColor != null) {
       imageButton.setBackgroundColor(actionBackgroundColor);
@@ -139,7 +139,7 @@ public class ActionButton extends RelativeLayout {
   }
 
   public void setStrokeGradient(GradientDrawable strokeGradient) {
-    this.strokeGradinet = strokeGradient;
+    this.strokeGradient = strokeGradient;
     updateViewState();
   }
 
