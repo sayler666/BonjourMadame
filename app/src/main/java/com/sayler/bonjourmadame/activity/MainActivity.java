@@ -1,6 +1,7 @@
 package com.sayler.bonjourmadame.activity;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
@@ -13,6 +14,7 @@ import com.sayler.bonjourmadame.BonjourMadameApplication;
 import com.sayler.bonjourmadame.R;
 import com.sayler.bonjourmadame.fragment.LoadingFragment;
 import com.sayler.bonjourmadame.network.BonjourMadameAPI;
+import com.sayler.bonjourmadame.util.ToolbarColorizeHelper;
 
 import javax.inject.Inject;
 
@@ -80,6 +82,10 @@ public class MainActivity extends BaseActivity {
     toolbar.startAnimation(toolbarDropInAnimation);
   }
 
+  public void colorizeToolbarIcons(int color) {
+    ToolbarColorizeHelper.colorizeToolbar(toolbar, color, MainActivity.this);
+  }
+
    /* ---------------------------------------------- PRIVATE METHODS --------------------------------------------------*/
 
   private void setupDrawer() {
@@ -112,7 +118,6 @@ public class MainActivity extends BaseActivity {
     public void onDrawerClosed(View drawerView) {
       super.onDrawerClosed(drawerView);
     }
-
 
   }
 }

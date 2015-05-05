@@ -186,7 +186,8 @@ public class LoadingFragment extends BaseFragment {
     getBaseActivity().animateNavigationBarColor(darkenColor, 1500);
 
     mainActivity.getToolbar().setBackgroundColor(colorArt.getBackgroundColor());
-    mainActivity.getToolbar().setTitleTextColor(colorArt.getDetailColor());
+    //mainActivity.getToolbar().setTitleTextColor(colorArt.getDetailColor());
+    mainActivity.colorizeToolbarIcons(colorArt.getDetailColor());
 
     refreshActionButton.setTint(colorArt.getDetailColor());
     refreshActionButton.setBackgroundColorAfterFinishLoading(darkenColor);
