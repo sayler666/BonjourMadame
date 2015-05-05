@@ -45,6 +45,8 @@ public class LoadingFragment extends BaseFragment {
   ActionButton setWallpaperActionButton;
   @InjectView(R.id.shareImageActionButton)
   ActionButton shareImageActionButton;
+  @InjectView(R.id.favouriteImageActionButton)
+  ActionButton favouriteImageActionButton;
   @InjectView(R.id.circuralReveal)
   CircularReveal circularReveal;
   @InjectView(R.id.mainContainer)
@@ -91,6 +93,7 @@ public class LoadingFragment extends BaseFragment {
     ObjectAnimator.ofFloat(setWallpaperActionButton, "alpha", 1, 0).setDuration(500).start();
     ObjectAnimator.ofFloat(shareImageActionButton, "alpha", 1, 0).setDuration(500).start();
     ObjectAnimator.ofFloat(refreshActionButton, "alpha", 1, 0).setDuration(500).start();
+    ObjectAnimator.ofFloat(favouriteImageActionButton, "alpha", 1, 0).setDuration(500).start();
   }
 
   private void finishMovingPhoto() {
@@ -98,6 +101,7 @@ public class LoadingFragment extends BaseFragment {
     ObjectAnimator.ofFloat(setWallpaperActionButton, "alpha", 0, 1).setDuration(500).start();
     ObjectAnimator.ofFloat(shareImageActionButton, "alpha", 0, 1).setDuration(500).start();
     ObjectAnimator.ofFloat(refreshActionButton, "alpha", 0, 1).setDuration(500).start();
+    ObjectAnimator.ofFloat(favouriteImageActionButton, "alpha", 0, 1).setDuration(500).start();
   }
 
   private void startLoading() {
@@ -186,7 +190,6 @@ public class LoadingFragment extends BaseFragment {
     getBaseActivity().animateNavigationBarColor(darkenColor, 1500);
 
     mainActivity.getToolbar().setBackgroundColor(colorArt.getBackgroundColor());
-    //mainActivity.getToolbar().setTitleTextColor(colorArt.getDetailColor());
     mainActivity.colorizeToolbarIcons(colorArt.getDetailColor());
 
     refreshActionButton.setTint(colorArt.getDetailColor());
@@ -202,6 +205,10 @@ public class LoadingFragment extends BaseFragment {
     shareImageActionButton.setTint(colorArt.getDetailColor());
     shareImageActionButton.setActionBackground(shareImageActionButton.prepareRippleDrawable(darkenColor, colorArt.getDetailColor()));
     shareImageActionButton.setStrokeGradient(shareImageActionButton.prepareStrokeGradient(colorArt.getDetailColor(), darkenColor));
+
+    favouriteImageActionButton.setTint(colorArt.getDetailColor());
+    favouriteImageActionButton.setActionBackground(shareImageActionButton.prepareRippleDrawable(darkenColor, colorArt.getDetailColor()));
+    favouriteImageActionButton.setStrokeGradient(shareImageActionButton.prepareStrokeGradient(colorArt.getDetailColor(), darkenColor));
 
     circularReveal.setFillColorAfterFinishAnimation(colorArt.getBackgroundColor());
 
@@ -222,6 +229,7 @@ public class LoadingFragment extends BaseFragment {
 
     ObjectAnimator.ofFloat(setWallpaperActionButton, "alpha", 1, 0).setDuration(500).start();
     ObjectAnimator.ofFloat(shareImageActionButton, "alpha", 1, 0).setDuration(500).start();
+    ObjectAnimator.ofFloat(favouriteImageActionButton, "alpha", 1, 0).setDuration(500).start();
 
     ActionButtonLocation actionButtonLocation = new ActionButtonLocation.ActionButtonLocationBuilder()
         .addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, null)
@@ -230,6 +238,7 @@ public class LoadingFragment extends BaseFragment {
     ActionButtonHelper.setActionButtonPosition(refreshActionButton, ActionButtonHelper.ActionButtonLocationEnum.CENTER);
     ActionButtonHelper.setActionButtonPosition(setWallpaperActionButton, actionButtonLocation);
     ActionButtonHelper.setActionButtonPosition(shareImageActionButton, actionButtonLocation);
+    ActionButtonHelper.setActionButtonPosition(favouriteImageActionButton, actionButtonLocation);
   }
 
   private void loadingFinishAnimations() {
@@ -239,6 +248,7 @@ public class LoadingFragment extends BaseFragment {
 
     ObjectAnimator.ofFloat(setWallpaperActionButton, "alpha", 0, 1).setDuration(500).start();
     ObjectAnimator.ofFloat(shareImageActionButton, "alpha", 0, 1).setDuration(500).start();
+    ObjectAnimator.ofFloat(favouriteImageActionButton, "alpha", 0, 1).setDuration(500).start();
 
     ActionButtonLocation setWallpaperLocation = new ActionButtonLocation.ActionButtonLocationBuilder()
         .addRule(RelativeLayout.ABOVE, refreshActionButton.getId())
@@ -248,8 +258,13 @@ public class LoadingFragment extends BaseFragment {
         .addRule(RelativeLayout.ABOVE, setWallpaperActionButton.getId())
         .removeRule(RelativeLayout.ALIGN_PARENT_BOTTOM).build();
 
+    ActionButtonLocation favouriteImageLocation = new ActionButtonLocation.ActionButtonLocationBuilder()
+        .addRule(RelativeLayout.ABOVE, shareImageActionButton.getId())
+        .removeRule(RelativeLayout.ALIGN_PARENT_BOTTOM).build();
+
     ActionButtonHelper.setActionButtonPosition(refreshActionButton, ActionButtonHelper.ActionButtonLocationEnum.BOTTOM_RIGHT);
     ActionButtonHelper.setActionButtonPosition(setWallpaperActionButton, setWallpaperLocation);
     ActionButtonHelper.setActionButtonPosition(shareImageActionButton, shareImageLocation);
+    ActionButtonHelper.setActionButtonPosition(favouriteImageActionButton, favouriteImageLocation);
   }
 }

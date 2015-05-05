@@ -26,7 +26,7 @@
             android:clipToPadding="false">
         <com.sayler.bonjourmadame.widget.RefreshActionButton
                 android:id="@+id/refreshActionButton"
-                ActionButton:actionIcon="@android:drawable/ic_popup_sync"
+                ActionButton:actionIcon="@drawable/ic_refresh_image"
                 ActionButton:actionBackground="@drawable/oval"
                 ActionButton:diameter="@dimen/diameter"
                 ActionButton:diameterStroke="@dimen/diameterStroke"
@@ -36,7 +36,7 @@
 
         <com.sayler.bonjourmadame.widget.ActionButton
                 android:id="@+id/setWallpaperActionButton"
-                ActionButton:actionIcon="@android:drawable/ic_input_add"
+                ActionButton:actionIcon="@drawable/ic_set_image"
                 ActionButton:actionBackground="@drawable/oval"
                 ActionButton:diameter="@dimen/diameter"
                 ActionButton:diameterStroke="@dimen/diameterStroke"
@@ -49,7 +49,7 @@
 
         <com.sayler.bonjourmadame.widget.ActionButton
                 android:id="@+id/shareImageActionButton"
-                ActionButton:actionIcon="@drawable/ic_action_share_dark"
+                ActionButton:actionIcon="@drawable/ic_share_image"
                 ActionButton:actionBackground="@drawable/oval"
                 ActionButton:diameter="@dimen/diameter"
                 ActionButton:diameterStroke="@dimen/diameterStroke"
@@ -59,6 +59,17 @@
                 android:elevation="1dp"
                 android:layout_above="@id/setWallpaperActionButton"
                 style="@style/setWallpaperActionButtonStyle"/>
-
+        <com.sayler.bonjourmadame.widget.ActionButton
+                android:id="@+id/favouriteImageActionButton"
+                ActionButton:actionIcon="@drawable/ic_favourite_image"
+                ActionButton:actionBackground="@drawable/oval"
+                ActionButton:diameter="@dimen/diameter"
+                ActionButton:diameterStroke="@dimen/diameterStroke"
+                ActionButton:tint="@android:color/white"
+                ActionButton:strokeColor="@android:color/white"
+                android:layout_marginBottom="-32dp"
+                android:elevation="1dp"
+                android:layout_above="@id/shareImageActionButton"
+                style="@style/setWallpaperActionButtonStyle"/>
     </RelativeLayout>
 </FrameLayout>

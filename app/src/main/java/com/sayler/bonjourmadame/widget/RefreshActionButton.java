@@ -159,7 +159,7 @@ public class RefreshActionButton extends ActionButton {
 
     Drawable backgrounds[] = new Drawable[2];
     backgrounds[0] = getImageButton().getDrawable();
-    backgrounds[1] = getContext().getDrawable(android.R.drawable.ic_popup_sync);
+    backgrounds[1] = getContext().getDrawable(R.drawable.ic_refresh_image);
     TransitionDrawable transitionDrawable = new TransitionDrawable(backgrounds);
     getImageButton().setImageDrawable(transitionDrawable);
     transitionDrawable.startTransition(2000);
