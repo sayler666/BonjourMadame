@@ -181,8 +181,7 @@ public class LoadingFragment extends BaseFragment {
 
   private void updateThemeColorsFromBitmap(Bitmap bitmap) {
     ColorArt colorArt = new ColorArt(bitmap);
-    int darkenColor = ColorUtils.darkenColor(colorArt.getBackgroundColor());
-
+    int darkenColor = ColorUtils.amendColor(colorArt.getBackgroundColor(), 1f, 1.4f, 0.8f);
     getBaseActivity().animateStatusBarColor(darkenColor, 1500);
     getBaseActivity().animateNavigationBarColor(darkenColor, 1500);
 

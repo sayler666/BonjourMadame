@@ -28,5 +28,5 @@
             android:layout_width="320dp"
             android:layout_height="match_parent"
             android:clickable="true"
-            android:background="@color/mainColor"/>
+            android:background="@android:color/white"/>
 </com.sayler.bonjourmadame.widget.HackyDrawerLayout>
