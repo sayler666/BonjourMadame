@@ -1,16 +1,32 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:id="@+id/container"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             tools:ignore="MergeRootFrame">
-    <Toolbar
-            android:id="@+id/toolbar"
+<com.sayler.bonjourmadame.widget.HackyDrawerLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/DrawerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:elevation="7dp">
+    <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/abc_action_bar_default_height_material"
-            android:background="@color/mainColor"
-            android:translationZ="5dp"
-            android:elevation="5dp"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark">
-    </Toolbar>
-</FrameLayout>
+            android:layout_height="match_parent">
+        <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/abc_action_bar_default_height_material"
+                android:background="@color/mainColor"
+                android:translationZ="5dp"
+                android:elevation="5dp"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark">
+        </android.support.v7.widget.Toolbar>
+
+        <FrameLayout
+                android:id="@+id/container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+    </FrameLayout>
+    <FrameLayout
+            android:layout_gravity="left"
+            android:layout_width="320dp"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:background="@color/mainColor"/>
+</com.sayler.bonjourmadame.widget.HackyDrawerLayout>

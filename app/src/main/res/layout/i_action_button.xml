@@ -30,6 +30,9 @@
             android:layout_height="56dp"
             android:elevation="@dimen/elevation_high"
             android:translationZ="1dp"
+            android:progressTint="@android:color/white"
+            android:indeterminateTint="@android:color/white"
+            android:indeterminateTintMode="src_in"
             style="@style/Base.Widget.AppCompat.ProgressBar"
             />
 </RelativeLayout>

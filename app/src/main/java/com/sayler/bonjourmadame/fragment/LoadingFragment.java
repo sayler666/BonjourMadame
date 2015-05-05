@@ -81,6 +81,7 @@ public class LoadingFragment extends BaseFragment {
   private void setupPhotoView() {
     photoViewAttacher = new PhotoViewAttacher(loadedMadameImageView);
     photoViewAttacher.setScaleType(ImageView.ScaleType.CENTER_CROP);
+    photoViewAttacher.setAllowParentInterceptOnEdge(false);
     photoViewAttacher.setOnTouchDownListener(this::startMovingPhoto);
     photoViewAttacher.setOnTouchUpListener(this::finishMovingPhoto);
   }
