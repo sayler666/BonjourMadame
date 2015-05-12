@@ -1,7 +1,6 @@
 package com.sayler.bonjourmadame.activity;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
@@ -12,6 +11,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.sayler.bonjourmadame.BonjourMadameApplication;
 import com.sayler.bonjourmadame.R;
+import com.sayler.bonjourmadame.fragment.DrawerFragment;
 import com.sayler.bonjourmadame.fragment.LoadingFragment;
 import com.sayler.bonjourmadame.network.BonjourMadameAPI;
 import com.sayler.bonjourmadame.util.ToolbarColorizeHelper;
@@ -51,6 +51,10 @@ public class MainActivity extends BaseActivity {
     if (savedInstanceState == null) {
       getFragmentManager().beginTransaction()
           .add(R.id.container, new LoadingFragment())
+          .commit();
+
+      getFragmentManager().beginTransaction()
+          .add(R.id.drawerLayout, new DrawerFragment())
           .commit();
     }
 
