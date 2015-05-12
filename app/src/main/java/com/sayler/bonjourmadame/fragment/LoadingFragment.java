@@ -3,6 +3,8 @@ package com.sayler.bonjourmadame.fragment;
 import android.animation.LayoutTransition;
 import android.animation.ObjectAnimator;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,7 +16,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import butterknife.OnClick;
 import com.sayler.bonjourmadame.R;
 import com.sayler.bonjourmadame.activity.MainActivity;
 import com.sayler.bonjourmadame.event.InflateDrawerFragmentEvent;
@@ -23,6 +24,7 @@ import com.sayler.bonjourmadame.network.model.MadameDto;
 import com.sayler.bonjourmadame.util.ActionButtonHelper;
 import com.sayler.bonjourmadame.util.ActionButtonLocation;
 import com.sayler.bonjourmadame.util.ColorUtils;
+import com.sayler.bonjourmadame.util.WallpaperHelper;
 import com.sayler.bonjourmadame.widget.ActionButton;
 import com.sayler.bonjourmadame.widget.CircularReveal;
 import com.sayler.bonjourmadame.widget.RefreshActionButton;
@@ -78,8 +80,38 @@ public class LoadingFragment extends BaseFragment {
   }
 
   private void setupViews() {
+    refreshActionButton.setOnClickListener(v -> onRefreshActionButtonClick());
+    setWallpaperActionButton.setOnClickListener(v -> onSetWallpaperActionButtonClick());
     setupPhotoView();
     setupLayoutTransition(mainContainer);
+  }
+
+  private void setWallpaper() {
+    if (photoViewAttacher.getVisibleRectangleBitmap() != null) {
+      loadingStartAnimations();
+      refreshActionButton.setLoadingColors(refreshActionButton.getLoadingColor1(), refreshActionButton.getLoadingColor2());
+      refreshActionButton.setBackgroundColorAfterFinishLoading(refreshActionButton.getLoadingColor1());
+
+      AppObservable.bindFragment(this, Observable.just(0))
+          .subscribeOn(Schedulers.io())
+          .observeOn(Schedulers.io())
+          .subscribe(v -> setWallpaperOnSeparateThread());
+
+      AppObservable.bindFragment(this, Observable.just(0))
+          .delay(2000, TimeUnit.MILLISECONDS)
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(integer -> loadFinishAnimationAfterSetWallpaper());
+    }
+  }
+
+  private void setWallpaperOnSeparateThread() {
+    WallpaperHelper.setBitmapAsWallpaper(photoViewAttacher.getVisibleRectangleBitmap(), getBaseActivity());
+  }
+
+  private void loadFinishAnimationAfterSetWallpaper() {
+    loadedMadameImageView.setImageBitmap(null);
+    loadedMadameImageView.setBackgroundColor(Color.TRANSPARENT);
+    loadingFinishAnimations();
   }
 
   private void setupPhotoView() {
@@ -121,11 +153,14 @@ public class LoadingFragment extends BaseFragment {
 
   /* ------------------------------------ ON CLICK CALLBACKS ---------------------------------------------------------*/
 
-  @OnClick(R.id.action_button)
-  public void onActionButtonClick() {
+  public void onRefreshActionButtonClick() {
     if (!isLoading) {
       startLoading();
     }
+  }
+
+  public void onSetWallpaperActionButtonClick() {
+    setWallpaper();
   }
 
   /* ------------------------------------ REQUEST CALLBACKS ----------------------------------------------------------*/

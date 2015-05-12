@@ -48,6 +48,11 @@ public class ActionButton extends RelativeLayout {
     setupViews();
   }
 
+  @Override
+  public void setOnClickListener(OnClickListener l) {
+    imageButton.setOnClickListener(l);
+  }
+
   protected void inflateView(Context context) {
     LayoutInflater.from(context).inflate(R.layout.i_action_button, this, true);
   }

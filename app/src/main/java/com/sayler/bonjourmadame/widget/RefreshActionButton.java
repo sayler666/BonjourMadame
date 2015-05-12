@@ -222,4 +222,11 @@ public class RefreshActionButton extends ActionButton {
     this.loadingColor2 = loadingColor2;
   }
 
+  public int getLoadingColor1() {
+    return loadingColor1;
+  }
+
+  public int getLoadingColor2() {
+    return loadingColor2;
+  }
 }
