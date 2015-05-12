@@ -31,6 +31,10 @@ public class NavigationItem {
     return icon;
   }
 
+  public void navigationClick(){
+    navigationListener.onNavigationClick();
+  }
+
   public interface NavigationListener {
     void onNavigationClick();
   }

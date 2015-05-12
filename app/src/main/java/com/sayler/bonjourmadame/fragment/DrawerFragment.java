@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import butterknife.ButterKnife;
@@ -54,6 +55,11 @@ public class DrawerFragment extends BaseFragment {
     return rootView;
   }
 
+  @Override
+  public void onActivityCreated(Bundle savedInstanceState) {
+    super.onActivityCreated(savedInstanceState);
+  }
+
   private void setupTopImage() {
     final WallpaperManager wallpaperManager = WallpaperManager.getInstance(getBaseActivity());
     final Drawable wallpaperDrawable = wallpaperManager.getDrawable();
@@ -61,22 +67,17 @@ public class DrawerFragment extends BaseFragment {
   }
 
   private void setupNavigation() {
-
-    List<NavigationItem> navigationItems = new ArrayList<>();
-    NavigationItem startItem = new NavigationItem(getResources().getDrawable(R.drawable.ic_refresh_image), "Start", () -> Log.d("DrawerFragment", "Start"));
-    NavigationItem favouritesItem = new NavigationItem(getResources().getDrawable(R.drawable.ic_favourite_image), "Favourites", () -> Log.d("DrawerFragment", "Favourites"));
-    NavigationItem historyItem = new NavigationItem(getResources().getDrawable(R.drawable.ic_history), "History", () -> Log.d("DrawerFragment", "History"));
-    navigationItems.add(startItem);
-    navigationItems.add(favouritesItem);
-    navigationItems.add(historyItem);
-
+    List<NavigationItem> navigationItems = createNavigationList();
     NavigationAdapter navigationAdapter = new NavigationAdapter(getBaseActivity(), navigationItems);
     navigationListView.setAdapter(navigationAdapter);
-
+    navigationListView.setOnItemClickListener((parent, view, position, id) -> ((NavigationItem) navigationAdapter.getItem(position)).navigationClick());
   }
 
-  @Override
-  public void onActivityCreated(Bundle savedInstanceState) {
-    super.onActivityCreated(savedInstanceState);
+  private List<NavigationItem> createNavigationList() {
+    List<NavigationItem> navigationItems = new ArrayList<>();
+    navigationItems.add(new NavigationItem(getResources().getDrawable(R.drawable.ic_refresh_image), "Start", () -> Log.d("DrawerFragment", "Start")));
+    navigationItems.add(new NavigationItem(getResources().getDrawable(R.drawable.ic_favourite_image), "Favourites", () -> Log.d("DrawerFragment", "Favourites")));
+    navigationItems.add(new NavigationItem(getResources().getDrawable(R.drawable.ic_history), "History", () -> Log.d("DrawerFragment", "History")));
+    return navigationItems;
   }
 }
