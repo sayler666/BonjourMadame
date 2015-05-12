@@ -11,10 +11,12 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.sayler.bonjourmadame.BonjourMadameApplication;
 import com.sayler.bonjourmadame.R;
+import com.sayler.bonjourmadame.event.InflateDrawerFragmentEvent;
 import com.sayler.bonjourmadame.fragment.DrawerFragment;
 import com.sayler.bonjourmadame.fragment.LoadingFragment;
 import com.sayler.bonjourmadame.network.BonjourMadameAPI;
 import com.sayler.bonjourmadame.util.ToolbarColorizeHelper;
+import de.greenrobot.event.EventBus;
 
 import javax.inject.Inject;
 
@@ -54,7 +56,7 @@ public class MainActivity extends BaseActivity {
           .commit();
 
       getFragmentManager().beginTransaction()
-          .add(R.id.drawerLayout, new DrawerFragment())
+          .add(R.id.drawerLayout, new DrawerFragment(), DrawerFragment.class.getSimpleName())
           .commit();
     }
 
@@ -116,6 +118,7 @@ public class MainActivity extends BaseActivity {
     @Override
     public void onDrawerOpened(View drawerView) {
       super.onDrawerOpened(drawerView);
+      EventBus.getDefault().post(new InflateDrawerFragmentEvent());
     }
 
     @Override

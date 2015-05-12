@@ -13,14 +13,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
+import android.view.ViewStub;
 import android.widget.ImageView;
 import android.widget.ListView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.sayler.bonjourmadame.R;
 import com.sayler.bonjourmadame.adapter.NavigationAdapter;
+import com.sayler.bonjourmadame.event.InflateDrawerFragmentEvent;
 import com.sayler.bonjourmadame.model.NavigationItem;
+import de.greenrobot.event.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,10 +34,21 @@ import java.util.List;
  */
 public class DrawerFragment extends BaseFragment {
 
-  @InjectView(R.id.navigationListView)
-  ListView navigationListView;
-  @InjectView(R.id.topImage)
-  ImageView topImage;
+  @InjectView(R.id.stubImport)
+  ViewStub viewStub;
+  private View rootView;
+  private DynamicViewStub dynamicViewStub;
+
+  public class DynamicViewStub {
+    @InjectView(R.id.navigationListView)
+    ListView navigationListView;
+    @InjectView(R.id.topImage)
+    ImageView topImage;
+
+    public DynamicViewStub(View view) {
+      ButterKnife.inject(this, view);
+    }
+  }
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
@@ -46,13 +59,34 @@ public class DrawerFragment extends BaseFragment {
   @Override
   public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                            Bundle savedInstanceState) {
-    View rootView = inflater.inflate(R.layout.f_drawer, container, false);
+    rootView = inflater.inflate(R.layout.f_drawer, container, false);
     ButterKnife.inject(this, rootView);
-
-    setupTopImage();
-    setupNavigation();
-
     return rootView;
+  }
+
+  @Override
+  public void onPause() {
+    super.onPause();
+    EventBus.getDefault().unregister(this);
+  }
+
+  @Override
+  public void onResume() {
+    super.onResume();
+    EventBus.getDefault().register(this);
+  }
+
+  public void onEvent(InflateDrawerFragmentEvent event) {
+    lazyInflateDrawer();
+  }
+
+  public void lazyInflateDrawer() {
+    if (dynamicViewStub == null) {
+      View viewFromViewStub = viewStub.inflate();
+      dynamicViewStub = new DynamicViewStub(viewFromViewStub);
+      setupTopImage();
+      setupNavigation();
+    }
   }
 
   @Override
@@ -63,14 +97,14 @@ public class DrawerFragment extends BaseFragment {
   private void setupTopImage() {
     final WallpaperManager wallpaperManager = WallpaperManager.getInstance(getBaseActivity());
     final Drawable wallpaperDrawable = wallpaperManager.getDrawable();
-    topImage.setImageDrawable(wallpaperDrawable);
+    dynamicViewStub.topImage.setImageDrawable(wallpaperDrawable);
   }
 
   private void setupNavigation() {
     List<NavigationItem> navigationItems = createNavigationList();
     NavigationAdapter navigationAdapter = new NavigationAdapter(getBaseActivity(), navigationItems);
-    navigationListView.setAdapter(navigationAdapter);
-    navigationListView.setOnItemClickListener((parent, view, position, id) -> ((NavigationItem) navigationAdapter.getItem(position)).navigationClick());
+    dynamicViewStub.navigationListView.setAdapter(navigationAdapter);
+    dynamicViewStub.navigationListView.setOnItemClickListener((parent, view, position, id) -> ((NavigationItem) navigationAdapter.getItem(position)).navigationClick());
   }
 
   private List<NavigationItem> createNavigationList() {

@@ -55,6 +55,7 @@ dependencies {
   compile 'com.squareup.picasso:picasso:2.5.0'
   compile 'org.michaelevans.colorart:library:0.0.3'
   compile 'com.github.thiagokimo:alexei-library:1.+'
+  compile 'de.greenrobot:eventbus:2.4.0'
   compile project(':network')
   compile fileTree(include: ['*.jar'], dir: 'libs')
   compile project(':PhotoView')

@@ -17,6 +17,7 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 import com.sayler.bonjourmadame.R;
 import com.sayler.bonjourmadame.activity.MainActivity;
+import com.sayler.bonjourmadame.event.InflateDrawerFragmentEvent;
 import com.sayler.bonjourmadame.network.model.BaseParseResponse;
 import com.sayler.bonjourmadame.network.model.MadameDto;
 import com.sayler.bonjourmadame.util.ActionButtonHelper;
@@ -27,6 +28,7 @@ import com.sayler.bonjourmadame.widget.CircularReveal;
 import com.sayler.bonjourmadame.widget.RefreshActionButton;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
+import de.greenrobot.event.EventBus;
 import org.michaelevans.colorart.library.ColorArt;
 import rx.Observable;
 import rx.android.app.AppObservable;
@@ -123,7 +125,6 @@ public class LoadingFragment extends BaseFragment {
   public void onActionButtonClick() {
     if (!isLoading) {
       startLoading();
-      isLoading = !isLoading;
     }
   }
 
@@ -161,16 +162,16 @@ public class LoadingFragment extends BaseFragment {
 
   private void onLoadingFinishFailure() {
     //TODO handle exception
-    isLoading = false;
     circularReveal.reveal(true, false);
     loadingFinishAnimations();
+
+    afterFinishLoading();
   }
 
   private void onLoadingFinishSuccessful(Bitmap bitmap) {
     /**
      * set image and reveal main content
      */
-    isLoading = false;
     loadedMadameImageView.setImageBitmap(bitmap);
     photoViewAttacher.update();
 
@@ -179,6 +180,13 @@ public class LoadingFragment extends BaseFragment {
         .delay(500, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(i -> loadingFinishAnimations());
+
+    afterFinishLoading();
+  }
+
+  private void afterFinishLoading() {
+    isLoading = false;
+    EventBus.getDefault().post(new InflateDrawerFragmentEvent());
   }
 
   /* ------------------------------------ ANIMATIONS -----------------------------------------------------------------*/
