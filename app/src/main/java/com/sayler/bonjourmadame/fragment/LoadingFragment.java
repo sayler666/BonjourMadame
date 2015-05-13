@@ -4,9 +4,10 @@ import android.animation.LayoutTransition;
 import android.animation.ObjectAnimator;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,9 +17,11 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
 import com.sayler.bonjourmadame.R;
 import com.sayler.bonjourmadame.activity.MainActivity;
 import com.sayler.bonjourmadame.event.InflateDrawerFragmentEvent;
+import com.sayler.bonjourmadame.event.RefreshDrawerTopImage;
 import com.sayler.bonjourmadame.network.model.BaseParseResponse;
 import com.sayler.bonjourmadame.network.model.MadameDto;
 import com.sayler.bonjourmadame.util.ActionButtonHelper;
@@ -38,11 +41,14 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import uk.co.senab.photoview.PhotoViewAttacher;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class LoadingFragment extends BaseFragment {
 
   private static final String TAG = "LoadingFragment";
+  List<ActionButton> actionButtonList = new ArrayList<>();
   @InjectView(R.id.refreshActionButton)
   RefreshActionButton refreshActionButton;
   @InjectView(R.id.setWallpaperActionButton)
@@ -75,15 +81,22 @@ public class LoadingFragment extends BaseFragment {
   public void onActivityCreated(Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
     mainActivity = (MainActivity) getActivity();
+
     setupViews();
     startLoading();
   }
 
   private void setupViews() {
-    refreshActionButton.setOnClickListener(v -> onRefreshActionButtonClick());
-    setWallpaperActionButton.setOnClickListener(v -> onSetWallpaperActionButtonClick());
+    setupActionButtons();
     setupPhotoView();
     setupLayoutTransition(mainContainer);
+  }
+
+  private void setupActionButtons() {
+    actionButtonList.add(refreshActionButton);
+    actionButtonList.add(setWallpaperActionButton);
+    actionButtonList.add(favouriteImageActionButton);
+    actionButtonList.add(shareImageActionButton);
   }
 
   private void setWallpaper() {
@@ -92,26 +105,33 @@ public class LoadingFragment extends BaseFragment {
       refreshActionButton.setLoadingColors(refreshActionButton.getLoadingColor1(), refreshActionButton.getLoadingColor2());
       refreshActionButton.setBackgroundColorAfterFinishLoading(refreshActionButton.getLoadingColor1());
 
-      AppObservable.bindFragment(this, Observable.just(0))
-          .subscribeOn(Schedulers.io())
+      AppObservable.bindFragment(this, Observable.just(1))
           .observeOn(Schedulers.io())
           .subscribe(v -> setWallpaperOnSeparateThread());
-
-      AppObservable.bindFragment(this, Observable.just(0))
-          .delay(2000, TimeUnit.MILLISECONDS)
-          .observeOn(AndroidSchedulers.mainThread())
-          .subscribe(integer -> loadFinishAnimationAfterSetWallpaper());
     }
   }
 
+  private Handler uiHandler = new Handler() {
+    @Override
+    public void handleMessage(Message msg) {
+      super.handleMessage(msg);
+      if (getBaseActivity() != null) {
+        afterSetWallpaper();
+      }
+    }
+  };
+
   private void setWallpaperOnSeparateThread() {
     WallpaperHelper.setBitmapAsWallpaper(photoViewAttacher.getVisibleRectangleBitmap(), getBaseActivity());
+    uiHandler.postDelayed(() -> uiHandler.sendEmptyMessage(1), 200);
   }
 
-  private void loadFinishAnimationAfterSetWallpaper() {
+  private void afterSetWallpaper() {
     loadedMadameImageView.setImageBitmap(null);
     loadedMadameImageView.setBackgroundColor(Color.TRANSPARENT);
     loadingFinishAnimations();
+
+    EventBus.getDefault().post(new RefreshDrawerTopImage());
   }
 
   private void setupPhotoView() {
@@ -124,18 +144,14 @@ public class LoadingFragment extends BaseFragment {
 
   private void startMovingPhoto() {
     ((MainActivity) getActivity()).hideToolbar();
-    ObjectAnimator.ofFloat(setWallpaperActionButton, "alpha", 1, 0).setDuration(500).start();
-    ObjectAnimator.ofFloat(shareImageActionButton, "alpha", 1, 0).setDuration(500).start();
-    ObjectAnimator.ofFloat(refreshActionButton, "alpha", 1, 0).setDuration(500).start();
-    ObjectAnimator.ofFloat(favouriteImageActionButton, "alpha", 1, 0).setDuration(500).start();
+    AppObservable.bindFragment(this, Observable.from(actionButtonList))
+        .doOnEach(ab -> ObjectAnimator.ofFloat(ab.getValue(), "alpha", 1, 0).setDuration(500).start());
   }
 
   private void finishMovingPhoto() {
     ((MainActivity) getActivity()).showToolbar();
-    ObjectAnimator.ofFloat(setWallpaperActionButton, "alpha", 0, 1).setDuration(500).start();
-    ObjectAnimator.ofFloat(shareImageActionButton, "alpha", 0, 1).setDuration(500).start();
-    ObjectAnimator.ofFloat(refreshActionButton, "alpha", 0, 1).setDuration(500).start();
-    ObjectAnimator.ofFloat(favouriteImageActionButton, "alpha", 0, 1).setDuration(500).start();
+    AppObservable.bindFragment(this, Observable.from(actionButtonList))
+        .doOnEach(ab -> ObjectAnimator.ofFloat(ab.getValue(), "alpha", 0, 1).setDuration(500).start());
   }
 
   private void startLoading() {
@@ -153,12 +169,14 @@ public class LoadingFragment extends BaseFragment {
 
   /* ------------------------------------ ON CLICK CALLBACKS ---------------------------------------------------------*/
 
+  @OnClick(R.id.refreshActionButton)
   public void onRefreshActionButtonClick() {
     if (!isLoading) {
       startLoading();
     }
   }
 
+  @OnClick(R.id.setWallpaperActionButton)
   public void onSetWallpaperActionButtonClick() {
     setWallpaper();
   }

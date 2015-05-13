@@ -21,6 +21,7 @@ import butterknife.InjectView;
 import com.sayler.bonjourmadame.R;
 import com.sayler.bonjourmadame.adapter.NavigationAdapter;
 import com.sayler.bonjourmadame.event.InflateDrawerFragmentEvent;
+import com.sayler.bonjourmadame.event.RefreshDrawerTopImage;
 import com.sayler.bonjourmadame.model.NavigationItem;
 import de.greenrobot.event.EventBus;
 
@@ -50,6 +51,8 @@ public class DrawerFragment extends BaseFragment {
     }
   }
 
+  /* ---------------------------------------------- LIFECYCLE METHODS ------------------------------------------------*/
+
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -65,6 +68,11 @@ public class DrawerFragment extends BaseFragment {
   }
 
   @Override
+  public void onActivityCreated(Bundle savedInstanceState) {
+    super.onActivityCreated(savedInstanceState);
+  }
+
+  @Override
   public void onPause() {
     super.onPause();
     EventBus.getDefault().unregister(this);
@@ -76,22 +84,25 @@ public class DrawerFragment extends BaseFragment {
     EventBus.getDefault().register(this);
   }
 
+  /* ---------------------------------------------- EVENTS -----------------------------------------------------------*/
+
   public void onEvent(InflateDrawerFragmentEvent event) {
     lazyInflateDrawer();
   }
 
-  public void lazyInflateDrawer() {
+  public void onEvent(RefreshDrawerTopImage event) {
+    setupTopImage();
+  }
+
+  /* ---------------------------------------------- PRIVATE METHODS --------------------------------------------------*/
+
+  private void lazyInflateDrawer() {
     if (dynamicViewStub == null) {
       View viewFromViewStub = viewStub.inflate();
       dynamicViewStub = new DynamicViewStub(viewFromViewStub);
       setupTopImage();
       setupNavigation();
     }
-  }
-
-  @Override
-  public void onActivityCreated(Bundle savedInstanceState) {
-    super.onActivityCreated(savedInstanceState);
   }
 
   private void setupTopImage() {
