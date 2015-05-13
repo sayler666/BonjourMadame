@@ -822,7 +822,13 @@ public class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
 
   public Bitmap getVisibleRectangleBitmap() {
     ImageView imageView = getImageView();
-    return imageView == null ? null : imageView.getDrawingCache();
+    Bitmap drawingCache = null;
+    if (imageView != null) {
+      imageView.setDrawingCacheEnabled(true);
+      drawingCache = imageView.getDrawingCache().copy(Bitmap.Config.RGB_565,false);
+      imageView.setDrawingCacheEnabled(false);
+    }
+    return drawingCache;
   }
 
   @Override
