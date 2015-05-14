@@ -101,29 +101,15 @@ public class LoadingFragment extends BaseFragment {
 
   private void setWallpaper() {
     if (photoViewAttacher.getVisibleRectangleBitmap() != null) {
-      loadingStartAnimations();
-      refreshActionButton.setLoadingColors(refreshActionButton.getLoadingColor1(), refreshActionButton.getLoadingColor2());
-      refreshActionButton.setBackgroundColorAfterFinishLoading(refreshActionButton.getLoadingColor1());
+      settingWallpaperStartAnimation();
 
-      AppObservable.bindFragment(this, Observable.just(1))
+      AppObservable.bindFragment(this, Observable.just(0))
           .observeOn(Schedulers.io())
-          .subscribe(v -> setWallpaperOnSeparateThread());
+          .doOnNext(v -> WallpaperHelper.setBitmapAsWallpaper(photoViewAttacher.getVisibleRectangleBitmap(), getBaseActivity()))
+          .delay(500, TimeUnit.MILLISECONDS)
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(v -> afterSetWallpaper());
     }
-  }
-
-  private Handler uiHandler = new Handler() {
-    @Override
-    public void handleMessage(Message msg) {
-      super.handleMessage(msg);
-      if (getBaseActivity() != null) {
-        afterSetWallpaper();
-      }
-    }
-  };
-
-  private void setWallpaperOnSeparateThread() {
-    WallpaperHelper.setBitmapAsWallpaper(photoViewAttacher.getVisibleRectangleBitmap(), getBaseActivity());
-    uiHandler.postDelayed(() -> uiHandler.sendEmptyMessage(1), 200);
   }
 
   private void afterSetWallpaper() {
@@ -281,6 +267,13 @@ public class LoadingFragment extends BaseFragment {
     layoutTransition.enableTransitionType(LayoutTransition.CHANGING);
     layoutTransition.setDuration(1500);
     layoutTransition.setInterpolator(LayoutTransition.CHANGING, new OvershootInterpolator());
+  }
+
+  private void settingWallpaperStartAnimation() {
+    refreshActionButton.setLoadingColors(refreshActionButton.getLoadingColor1(), refreshActionButton.getLoadingColor2());
+    refreshActionButton.setBackgroundColorAfterFinishLoading(refreshActionButton.getLoadingColor1());
+
+    loadingStartAnimations();
   }
 
   private void loadingStartAnimations() {
