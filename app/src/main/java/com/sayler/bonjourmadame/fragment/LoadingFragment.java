@@ -6,10 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +16,10 @@ import android.widget.RelativeLayout;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import com.github.johnpersano.supertoasts.SuperActivityToast;
+import com.github.johnpersano.supertoasts.SuperToast;
+import com.github.johnpersano.supertoasts.util.OnClickWrapper;
+import com.github.johnpersano.supertoasts.util.OnDismissWrapper;
 import com.sayler.bonjourmadame.R;
 import com.sayler.bonjourmadame.activity.MainActivity;
 import com.sayler.bonjourmadame.event.InflateDrawerFragmentEvent;
@@ -37,17 +38,11 @@ import com.squareup.picasso.Target;
 import de.greenrobot.event.EventBus;
 import org.michaelevans.colorart.library.ColorArt;
 import rx.Observable;
-import rx.Subscriber;
 import rx.android.app.AppObservable;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
-import rx.functions.Func2;
 import rx.schedulers.Schedulers;
-import rx.subjects.PublishSubject;
-import rx.subjects.Subject;
 import uk.co.senab.photoview.PhotoViewAttacher;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -120,9 +115,22 @@ public class LoadingFragment extends BaseFragment {
   }
 
   private void afterSetWallpaper() {
-    loadedMadameImageView.setImageBitmap(null);
-    loadedMadameImageView.setBackgroundColor(Color.TRANSPARENT);
-    loadingFinishAnimations();
+
+    settingWallpaperFinishAnimations();
+
+    SuperActivityToast previousWallpaperToast = new SuperActivityToast(getBaseActivity(), SuperToast.Type.BUTTON);
+    previousWallpaperToast.setButtonIcon(SuperToast.Icon.Dark.UNDO, "UNDO");
+    previousWallpaperToast.setDuration(SuperToast.Duration.LONG);
+    previousWallpaperToast.setOnClickWrapper(new OnClickWrapper("cancel", (view, parcelable) -> {
+    }));
+    previousWallpaperToast.setButtonText("Back");
+    previousWallpaperToast.setOnDismissWrapper(new OnDismissWrapper("cancel", view -> {
+      mainActivity.showToolbar();
+      AppObservable.bindFragment(this, Observable.from(actionButtonList))
+          .subscribe(ab -> ObjectAnimator.ofFloat(ab, "alpha", 0, 1).setDuration(500).start());
+    }));
+    previousWallpaperToast.setText("Cancel");
+    previousWallpaperToast.show();
 
     EventBus.getDefault().post(new RefreshDrawerTopImage());
   }
@@ -136,8 +144,7 @@ public class LoadingFragment extends BaseFragment {
   }
 
   private void startMovingPhoto() {
-    ((MainActivity) getActivity()).hideToolbar();
-
+    mainActivity.hideToolbar();
     AppObservable.bindFragment(this, Observable.from(actionButtonList))
         .subscribe(ab -> ObjectAnimator.ofFloat(ab, "alpha", 1, 0).setDuration(500).start());
 
@@ -149,7 +156,7 @@ public class LoadingFragment extends BaseFragment {
   }
 
   private void finishMovingPhoto() {
-    ((MainActivity) getActivity()).showToolbar();
+    mainActivity.showToolbar();
     AppObservable.bindFragment(this, Observable.from(actionButtonList))
         .subscribe(ab -> ObjectAnimator.ofFloat(ab, "alpha", 0, 1).setDuration(500).start());
   }
@@ -290,6 +297,18 @@ public class LoadingFragment extends BaseFragment {
     loadingStartAnimations();
   }
 
+  private void settingWallpaperFinishAnimations() {
+    loadedMadameImageView.setImageBitmap(null);
+    loadedMadameImageView.setBackgroundColor(Color.TRANSPARENT);
+
+    circularReveal.reveal(true, false);
+    refreshActionButton.loadingFinishAnimation();
+
+    ObjectAnimator.ofFloat(refreshActionButton, "alpha", 1, 0).setDuration(500).start();
+
+    setButtonDefaultPosition();
+  }
+
   private void loadingStartAnimations() {
     circularReveal.hide(true, true);
     refreshActionButton.loadingStartAnimation();
@@ -318,6 +337,10 @@ public class LoadingFragment extends BaseFragment {
     ObjectAnimator.ofFloat(shareImageActionButton, "alpha", 0, 1).setDuration(500).start();
     ObjectAnimator.ofFloat(favouriteImageActionButton, "alpha", 0, 1).setDuration(500).start();
 
+    setButtonDefaultPosition();
+  }
+
+  private void setButtonDefaultPosition() {
     ActionButtonLocation setWallpaperLocation = new ActionButtonLocation.ActionButtonLocationBuilder()
         .addRule(RelativeLayout.ABOVE, refreshActionButton.getId())
         .removeRule(RelativeLayout.ALIGN_PARENT_BOTTOM).build();
