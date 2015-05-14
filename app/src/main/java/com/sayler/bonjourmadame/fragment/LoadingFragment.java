@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,11 +37,17 @@ import com.squareup.picasso.Target;
 import de.greenrobot.event.EventBus;
 import org.michaelevans.colorart.library.ColorArt;
 import rx.Observable;
+import rx.Subscriber;
 import rx.android.app.AppObservable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
+import rx.functions.Func2;
 import rx.schedulers.Schedulers;
+import rx.subjects.PublishSubject;
+import rx.subjects.Subject;
 import uk.co.senab.photoview.PhotoViewAttacher;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -93,10 +100,10 @@ public class LoadingFragment extends BaseFragment {
   }
 
   private void setupActionButtons() {
-    actionButtonList.add(refreshActionButton);
-    actionButtonList.add(setWallpaperActionButton);
     actionButtonList.add(favouriteImageActionButton);
     actionButtonList.add(shareImageActionButton);
+    actionButtonList.add(setWallpaperActionButton);
+    actionButtonList.add(refreshActionButton);
   }
 
   private void setWallpaper() {
@@ -130,14 +137,21 @@ public class LoadingFragment extends BaseFragment {
 
   private void startMovingPhoto() {
     ((MainActivity) getActivity()).hideToolbar();
+
     AppObservable.bindFragment(this, Observable.from(actionButtonList))
-        .doOnEach(ab -> ObjectAnimator.ofFloat(ab.getValue(), "alpha", 1, 0).setDuration(500).start());
+        .subscribe(ab -> ObjectAnimator.ofFloat(ab, "alpha", 1, 0).setDuration(500).start());
+
+//    AppObservable.bindFragment(this, Observable.range(0, actionButtonList.size()))
+//        .map(i -> Observable.just(actionButtonList.get(i)).delay(100, TimeUnit.MILLISECONDS))
+//        .concatMap(actionButtonObservable -> actionButtonObservable)
+//        .observeOn(AndroidSchedulers.mainThread())
+//        .subscribe(ab -> ObjectAnimator.ofFloat(ab, "alpha", 1, 0).setDuration(300).start());
   }
 
   private void finishMovingPhoto() {
     ((MainActivity) getActivity()).showToolbar();
     AppObservable.bindFragment(this, Observable.from(actionButtonList))
-        .doOnEach(ab -> ObjectAnimator.ofFloat(ab.getValue(), "alpha", 0, 1).setDuration(500).start());
+        .subscribe(ab -> ObjectAnimator.ofFloat(ab, "alpha", 0, 1).setDuration(500).start());
   }
 
   private void startLoading() {
