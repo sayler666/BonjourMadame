@@ -1,7 +1,6 @@
 package com.sayler.bonjourmadame.network;
 
 import com.sayler.bonjourmadame.activity.MainActivity;
-import com.sayler.bonjourmadame.inject.DataModule;
 import dagger.Component;
 
 @Component(

@@ -1,9 +1,10 @@
-package com.sayler.bonjourmadame.inject;
+package com.sayler.bonjourmadame.network;
 
-import android.app.Activity;
 import dagger.Module;
 import dagger.Provides;
 import mapper.MadamEntityDataMapper;
+
+import javax.inject.Singleton;
 
 @Module
 public class DataModule {
