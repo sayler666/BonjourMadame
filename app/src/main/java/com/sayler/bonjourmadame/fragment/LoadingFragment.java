@@ -2,6 +2,7 @@ package com.sayler.bonjourmadame.fragment;
 
 import android.animation.LayoutTransition;
 import android.animation.ObjectAnimator;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -22,6 +23,7 @@ import com.github.johnpersano.supertoasts.util.OnClickWrapper;
 import com.github.johnpersano.supertoasts.util.OnDismissWrapper;
 import com.sayler.bonjourmadame.R;
 import com.sayler.bonjourmadame.activity.MainActivity;
+import com.sayler.bonjourmadame.activity.TestActivity;
 import com.sayler.bonjourmadame.event.InflateDrawerFragmentEvent;
 import com.sayler.bonjourmadame.event.RefreshDrawerTopImage;
 import com.sayler.bonjourmadame.network.model.BaseParseResponse;
@@ -205,6 +207,11 @@ public class LoadingFragment extends BaseFragment {
   }
 
   /* ------------------------------------ ON CLICK CALLBACKS ---------------------------------------------------------*/
+
+  @OnClick(R.id.shareImageActionButton)
+  public void onShareActionButtonClick() {
+    startActivity(new Intent(getActivity(), TestActivity.class));
+  }
 
   @OnClick(R.id.refreshActionButton)
   public void onRefreshActionButtonClick() {
