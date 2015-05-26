@@ -1,2 +1,2 @@
-include ':network', ':app', ':PhotoView'
+include ':network',':data', ':app', ':PhotoView'
 project(':PhotoView').projectDir = new File('PhotoView-master/library')

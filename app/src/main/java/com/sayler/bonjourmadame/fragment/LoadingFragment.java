@@ -38,6 +38,8 @@ import com.sayler.bonjourmadame.widget.RefreshActionButton;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 import de.greenrobot.event.EventBus;
+import entity.Madam;
+import mapper.MadamEntityDataMapper;
 import org.michaelevans.colorart.library.ColorArt;
 import rx.Observable;
 import rx.android.app.AppObservable;
@@ -177,6 +179,7 @@ public class LoadingFragment extends BaseFragment {
     AppObservable.bindFragment(this, ((MainActivity) getBaseActivity()).getBonjourMadameAPI().getRandomMadame())
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
+        .map(madam -> mainActivity.getMadamEntityDataMapper().transform(madam.getResult()))
         .subscribe(this::onImageRequestFinishSuccessful, this::onErrorLoading);
   }
 
@@ -232,9 +235,9 @@ public class LoadingFragment extends BaseFragment {
     onLoadingFinishFailure();
   }
 
-  private void onImageRequestFinishSuccessful(BaseParseResponse<MadameDto> baseParseResponse) {
-    Log.d(TAG, baseParseResponse.getResult().url);
-    Picasso.with(getBaseActivity()).load(baseParseResponse.getResult().url).into(imageDownloadTarget);
+  private void onImageRequestFinishSuccessful(Madam madam) {
+    Log.d(TAG, madam.getUrl());
+    Picasso.with(getBaseActivity()).load(madam.getUrl()).into(imageDownloadTarget);
   }
 
   private Target imageDownloadTarget = new Target() {
@@ -269,7 +272,6 @@ public class LoadingFragment extends BaseFragment {
     /**
      * set image and reveal main content
      */
-    currentBitmap = bitmap;
     loadedMadameImageView.setImageBitmap(bitmap);
     photoViewAttacher.update();
 

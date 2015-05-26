@@ -8,7 +8,7 @@ package com.sayler.bonjourmadame.model;
 import android.graphics.drawable.Drawable;
 
 /**
- * TODO Add class description...
+ * Navigation drawer menu item.
  *
  * @author sayler666
  */

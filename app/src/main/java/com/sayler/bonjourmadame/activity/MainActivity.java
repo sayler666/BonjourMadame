@@ -17,12 +17,15 @@ import com.sayler.bonjourmadame.fragment.LoadingFragment;
 import com.sayler.bonjourmadame.network.BonjourMadameAPI;
 import com.sayler.bonjourmadame.util.ToolbarColorizeHelper;
 import de.greenrobot.event.EventBus;
+import mapper.MadamEntityDataMapper;
 
 import javax.inject.Inject;
 
 public class MainActivity extends BaseActivity {
   @Inject
   BonjourMadameAPI bonjourMadameAPI;
+  @Inject
+  MadamEntityDataMapper madamEntityDataMapper;
   @InjectView(R.id.toolbar)
   Toolbar toolbar;
   @InjectView(R.id.DrawerLayout)
@@ -76,6 +79,10 @@ public class MainActivity extends BaseActivity {
 
   public BonjourMadameAPI getBonjourMadameAPI() {
     return bonjourMadameAPI;
+  }
+
+  public MadamEntityDataMapper getMadamEntityDataMapper() {
+    return madamEntityDataMapper;
   }
 
   /* ---------------------------------------------- PUBLIC METHODS ---------------------------------------------------*/
