@@ -2,8 +2,10 @@ package com.sayler.bonjourmadame.fragment;
 
 import android.animation.LayoutTransition;
 import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -55,6 +57,7 @@ public class LoadingFragment extends BaseFragment {
   public static final int DURATION_SHORT = 500;
   public static final int DURATION_MEDIUM = 1000;
   public static final int DURATION_LONG = 1500;
+  public static final String BITMAP_BUNDLE = "bitmap";
   List<ActionButton> actionButtonList = new ArrayList<>();
   @InjectView(R.id.refreshActionButton)
   RefreshActionButton refreshActionButton;
@@ -73,16 +76,35 @@ public class LoadingFragment extends BaseFragment {
   private boolean isLoading = true;
   private MainActivity mainActivity;
   private PhotoViewAttacher photoViewAttacher;
-  private Bitmap currentBitmap;
   private ColorArt currentColorArt;
   private WallpaperManager wallpaperManager;
+  private String imageTransitionName;
+  private View rootView;
+
+  /* ---------------------------------------------- FACTORY METHODS --------------------------------------------------*/
+  public static LoadingFragment newInstanceWithImage(Bitmap bitmap) {
+    LoadingFragment loadingFragment = new LoadingFragment();
+    Bundle bundle = new Bundle();
+    bundle.putParcelable(BITMAP_BUNDLE, bitmap);
+
+    loadingFragment.setArguments(bundle);
+
+    return loadingFragment;
+  }
+
+  public static LoadingFragment newInstanceRandomLoad() {
+    return new LoadingFragment();
+  }
 
   /* ---------------------------------------------- LIFECYCLE METHODS ------------------------------------------------*/
+  public void setImageTransitionName(String imageTransitionName) {
+    this.imageTransitionName = imageTransitionName;
+  }
 
   @Override
   public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                            Bundle savedInstanceState) {
-    View rootView = inflater.inflate(R.layout.f_loading, container, false);
+    rootView = inflater.inflate(R.layout.f_loading, container, false);
     ButterKnife.inject(this, rootView);
     return rootView;
   }
@@ -94,7 +116,36 @@ public class LoadingFragment extends BaseFragment {
 
     wallpaperManager = new WallpaperManager(mainActivity);
     setupViews();
-    startLoading();
+
+    if (getArguments() == null) {
+      startLoading();
+    } else {
+      showBitmap(getArguments().getParcelable(BITMAP_BUNDLE));
+    }
+
+  }
+
+  private void showBitmap(Bitmap bitmap) {
+
+    hideButtons(false);
+    AppObservable.bindFragment(LoadingFragment.this, Observable.just(0))
+        .delay(DURATION_MEDIUM, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(i -> showButtons(true));
+
+    isLoading = false;
+    loadedMadameImageView.setImageBitmap(bitmap);
+    loadedMadameImageView.setTransitionName(imageTransitionName);
+   // updateThemeColorsFromBitmap(bitmap, true);
+  //  loadedMadameImageView.setImageBitmap(bitmap);
+    circularReveal.reveal(false, true);
+    currentColorArt = new ColorArt(bitmap);
+
+    ValueAnimator valueAnimator = ValueAnimator.ofArgb(Color.WHITE, currentColorArt.getDetailColor());
+    valueAnimator.setDuration(DURATION_LONG);
+    valueAnimator.addUpdateListener(animation -> rootView.setBackgroundColor((int) animation.getAnimatedValue()));
+    valueAnimator.start();
+
   }
 
   private void setupViews() {
@@ -151,7 +202,7 @@ public class LoadingFragment extends BaseFragment {
     ObjectAnimator.ofFloat(loadedMadameImageView, "alpha", 0, 1).setDuration(DURATION_MEDIUM).start();
     loadedMadameImageView.setVisibility(View.VISIBLE);
     mainActivity.showToolbar();
-    showButtons();
+    showButtons(true);
   }
 
   private void afterSettingPreviousWallpaper() {
@@ -192,17 +243,24 @@ public class LoadingFragment extends BaseFragment {
 
   private void startMovingPhoto() {
     mainActivity.hideToolbar();
-    hideButtons();
+    hideButtons(true);
   }
 
   private void finishMovingPhoto() {
     mainActivity.showToolbar();
-    showButtons();
+    showButtons(true);
   }
 
-  private void hideButtons() {
-    AppObservable.bindFragment(this, Observable.from(actionButtonList))
-        .subscribe(ab -> ObjectAnimator.ofFloat(ab, "alpha", 1, 0).setDuration(DURATION_SHORT).start());
+  private void hideButtons(boolean animation) {
+    if (animation) {
+      for (ActionButton actionButton : actionButtonList) {
+        ObjectAnimator.ofFloat(actionButton, "alpha", 1, 0).setDuration(DURATION_SHORT).start();
+      }
+    } else {
+      for (ActionButton actionButton : actionButtonList) {
+        actionButton.setAlpha(0f);
+      }
+    }
 
 //    AppObservable.bindFragment(this, Observable.range(0, actionButtonList.size()))
 //        .map(i -> Observable.just(actionButtonList.get(i)).delay(100, TimeUnit.MILLISECONDS))
@@ -211,9 +269,16 @@ public class LoadingFragment extends BaseFragment {
 //        .subscribe(ab -> ObjectAnimator.ofFloat(ab, "alpha", 1, 0).setDuration(300).start());
   }
 
-  private void showButtons() {
-    AppObservable.bindFragment(this, Observable.from(actionButtonList))
-        .subscribe(ab -> ObjectAnimator.ofFloat(ab, "alpha", 0, 1).setDuration(DURATION_SHORT).start());
+  private void showButtons(boolean animation) {
+    if (animation) {
+      for (ActionButton actionButton : actionButtonList) {
+        ObjectAnimator.ofFloat(actionButton, "alpha", 0, 1).setDuration(DURATION_SHORT).start();
+      }
+    } else {
+      for (ActionButton actionButton : actionButtonList) {
+        actionButton.setAlpha(1f);
+      }
+    }
   }
 
   /* ------------------------------------ ON CLICK CALLBACKS ---------------------------------------------------------*/
@@ -250,7 +315,7 @@ public class LoadingFragment extends BaseFragment {
   private Target imageDownloadTarget = new Target() {
     @Override
     public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-      updateThemeColorsFromBitmap(bitmap);
+      updateThemeColorsFromBitmap(bitmap, false);
       onLoadingFinishSuccessful(bitmap);
     }
 
@@ -305,7 +370,7 @@ public class LoadingFragment extends BaseFragment {
     layoutTransition.setInterpolator(LayoutTransition.CHANGING, new OvershootInterpolator());
   }
 
-  private void updateThemeColorsFromBitmap(Bitmap bitmap) {
+  private void updateThemeColorsFromBitmap(Bitmap bitmap, boolean animation) {
     currentColorArt = new ColorArt(bitmap);
     int darkenColor = ColorUtils.amendColor(currentColorArt.getBackgroundColor(), 1f, 1.4f, 0.8f);
     getBaseActivity().animateStatusBarColor(darkenColor, DURATION_LONG);
@@ -319,6 +384,11 @@ public class LoadingFragment extends BaseFragment {
     refreshActionButton.setRippleDrawableAfterFinishLoading(darkenColor, currentColorArt.getDetailColor());
     refreshActionButton.setStrokeGradientAfterFinishLoading(currentColorArt.getDetailColor(), darkenColor);
     refreshActionButton.setLoadingColors(darkenColor, currentColorArt.getBackgroundColor());
+
+    if (animation) {
+      refreshActionButton.setActionBackground(refreshActionButton.prepareRippleDrawable(darkenColor, currentColorArt.getDetailColor()));
+      refreshActionButton.setStrokeGradient(refreshActionButton.prepareStrokeGradient(currentColorArt.getDetailColor(), darkenColor));
+    }
 
     setWallpaperActionButton.setTint(currentColorArt.getDetailColor());
     setWallpaperActionButton.setActionBackground(setWallpaperActionButton.prepareRippleDrawable(darkenColor, currentColorArt.getDetailColor()));
@@ -345,6 +415,7 @@ public class LoadingFragment extends BaseFragment {
   }
 
   private void settingWallpaperFinishAnimations() {
+    rootView.setBackgroundColor(Color.TRANSPARENT);
     loadedMadameImageView.setVisibility(View.GONE);
     circularReveal.reveal(true, false);
     refreshActionButton.loadingFinishAnimation();
@@ -402,4 +473,5 @@ public class LoadingFragment extends BaseFragment {
     ActionButtonHelper.setActionButtonPosition(shareImageActionButton, shareImageLocation);
     ActionButtonHelper.setActionButtonPosition(favouriteImageActionButton, favouriteImageLocation);
   }
+
 }

@@ -60,7 +60,7 @@ public class MainActivity extends BaseActivity {
      */
     if (savedInstanceState == null) {
       getFragmentManager().beginTransaction()
-          .add(R.id.container, new LoadingFragment())
+          .add(R.id.container, LoadingFragment.newInstanceRandomLoad())
           .commit();
 
       getFragmentManager().beginTransaction()

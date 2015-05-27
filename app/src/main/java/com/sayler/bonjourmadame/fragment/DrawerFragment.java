@@ -122,7 +122,12 @@ public class DrawerFragment extends BaseFragment {
     List<NavigationItem> navigationItems = new ArrayList<>();
     navigationItems.add(new NavigationItem(getResources().getDrawable(R.drawable.ic_refresh_image), "Start", () -> Log.d("DrawerFragment", "Start")));
     navigationItems.add(new NavigationItem(getResources().getDrawable(R.drawable.ic_favourite_image), "Favourites", () -> Log.d("DrawerFragment", "Favourites")));
-    navigationItems.add(new NavigationItem(getResources().getDrawable(R.drawable.ic_history), "History", () -> Log.d("DrawerFragment", "History")));
+    navigationItems.add(new NavigationItem(getResources().getDrawable(R.drawable.ic_history), "History", () -> {
+      Log.d("DrawerFragment", "History");
+      getFragmentManager().beginTransaction()
+          .replace(R.id.container, new HistoryFragment(), HistoryFragment.class.getSimpleName())
+          .commit();
+    }));
     return navigationItems;
   }
 }
