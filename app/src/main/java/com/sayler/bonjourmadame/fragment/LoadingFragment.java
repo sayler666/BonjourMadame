@@ -26,8 +26,6 @@ import com.sayler.bonjourmadame.activity.MainActivity;
 import com.sayler.bonjourmadame.activity.TestActivity;
 import com.sayler.bonjourmadame.event.InflateDrawerFragmentEvent;
 import com.sayler.bonjourmadame.event.RefreshDrawerTopImage;
-import com.sayler.bonjourmadame.network.model.BaseParseResponse;
-import com.sayler.bonjourmadame.network.model.MadameDto;
 import com.sayler.bonjourmadame.util.ActionButtonHelper;
 import com.sayler.bonjourmadame.util.ActionButtonLocation;
 import com.sayler.bonjourmadame.util.ColorUtils;
@@ -37,9 +35,9 @@ import com.sayler.bonjourmadame.widget.CircularReveal;
 import com.sayler.bonjourmadame.widget.RefreshActionButton;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
+import dao.MadameDataProvider;
 import de.greenrobot.event.EventBus;
-import entity.Madam;
-import mapper.MadamEntityDataMapper;
+import entity.Madame;
 import org.michaelevans.colorart.library.ColorArt;
 import rx.Observable;
 import rx.android.app.AppObservable;
@@ -179,8 +177,17 @@ public class LoadingFragment extends BaseFragment {
     AppObservable.bindFragment(this, ((MainActivity) getBaseActivity()).getBonjourMadameAPI().getRandomMadame())
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
-        .map(madam -> mainActivity.getMadamEntityDataMapper().transform(madam.getResult()))
+        .map(madamDto -> mainActivity.getMadamEntityDataMapper().transform(madamDto.getResult()))
+        .map(this::storeInDb)
         .subscribe(this::onImageRequestFinishSuccessful, this::onErrorLoading);
+  }
+
+  private Madame storeInDb(Madame madame) {
+
+    MadameDataProvider madameDataProvider = new MadameDataProvider(mainActivity);
+    madameDataProvider.save(madame);
+
+    return madame;
   }
 
   private void startMovingPhoto() {
@@ -235,9 +242,9 @@ public class LoadingFragment extends BaseFragment {
     onLoadingFinishFailure();
   }
 
-  private void onImageRequestFinishSuccessful(Madam madam) {
-    Log.d(TAG, madam.getUrl());
-    Picasso.with(getBaseActivity()).load(madam.getUrl()).into(imageDownloadTarget);
+  private void onImageRequestFinishSuccessful(Madame madame) {
+    Log.d(TAG, madame.getUrl());
+    Picasso.with(getBaseActivity()).load(madame.getUrl()).into(imageDownloadTarget);
   }
 
   private Target imageDownloadTarget = new Target() {
