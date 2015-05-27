@@ -3,9 +3,7 @@
              xmlns:ActionButton="http://schemas.android.com/apk/res-auto"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
-             android:id="@+id/scene_base"
-             android:clipChildren="false"
-             android:clipToPadding="false">
+             android:id="@+id/scene_base">
     <ImageView
             android:id="@+id/loadedMadameImageView"
             android:layout_width="match_parent"

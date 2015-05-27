@@ -44,7 +44,7 @@ public class HistoryFragment extends Fragment {
     ImageAdapter adapter = new ImageAdapter(madames, getActivity());
     adapter.setOnItemClickListener((view, position) -> {
       // Set shared and scene transitions
-      setSharedElementReturnTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.trans_my));
+      setSharedElementReturnTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.image_transition));
       setExitTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.fade));
 
       ImageView imageView = (ImageView) view.findViewById(R.id.image);
@@ -53,8 +53,8 @@ public class HistoryFragment extends Fragment {
 
       LoadingFragment loadingFragment = LoadingFragment.newInstanceWithImage(bitmap);
       // Set shared and scene transitions on 2nd fragment
-      loadingFragment.setSharedElementEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.trans_my));
-      loadingFragment.setEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.fade));
+      loadingFragment.setSharedElementEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.image_transition));
+      loadingFragment.setEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.no_transition));
 
       // You need to make sure the transitionName is both unique to each instance of the view you
       // want to animate as well as known to the 2nd fragment.  Since these views are inside

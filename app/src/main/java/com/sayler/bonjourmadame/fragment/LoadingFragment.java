@@ -3,7 +3,6 @@ package com.sayler.bonjourmadame.fragment;
 import android.animation.LayoutTransition;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -25,7 +24,6 @@ import com.github.johnpersano.supertoasts.util.OnClickWrapper;
 import com.github.johnpersano.supertoasts.util.OnDismissWrapper;
 import com.sayler.bonjourmadame.R;
 import com.sayler.bonjourmadame.activity.MainActivity;
-import com.sayler.bonjourmadame.activity.TestActivity;
 import com.sayler.bonjourmadame.event.InflateDrawerFragmentEvent;
 import com.sayler.bonjourmadame.event.RefreshDrawerTopImage;
 import com.sayler.bonjourmadame.util.ActionButtonHelper;
@@ -133,18 +131,20 @@ public class LoadingFragment extends BaseFragment {
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(i -> showButtons(true));
 
-    isLoading = false;
-    loadedMadameImageView.setImageBitmap(bitmap);
-    loadedMadameImageView.setTransitionName(imageTransitionName);
-   // updateThemeColorsFromBitmap(bitmap, true);
-  //  loadedMadameImageView.setImageBitmap(bitmap);
-    circularReveal.reveal(false, true);
     currentColorArt = new ColorArt(bitmap);
 
+    rootView.setBackgroundColor(Color.WHITE);
     ValueAnimator valueAnimator = ValueAnimator.ofArgb(Color.WHITE, currentColorArt.getDetailColor());
     valueAnimator.setDuration(DURATION_LONG);
     valueAnimator.addUpdateListener(animation -> rootView.setBackgroundColor((int) animation.getAnimatedValue()));
     valueAnimator.start();
+
+    isLoading = false;
+    loadedMadameImageView.setImageBitmap(bitmap);
+    loadedMadameImageView.setTransitionName(imageTransitionName);
+    updateThemeColorsFromBitmap(bitmap, true);
+    loadedMadameImageView.setImageBitmap(bitmap);
+    circularReveal.reveal(false, true);
 
   }
 
@@ -285,7 +285,7 @@ public class LoadingFragment extends BaseFragment {
 
   @OnClick(R.id.shareImageActionButton)
   public void onShareActionButtonClick() {
-    startActivity(new Intent(getActivity(), TestActivity.class));
+
   }
 
   @OnClick(R.id.refreshActionButton)
