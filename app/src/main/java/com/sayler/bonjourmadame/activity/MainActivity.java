@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -46,6 +47,10 @@ public class MainActivity extends BaseActivity {
     overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     setContentView(R.layout.a_main);
     ButterKnife.inject(this);
+
+    if (madamEntityDataMapper != null) {
+      Log.d("TEST", madamEntityDataMapper.toString());
+    }
 
     setupDrawer();
     setupToolbar();

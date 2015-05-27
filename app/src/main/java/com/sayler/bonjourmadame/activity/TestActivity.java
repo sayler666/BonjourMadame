@@ -9,23 +9,39 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.transition.ChangeBounds;
 import android.transition.TransitionInflater;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import com.sayler.bonjourmadame.BonjourMadameApplication;
 import com.sayler.bonjourmadame.R;
+import mapper.MadamEntityDataMapper;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class TestActivity extends Activity {
+public class TestActivity extends BaseActivity {
+  @Inject
+  MadamEntityDataMapper madamEntityDataMapper;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+
+    BonjourMadameApplication bonjourMadameApplication = BonjourMadameApplication.get(this);
+    bonjourMadameApplication.getApplicationComponent().inject(this);
+    bonjourMadameApplication.getNetworkComponent().inject(this);
+
+
+    if (madamEntityDataMapper != null) {
+      Log.d("TEST", madamEntityDataMapper.toString());
+    }
+
     setContentView(R.layout.activity_my);
     if (savedInstanceState == null) {
       getFragmentManager().beginTransaction()

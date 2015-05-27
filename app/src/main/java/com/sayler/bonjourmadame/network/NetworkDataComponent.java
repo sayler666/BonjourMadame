@@ -1,7 +1,10 @@
 package com.sayler.bonjourmadame.network;
 
 import com.sayler.bonjourmadame.activity.MainActivity;
+import com.sayler.bonjourmadame.activity.TestActivity;
 import dagger.Component;
+
+import javax.inject.Singleton;
 
 @Component(
     modules = {
@@ -10,7 +13,9 @@ import dagger.Component;
         DataModule.class
     }
 )
-public interface NetworkComponent {
+public interface NetworkDataComponent {
 
   void inject(MainActivity mainActivity);
+
+  void inject(TestActivity mainActivity);
 }

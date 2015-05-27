@@ -6,13 +6,13 @@ import android.support.annotation.NonNull;
 import com.sayler.bonjourmadame.inject.ApplicationComponent;
 import com.sayler.bonjourmadame.inject.ApplicationModule;
 import com.sayler.bonjourmadame.inject.DaggerApplicationComponent;
-import com.sayler.bonjourmadame.network.DaggerNetworkComponent;
-import com.sayler.bonjourmadame.network.NetworkComponent;
+import com.sayler.bonjourmadame.network.DaggerNetworkDataComponent;
+import com.sayler.bonjourmadame.network.NetworkDataComponent;
 
 public class BonjourMadameApplication extends Application {
 
   private ApplicationComponent applicationComponent;
-  private NetworkComponent networkComponent;
+  private NetworkDataComponent networkComponent;
 
   @Override
   public void onCreate() {
@@ -22,7 +22,7 @@ public class BonjourMadameApplication extends Application {
         .applicationModule(new ApplicationModule(this))
         .build();
 
-    networkComponent = DaggerNetworkComponent.builder()
+    networkComponent = DaggerNetworkDataComponent.builder()
         .build();
 
   }
@@ -31,7 +31,7 @@ public class BonjourMadameApplication extends Application {
     return applicationComponent;
   }
 
-  public NetworkComponent getNetworkComponent() {
+  public NetworkDataComponent getNetworkComponent() {
     return networkComponent;
   }
 
