@@ -17,6 +17,7 @@ import com.sayler.bonjourmadame.fragment.DrawerFragment;
 import com.sayler.bonjourmadame.fragment.LoadingFragment;
 import com.sayler.bonjourmadame.network.BonjourMadameAPI;
 import com.sayler.bonjourmadame.util.ToolbarColorizeHelper;
+import dao.MadameDataProvider;
 import de.greenrobot.event.EventBus;
 import mapper.MadamEntityDataMapper;
 
@@ -27,6 +28,8 @@ public class MainActivity extends BaseActivity {
   BonjourMadameAPI bonjourMadameAPI;
   @Inject
   MadamEntityDataMapper madamEntityDataMapper;
+  @Inject
+  MadameDataProvider madameDataProvider;
   @InjectView(R.id.toolbar)
   Toolbar toolbar;
   @InjectView(R.id.DrawerLayout)
@@ -42,7 +45,7 @@ public class MainActivity extends BaseActivity {
 
     BonjourMadameApplication bonjourMadameApplication = BonjourMadameApplication.get(this);
     bonjourMadameApplication.getApplicationComponent().inject(this);
-    bonjourMadameApplication.getNetworkComponent().inject(this);
+    bonjourMadameApplication.getNetworkDataComponent().inject(this);
 
     overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     setContentView(R.layout.a_main);
@@ -88,6 +91,10 @@ public class MainActivity extends BaseActivity {
 
   public MadamEntityDataMapper getMadamEntityDataMapper() {
     return madamEntityDataMapper;
+  }
+
+  public MadameDataProvider getMadameDataProvider() {
+    return madameDataProvider;
   }
 
   /* ---------------------------------------------- PUBLIC METHODS ---------------------------------------------------*/

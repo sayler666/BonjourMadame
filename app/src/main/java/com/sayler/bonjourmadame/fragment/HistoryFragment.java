@@ -12,9 +12,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import com.sayler.bonjourmadame.R;
+import com.sayler.bonjourmadame.activity.MainActivity;
 import com.sayler.bonjourmadame.adapter.ImageAdapter;
-import dao.MadameDataProvider;
 import entity.Madame;
 
 import java.sql.SQLException;
@@ -26,32 +28,44 @@ import java.util.List;
  */
 public class HistoryFragment extends Fragment {
 
+  private MainActivity mainActivity;
+  @InjectView(R.id.history_list_recycler_view)
+  public RecyclerView recyclerView;
+
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
                            Bundle savedInstanceState) {
     View rootView = inflater.inflate(R.layout.f_history, container, false);
+    ButterKnife.inject(this, rootView);
+    return rootView;
+  }
 
-    RecyclerView list = (RecyclerView) rootView.findViewById(R.id.streams_list);
-    list.setLayoutManager(new LinearLayoutManager(getActivity()));
+  @Override
+  public void onActivityCreated(Bundle savedInstanceState) {
+    super.onActivityCreated(savedInstanceState);
+    mainActivity = (MainActivity) getActivity();
 
-    MadameDataProvider madameDataProvider = new MadameDataProvider(getActivity());
-    List<Madame> madames = Collections.emptyList();
+    setupViews();
+  }
+
+  private void setupViews() {
+    recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+    List<Madame> madameList = Collections.emptyList();
     try {
-      madames = madameDataProvider.getAll();
+      madameList = mainActivity.getMadameDataProvider().getAll();
     } catch (SQLException e) {
       e.printStackTrace();
     }
-    ImageAdapter adapter = new ImageAdapter(madames, getActivity());
+    ImageAdapter adapter = new ImageAdapter(madameList, getActivity());
     adapter.setOnItemClickListener((view, position) -> {
       // Set shared and scene transitions
       setSharedElementReturnTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.image_transition));
       setExitTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.fade));
 
       ImageView imageView = (ImageView) view.findViewById(R.id.image);
-
       Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
-
       LoadingFragment loadingFragment = LoadingFragment.newInstanceWithImage(bitmap);
+
       // Set shared and scene transitions on 2nd fragment
       loadingFragment.setSharedElementEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.image_transition));
       loadingFragment.setEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.no_transition));
@@ -69,8 +83,6 @@ public class HistoryFragment extends Fragment {
       trans.addSharedElement(imageView, imageView.getTransitionName());
       trans.commit();
     });
-    list.setAdapter(adapter);
-
-    return rootView;
+    recyclerView.setAdapter(adapter);
   }
 }

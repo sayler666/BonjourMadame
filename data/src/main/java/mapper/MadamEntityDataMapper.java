@@ -3,21 +3,14 @@ package mapper;
 import com.sayler.bonjourmadame.network.model.MadameDto;
 import entity.Madame;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 /**
  * Mapper class used to transform {@link com.sayler.bonjourmadame.network.model.MadameDto} (in the net layer) to {@link Madame} in the data layer.
- *
+ * <p>
  * Created by lchromy on 26.05.15.
  */
 
-@Singleton
-public class MadamEntityDataMapper {
 
-  @Inject
-  public MadamEntityDataMapper() {
-  }
+public class MadamEntityDataMapper {
 
   public Madame transform(MadameDto madameDto) {
     Madame madame = new Madame();

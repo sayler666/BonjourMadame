@@ -12,7 +12,7 @@ import com.sayler.bonjourmadame.network.NetworkDataComponent;
 public class BonjourMadameApplication extends Application {
 
   private ApplicationComponent applicationComponent;
-  private NetworkDataComponent networkComponent;
+  private NetworkDataComponent networkDataComponent;
 
   @Override
   public void onCreate() {
@@ -22,7 +22,8 @@ public class BonjourMadameApplication extends Application {
         .applicationModule(new ApplicationModule(this))
         .build();
 
-    networkComponent = DaggerNetworkDataComponent.builder()
+    networkDataComponent = DaggerNetworkDataComponent.builder()
+        .applicationComponent(applicationComponent)
         .build();
 
   }
@@ -31,8 +32,8 @@ public class BonjourMadameApplication extends Application {
     return applicationComponent;
   }
 
-  public NetworkDataComponent getNetworkComponent() {
-    return networkComponent;
+  public NetworkDataComponent getNetworkDataComponent() {
+    return networkDataComponent;
   }
 
   public static BonjourMadameApplication get(@NonNull Context context) {

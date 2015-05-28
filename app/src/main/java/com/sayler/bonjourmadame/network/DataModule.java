@@ -1,10 +1,10 @@
 package com.sayler.bonjourmadame.network;
 
+import android.content.Context;
 import dagger.Module;
 import dagger.Provides;
+import dao.MadameDataProvider;
 import mapper.MadamEntityDataMapper;
-
-import javax.inject.Singleton;
 
 @Module
 public class DataModule {
@@ -13,4 +13,10 @@ public class DataModule {
   public MadamEntityDataMapper provideDataMapper() {
     return new MadamEntityDataMapper();
   }
+
+  @Provides
+  public MadameDataProvider provideMadameDataProvider(Context context) {
+    return new MadameDataProvider(context);
+  }
+
 }

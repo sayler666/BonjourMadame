@@ -26,15 +26,15 @@ public class MadameDataProvider extends BaseDataProvider<Madame> {
   }
 
   @Override
-    protected Dao<Madame, Long> setupDao() {
-      try {
-        DaoHelper.setOpenHelper(context,
-            DBHelper.class);
-        return DaoHelper.getDao(Madame.class);
-      } catch (SQLException e) {
-        Log.e(TAG, e.getMessage(), e);
-      }
-      return null;
+  protected Dao<Madame, Long> setupDao() {
+    try {
+      DaoHelper.setOpenHelper(context,
+          DBHelper.class);
+      return DaoHelper.getDao(Madame.class);
+    } catch (SQLException e) {
+      Log.e(TAG, e.getMessage(), e);
     }
+    return null;
+  }
 
 }
