@@ -5,6 +5,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -12,6 +13,8 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.sayler.bonjourmadame.BonjourMadameApplication;
 import com.sayler.bonjourmadame.R;
+import com.sayler.bonjourmadame.event.ForceCloseDrawerEvent;
+import com.sayler.bonjourmadame.event.DrawerClosedEvent;
 import com.sayler.bonjourmadame.event.InflateDrawerFragmentEvent;
 import com.sayler.bonjourmadame.fragment.DrawerFragment;
 import com.sayler.bonjourmadame.fragment.LoadingFragment;
@@ -74,6 +77,18 @@ public class MainActivity extends BaseActivity {
   }
 
   @Override
+  public void onPause() {
+    super.onPause();
+    EventBus.getDefault().unregister(this);
+  }
+
+  @Override
+  public void onResume() {
+    super.onResume();
+    EventBus.getDefault().register(this);
+  }
+
+  @Override
   public void finish() {
     super.finish();
     overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
@@ -111,7 +126,13 @@ public class MainActivity extends BaseActivity {
     ToolbarColorizeHelper.colorizeToolbar(toolbar, color, MainActivity.this);
   }
 
-   /* ---------------------------------------------- PRIVATE METHODS --------------------------------------------------*/
+  /* ---------------------------------------------- EVENTS -----------------------------------------------------------*/
+
+  public void onEvent(ForceCloseDrawerEvent event) {
+    closeDrawer();
+  }
+
+  /* ---------------------------------------------- PRIVATE METHODS --------------------------------------------------*/
 
   private void setupDrawer() {
     drawerToggle = new MyActionBarDrawerToggle();
@@ -126,6 +147,10 @@ public class MainActivity extends BaseActivity {
   private void setupAnimation() {
     toolbarDropOutAnimation = AnimationUtils.loadAnimation(this, R.anim.drop_out);
     toolbarDropInAnimation = AnimationUtils.loadAnimation(this, R.anim.drop_in);
+  }
+
+  private void closeDrawer() {
+    drawer.closeDrawer(Gravity.START);
   }
 
   private class MyActionBarDrawerToggle extends ActionBarDrawerToggle {
@@ -143,7 +168,7 @@ public class MainActivity extends BaseActivity {
     @Override
     public void onDrawerClosed(View drawerView) {
       super.onDrawerClosed(drawerView);
+      EventBus.getDefault().post(new DrawerClosedEvent());
     }
-
   }
 }

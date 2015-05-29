@@ -24,7 +24,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * A placeholder fragment containing a simple view.
+ * History fragment.
  */
 public class HistoryFragment extends Fragment {
 
@@ -53,6 +53,7 @@ public class HistoryFragment extends Fragment {
     List<Madame> madameList = Collections.emptyList();
     try {
       madameList = mainActivity.getMadameDataProvider().getAll();
+      Collections.reverse(madameList);
     } catch (SQLException e) {
       e.printStackTrace();
     }

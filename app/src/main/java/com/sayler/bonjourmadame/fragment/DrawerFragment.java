@@ -5,6 +5,7 @@
  */
 package com.sayler.bonjourmadame.fragment;
 
+import android.app.Fragment;
 import android.app.WallpaperManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -20,6 +21,8 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.sayler.bonjourmadame.R;
 import com.sayler.bonjourmadame.adapter.NavigationAdapter;
+import com.sayler.bonjourmadame.event.ForceCloseDrawerEvent;
+import com.sayler.bonjourmadame.event.DrawerClosedEvent;
 import com.sayler.bonjourmadame.event.InflateDrawerFragmentEvent;
 import com.sayler.bonjourmadame.event.RefreshDrawerTopImage;
 import com.sayler.bonjourmadame.model.NavigationItem;
@@ -39,6 +42,7 @@ public class DrawerFragment extends BaseFragment {
   ViewStub viewStub;
   private View rootView;
   private DynamicViewStub dynamicViewStub;
+  private Fragment fragmentToChange;
 
   public class DynamicViewStub {
     @InjectView(R.id.navigationListView)
@@ -94,6 +98,10 @@ public class DrawerFragment extends BaseFragment {
     setupTopImage();
   }
 
+  public void onEvent(DrawerClosedEvent event) {
+    changeFragment();
+  }
+
   /* ---------------------------------------------- PRIVATE METHODS --------------------------------------------------*/
 
   private void lazyInflateDrawer() {
@@ -120,14 +128,26 @@ public class DrawerFragment extends BaseFragment {
 
   private List<NavigationItem> createNavigationList() {
     List<NavigationItem> navigationItems = new ArrayList<>();
-    navigationItems.add(new NavigationItem(getResources().getDrawable(R.drawable.ic_refresh_image), "Start", () -> Log.d("DrawerFragment", "Start")));
+    navigationItems.add(new NavigationItem(getResources().getDrawable(R.drawable.ic_refresh_image), "Start", () -> lateChangeFragment(LoadingFragment.newInstanceRandomLoad())));
     navigationItems.add(new NavigationItem(getResources().getDrawable(R.drawable.ic_favourite_image), "Favourites", () -> Log.d("DrawerFragment", "Favourites")));
-    navigationItems.add(new NavigationItem(getResources().getDrawable(R.drawable.ic_history), "History", () -> {
-      Log.d("DrawerFragment", "History");
-      getFragmentManager().beginTransaction()
-          .replace(R.id.container, new HistoryFragment(), HistoryFragment.class.getSimpleName())
-          .commit();
-    }));
+    navigationItems.add(new NavigationItem(getResources().getDrawable(R.drawable.ic_history), "History", () -> lateChangeFragment(new HistoryFragment())));
     return navigationItems;
   }
+
+  private void lateChangeFragment(Fragment newFragment) {
+    fragmentToChange = newFragment;
+    EventBus.getDefault().post(new ForceCloseDrawerEvent());
+  }
+
+  private void changeFragment() {
+    if (fragmentToChange != null) {
+      fragmentToChange.setAllowEnterTransitionOverlap(true);
+      getFragmentManager().beginTransaction()
+          .setCustomAnimations(R.animator.slide_in, R.animator.slide_out)
+          .replace(R.id.container, fragmentToChange, fragmentToChange.getClass().getSimpleName())
+          .commit();
+      fragmentToChange = null;
+    }
+  }
+
 }
