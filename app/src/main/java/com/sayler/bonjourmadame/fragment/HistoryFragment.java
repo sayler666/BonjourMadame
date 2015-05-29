@@ -5,6 +5,7 @@ import android.app.FragmentTransaction;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.transition.TransitionInflater;
@@ -49,7 +50,8 @@ public class HistoryFragment extends Fragment {
   }
 
   private void setupViews() {
-    recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+    recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
+    recyclerView.setItemViewCacheSize(25);
     List<Madame> madameList = Collections.emptyList();
     try {
       madameList = mainActivity.getMadameDataProvider().getAll();
@@ -59,30 +61,22 @@ public class HistoryFragment extends Fragment {
     }
     ImageAdapter adapter = new ImageAdapter(madameList, getActivity());
     adapter.setOnItemClickListener((view, position) -> {
-      // Set shared and scene transitions
+      ImageView imageView = (ImageView) view.findViewById(R.id.image);
+      Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+
       setSharedElementReturnTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.image_transition));
       setExitTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.fade));
 
-      ImageView imageView = (ImageView) view.findViewById(R.id.image);
-      Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
       LoadingFragment loadingFragment = LoadingFragment.newInstanceWithImage(bitmap);
-
-      // Set shared and scene transitions on 2nd fragment
       loadingFragment.setSharedElementEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.image_transition));
       loadingFragment.setEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.no_transition));
-
-      // You need to make sure the transitionName is both unique to each instance of the view you
-      // want to animate as well as known to the 2nd fragment.  Since these views are inside
-      // a RecyclerView or ListView, they can have many instances.  In your adapter you need to
-      // set a transitionName dynamically (I use the position), then pass that unique transitionName
-      // to the 2nd fragment before you animate
       loadingFragment.setImageTransitionName(imageView.getTransitionName());
-      FragmentTransaction trans = getFragmentManager().beginTransaction();
-      trans.replace(R.id.container, loadingFragment);
-      trans.addToBackStack(null);
 
-      trans.addSharedElement(imageView, imageView.getTransitionName());
-      trans.commit();
+      getFragmentManager().beginTransaction()
+          .replace(R.id.container, loadingFragment)
+          .addToBackStack(null)
+          .addSharedElement(imageView, imageView.getTransitionName())
+          .commit();
     });
     recyclerView.setAdapter(adapter);
   }

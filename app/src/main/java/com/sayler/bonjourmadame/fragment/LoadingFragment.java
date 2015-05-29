@@ -22,6 +22,9 @@ import com.github.johnpersano.supertoasts.SuperActivityToast;
 import com.github.johnpersano.supertoasts.SuperToast;
 import com.github.johnpersano.supertoasts.util.OnClickWrapper;
 import com.github.johnpersano.supertoasts.util.OnDismissWrapper;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.sayler.bonjourmadame.R;
 import com.sayler.bonjourmadame.activity.MainActivity;
 import com.sayler.bonjourmadame.event.InflateDrawerFragmentEvent;
@@ -309,26 +312,33 @@ public class LoadingFragment extends BaseFragment {
 
   private void onImageRequestFinishSuccessful(Madame madame) {
     Log.d(TAG, madame.getUrl());
-    Picasso.with(getBaseActivity()).load(madame.getUrl()).into(imageDownloadTarget);
+    ImageLoader.getInstance().loadImage(madame.getUrl(), imageDownloadTarget);
+    //Picasso.with(getBaseActivity()).load(madame.getUrl()).into(imageDownloadTarget);
   }
 
-  private Target imageDownloadTarget = new Target() {
+  private ImageLoadingListener imageDownloadTarget = new ImageLoadingListener() {
     @Override
-    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-      updateThemeColorsFromBitmap(bitmap, false);
-      onLoadingFinishSuccessful(bitmap);
+    public void onLoadingStarted(String imageUri, View view) {
+      //not used
     }
 
     @Override
-    public void onBitmapFailed(Drawable errorDrawable) {
-      onLoadingFinishFailure();
+    public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+      //not used
     }
 
     @Override
-    public void onPrepareLoad(Drawable placeHolderDrawable) {
+    public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+      updateThemeColorsFromBitmap(loadedImage, false);
+      onLoadingFinishSuccessful(loadedImage);
+    }
+
+    @Override
+    public void onLoadingCancelled(String imageUri, View view) {
       //not used
     }
   };
+
 
   /* ------------------------------------ LOADING CALLBACKS ----------------------------------------------------------*/
 
