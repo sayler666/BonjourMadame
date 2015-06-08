@@ -1,17 +1,16 @@
 package com.sayler.bonjourmadame.fragment;
 
 import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.transition.TransitionInflater;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -51,7 +50,13 @@ public class HistoryFragment extends Fragment {
 
   private void setupViews() {
     recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
-    recyclerView.setItemViewCacheSize(25);
+    recyclerView.setRecyclerListener(holder -> {
+      BitmapDrawable bitmapDrawable = (BitmapDrawable) ((ImageAdapter.ViewHolder) holder).image.getDrawable();
+      if (bitmapDrawable != null && bitmapDrawable.getBitmap() != null) {
+        bitmapDrawable.getBitmap().recycle();
+      }
+      ((ImageAdapter.ViewHolder) holder).image.setImageBitmap(null);
+    });
     List<Madame> madameList = Collections.emptyList();
     try {
       madameList = mainActivity.getMadameDataProvider().getAll();
@@ -79,5 +84,21 @@ public class HistoryFragment extends Fragment {
           .commit();
     });
     recyclerView.setAdapter(adapter);
+  }
+
+  @Override
+  public void onDestroy() {
+    super.onDestroy();
+    final int count = recyclerView.getChildCount();
+    for (int i = 0; i < count; i++) {
+      final View view = recyclerView.getChildAt(i);
+      ImageView imageView = (ImageView) view.findViewById(R.id.image);
+      final BitmapDrawable drawable = (BitmapDrawable) imageView.getDrawable();
+      if (drawable != null && drawable.getBitmap() != null) {
+        drawable.getBitmap().recycle();
+      }
+    }
+    recyclerView.removeViews(0, count);
+    System.gc();
   }
 }

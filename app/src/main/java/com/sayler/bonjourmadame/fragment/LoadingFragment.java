@@ -81,6 +81,7 @@ public class LoadingFragment extends BaseFragment {
   private WallpaperManager wallpaperManager;
   private String imageTransitionName;
   private View rootView;
+  private Bitmap currentBitmap;
 
   /* ---------------------------------------------- FACTORY METHODS --------------------------------------------------*/
   public static LoadingFragment newInstanceWithImage(Bitmap bitmap) {
@@ -143,7 +144,6 @@ public class LoadingFragment extends BaseFragment {
     valueAnimator.start();
 
     isLoading = false;
-    loadedMadameImageView.setImageBitmap(bitmap);
     loadedMadameImageView.setTransitionName(imageTransitionName);
     updateThemeColorsFromBitmap(bitmap, true);
     loadedMadameImageView.setImageBitmap(bitmap);
@@ -227,7 +227,6 @@ public class LoadingFragment extends BaseFragment {
      */
     isLoading = true;
     loadingStartAnimations();
-
     AppObservable.bindFragment(this, ((MainActivity) getBaseActivity()).getBonjourMadameAPI().getRandomMadame())
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
@@ -354,6 +353,13 @@ public class LoadingFragment extends BaseFragment {
     /**
      * set image and reveal main content
      */
+
+    if (currentBitmap != null) {
+      loadedMadameImageView.setImageBitmap(null);
+      currentBitmap.recycle();
+    }
+
+    currentBitmap = bitmap;
     loadedMadameImageView.setImageBitmap(bitmap);
     photoViewAttacher.update();
 
@@ -415,6 +421,7 @@ public class LoadingFragment extends BaseFragment {
     circularReveal.setFillColorAfterFinishAnimation(currentColorArt.getBackgroundColor());
 
     loadedMadameImageView.setBackgroundColor(currentColorArt.getDetailColor());
+    currentColorArt = null;
   }
 
   private void settingWallpaperStartAnimation() {
@@ -484,4 +491,12 @@ public class LoadingFragment extends BaseFragment {
     ActionButtonHelper.setActionButtonPosition(favouriteImageActionButton, favouriteImageLocation);
   }
 
+  @Override
+  public void onDestroyView() {
+    super.onDestroyView();
+    loadedMadameImageView.setImageBitmap(null);
+    if (currentBitmap != null) {
+      currentBitmap.recycle();
+    }
+  }
 }

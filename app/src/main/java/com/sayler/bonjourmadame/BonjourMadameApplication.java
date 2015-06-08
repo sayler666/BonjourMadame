@@ -53,7 +53,6 @@ public class BonjourMadameApplication extends Application {
   private void configureImageLoader() {
     DisplayImageOptions options = new DisplayImageOptions.Builder()
         .resetViewBeforeLoading(true)
-        .cacheInMemory(true)
         .cacheOnDisk(true)
         .displayer(new FadeInBitmapDisplayer(500))
         .build();
