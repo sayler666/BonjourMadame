@@ -145,6 +145,7 @@ public class DrawerFragment extends BaseFragment {
       getFragmentManager().beginTransaction()
           .setCustomAnimations(R.animator.slide_in, R.animator.slide_out)
           .replace(R.id.container, fragmentToChange, fragmentToChange.getClass().getSimpleName())
+          .addToBackStack(null)
           .commit();
       fragmentToChange = null;
     }

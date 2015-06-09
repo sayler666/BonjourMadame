@@ -4,13 +4,13 @@ import android.app.Fragment;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.transition.TransitionInflater;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -28,9 +28,10 @@ import java.util.List;
  */
 public class HistoryFragment extends Fragment {
 
-  private MainActivity mainActivity;
   @InjectView(R.id.history_list_recycler_view)
   public RecyclerView recyclerView;
+  private MainActivity mainActivity;
+  private ImageAdapter adapter;
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -49,6 +50,10 @@ public class HistoryFragment extends Fragment {
   }
 
   private void setupViews() {
+    setupRecyclerView();
+  }
+
+  private void setupRecyclerView() {
     recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
     recyclerView.setRecyclerListener(holder -> {
       BitmapDrawable bitmapDrawable = (BitmapDrawable) ((ImageAdapter.ViewHolder) holder).image.getDrawable();
@@ -57,14 +62,14 @@ public class HistoryFragment extends Fragment {
       }
       ((ImageAdapter.ViewHolder) holder).image.setImageBitmap(null);
     });
-    List<Madame> madameList = Collections.emptyList();
-    try {
-      madameList = mainActivity.getMadameDataProvider().getAll();
-      Collections.reverse(madameList);
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
-    ImageAdapter adapter = new ImageAdapter(madameList, getActivity());
+
+    List<Madame> madameList = getMadameList();
+    setupAdapter(madameList);
+    recyclerView.setAdapter(adapter);
+  }
+
+  private void setupAdapter(List<Madame> madameList) {
+    adapter = new ImageAdapter(madameList, recyclerView);
     adapter.setOnItemClickListener((view, position) -> {
       ImageView imageView = (ImageView) view.findViewById(R.id.image);
       Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
@@ -83,22 +88,23 @@ public class HistoryFragment extends Fragment {
           .addSharedElement(imageView, imageView.getTransitionName())
           .commit();
     });
-    recyclerView.setAdapter(adapter);
+  }
+
+  @NonNull
+  private List<Madame> getMadameList() {
+    List<Madame> madameList = Collections.emptyList();
+    try {
+      madameList = mainActivity.getMadameDataProvider().getAll();
+      Collections.reverse(madameList);
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    return madameList;
   }
 
   @Override
   public void onDestroy() {
     super.onDestroy();
-    final int count = recyclerView.getChildCount();
-    for (int i = 0; i < count; i++) {
-      final View view = recyclerView.getChildAt(i);
-      ImageView imageView = (ImageView) view.findViewById(R.id.image);
-      final BitmapDrawable drawable = (BitmapDrawable) imageView.getDrawable();
-      if (drawable != null && drawable.getBitmap() != null) {
-        drawable.getBitmap().recycle();
-      }
-    }
-    recyclerView.removeViews(0, count);
-    System.gc();
+    adapter.destroy();
   }
 }

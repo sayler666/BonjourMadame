@@ -1,6 +1,6 @@
 package com.sayler.bonjourmadame.adapter;
 
-import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,29 +8,27 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.sayler.bonjourmadame.R;
-import com.squareup.picasso.Picasso;
 import entity.Madame;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> {
-  public interface OnItemClickListener {
+  public interface ItemClickListener {
     void onItemClick(View view, int position);
   }
 
-  private OnItemClickListener mItemClickListener;
+  private ItemClickListener itemClickListener;
+  private List<Madame> madameList = new ArrayList<>();
+  private RecyclerView recyclerView;
 
-  List<Madame> items = new ArrayList<>();
-  private Context context;
-
-  public void setOnItemClickListener(OnItemClickListener listener) {
-    this.mItemClickListener = listener;
+  public void setOnItemClickListener(ItemClickListener listener) {
+    this.itemClickListener = listener;
   }
 
-  public ImageAdapter(List<Madame> madames, Context context) {
-    items = madames;
-    this.context = context;
+  public ImageAdapter(List<Madame> madameList, RecyclerView recyclerView) {
+    this.madameList = madameList;
+    this.recyclerView = recyclerView;
   }
 
   @Override
@@ -42,18 +40,32 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
   @Override
   public void onBindViewHolder(ViewHolder viewHolder, final int i) {
     viewHolder.container.setOnClickListener(view -> {
-      if (mItemClickListener != null) {
-        mItemClickListener.onItemClick(view, i);
+      if (itemClickListener != null) {
+        itemClickListener.onItemClick(view, i);
       }
     });
     viewHolder.image.setTransitionName("image" + i);
-    ImageLoader.getInstance().displayImage(items.get(i).getUrl(), viewHolder.image);
-   // Picasso.with(context).load(items.get(i).getUrl()).into(viewHolder.image);
+    ImageLoader.getInstance().displayImage(madameList.get(i).getUrl(), viewHolder.image);
+    // Picasso.with(context).load(madameList.get(i).getUrl()).into(viewHolder.image);
   }
 
   @Override
   public int getItemCount() {
-    return items.size();
+    return madameList.size();
+  }
+
+  public void destroy() {
+    final int count = recyclerView.getChildCount();
+    for (int i = 0; i < count; i++) {
+      final View view = recyclerView.getChildAt(i);
+      ImageView imageView = (ImageView) view.findViewById(R.id.image);
+      final BitmapDrawable drawable = (BitmapDrawable) imageView.getDrawable();
+      if (drawable != null && drawable.getBitmap() != null) {
+        drawable.getBitmap().recycle();
+      }
+    }
+    recyclerView.removeViews(0, count);
+    System.gc();
   }
 
   public static class ViewHolder extends RecyclerView.ViewHolder {
