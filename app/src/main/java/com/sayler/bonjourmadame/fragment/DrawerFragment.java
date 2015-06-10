@@ -6,6 +6,7 @@
 package com.sayler.bonjourmadame.fragment;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.app.WallpaperManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -40,7 +41,6 @@ public class DrawerFragment extends BaseFragment {
 
   @InjectView(R.id.stubImport)
   ViewStub viewStub;
-  private View rootView;
   private DynamicViewStub dynamicViewStub;
   private Fragment fragmentToChange;
 
@@ -66,7 +66,7 @@ public class DrawerFragment extends BaseFragment {
   @Override
   public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                            Bundle savedInstanceState) {
-    rootView = inflater.inflate(R.layout.f_drawer, container, false);
+    View rootView = inflater.inflate(R.layout.f_drawer, container, false);
     ButterKnife.inject(this, rootView);
     return rootView;
   }
@@ -142,11 +142,12 @@ public class DrawerFragment extends BaseFragment {
   private void changeFragment() {
     if (fragmentToChange != null) {
       fragmentToChange.setAllowEnterTransitionOverlap(true);
+
       getFragmentManager().beginTransaction()
           .setCustomAnimations(R.animator.slide_in, R.animator.slide_out)
           .replace(R.id.container, fragmentToChange, fragmentToChange.getClass().getSimpleName())
-          .addToBackStack(null)
           .commit();
+
       fragmentToChange = null;
     }
   }

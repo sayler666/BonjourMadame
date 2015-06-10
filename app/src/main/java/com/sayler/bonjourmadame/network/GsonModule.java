@@ -14,7 +14,6 @@ import retrofit.converter.Converter;
 import retrofit.converter.GsonConverter;
 
 /**
- *
  * @author sayler666
  */
 

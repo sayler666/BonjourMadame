@@ -388,11 +388,12 @@ public class LoadingFragment extends BaseFragment {
 
   private void updateThemeColorsFromBitmap(Bitmap bitmap, boolean animation) {
     currentColorArt = new ColorArt(bitmap);
+    //1, 1.4, .8 are hsv factor that will make color slightly darker
     int darkenColor = ColorUtils.amendColor(currentColorArt.getBackgroundColor(), 1f, 1.4f, 0.8f);
     getBaseActivity().animateStatusBarColor(darkenColor, DURATION_LONG);
     getBaseActivity().animateNavigationBarColor(darkenColor, DURATION_LONG);
 
-    mainActivity.getToolbar().setBackgroundColor(currentColorArt.getBackgroundColor());
+    mainActivity.colorizeToolbar(currentColorArt.getBackgroundColor(), DURATION_LONG);
     mainActivity.colorizeToolbarIcons(currentColorArt.getDetailColor());
 
     refreshActionButton.setTint(currentColorArt.getDetailColor());
@@ -498,5 +499,6 @@ public class LoadingFragment extends BaseFragment {
     if (currentBitmap != null) {
       currentBitmap.recycle();
     }
+    System.gc();
   }
 }

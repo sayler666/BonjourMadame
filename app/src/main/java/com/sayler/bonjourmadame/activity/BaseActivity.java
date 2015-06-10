@@ -17,7 +17,7 @@ import com.sayler.bonjourmadame.inject.ActivityComponent;
  *
  * @author sayler666
  */
-public class BaseActivity extends AppCompatActivity {
+public class BaseActivity extends Activity {
 
   private ActivityComponent activityComponent;
 

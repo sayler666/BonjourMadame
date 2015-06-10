@@ -1,5 +1,6 @@
 package com.sayler.bonjourmadame.activity;
 
+import android.animation.ValueAnimator;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -40,6 +41,7 @@ public class MainActivity extends BaseActivity {
   ActionBarDrawerToggle drawerToggle;
   private Animation toolbarDropOutAnimation;
   private Animation toolbarDropInAnimation;
+  private int currentToolbarColor;
   /* ---------------------------------------------- LIFECYCLE METHODS ------------------------------------------------*/
 
   @Override
@@ -124,6 +126,14 @@ public class MainActivity extends BaseActivity {
 
   public void colorizeToolbarIcons(int color) {
     ToolbarColorizeHelper.colorizeToolbar(toolbar, color, MainActivity.this);
+  }
+
+  public void colorizeToolbar(int color, int duration) {
+    ValueAnimator valueAnimator = ValueAnimator.ofArgb(currentToolbarColor, color);
+    valueAnimator.setDuration(duration);
+    valueAnimator.addUpdateListener(animation -> toolbar.setBackgroundColor((int) animation.getAnimatedValue()));
+    valueAnimator.start();
+    currentToolbarColor = color;
   }
 
   /* ---------------------------------------------- EVENTS -----------------------------------------------------------*/

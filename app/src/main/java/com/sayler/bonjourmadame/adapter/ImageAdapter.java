@@ -1,5 +1,6 @@
 package com.sayler.bonjourmadame.adapter;
 
+import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -21,14 +22,18 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
   private ItemClickListener itemClickListener;
   private List<Madame> madameList = new ArrayList<>();
   private RecyclerView recyclerView;
+  private final Bitmap chosenBitmap;
+  private final int chosenPosition;
 
   public void setOnItemClickListener(ItemClickListener listener) {
     this.itemClickListener = listener;
   }
 
-  public ImageAdapter(List<Madame> madameList, RecyclerView recyclerView) {
+  public ImageAdapter(List<Madame> madameList, RecyclerView recyclerView, Bitmap chosenBitmap, int chosenPosition) {
     this.madameList = madameList;
     this.recyclerView = recyclerView;
+    this.chosenBitmap = chosenBitmap;
+    this.chosenPosition = chosenPosition;
   }
 
   @Override
@@ -45,8 +50,12 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
       }
     });
     viewHolder.image.setTransitionName("image" + i);
-    ImageLoader.getInstance().displayImage(madameList.get(i).getUrl(), viewHolder.image);
-    // Picasso.with(context).load(madameList.get(i).getUrl()).into(viewHolder.image);
+
+    if (i == chosenPosition) {
+      viewHolder.image.setImageBitmap(chosenBitmap);
+    } else {
+      ImageLoader.getInstance().displayImage(madameList.get(i).getUrl(), viewHolder.image);
+    }
   }
 
   @Override
@@ -64,8 +73,10 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         drawable.getBitmap().recycle();
       }
     }
+    if (chosenBitmap != null) {
+      chosenBitmap.recycle();
+    }
     recyclerView.removeViews(0, count);
-    System.gc();
   }
 
   public static class ViewHolder extends RecyclerView.ViewHolder {

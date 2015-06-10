@@ -32,6 +32,8 @@ public class HistoryFragment extends Fragment {
   public RecyclerView recyclerView;
   private MainActivity mainActivity;
   private ImageAdapter adapter;
+  private Bitmap chosenBitmap;
+  private int chosenPosition = -1;
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -69,17 +71,19 @@ public class HistoryFragment extends Fragment {
   }
 
   private void setupAdapter(List<Madame> madameList) {
-    adapter = new ImageAdapter(madameList, recyclerView);
+    adapter = new ImageAdapter(madameList, recyclerView, chosenBitmap, chosenPosition);
+
     adapter.setOnItemClickListener((view, position) -> {
       ImageView imageView = (ImageView) view.findViewById(R.id.image);
-      Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+      chosenBitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+      chosenPosition = position;
 
       setSharedElementReturnTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.image_transition));
       setExitTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.fade));
 
-      LoadingFragment loadingFragment = LoadingFragment.newInstanceWithImage(bitmap);
+      LoadingFragment loadingFragment = LoadingFragment.newInstanceWithImage(chosenBitmap);
       loadingFragment.setSharedElementEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.image_transition));
-      loadingFragment.setEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.no_transition));
+      loadingFragment.setEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.fade));
       loadingFragment.setImageTransitionName(imageView.getTransitionName());
 
       getFragmentManager().beginTransaction()
@@ -106,5 +110,6 @@ public class HistoryFragment extends Fragment {
   public void onDestroy() {
     super.onDestroy();
     adapter.destroy();
+    System.gc();
   }
 }
