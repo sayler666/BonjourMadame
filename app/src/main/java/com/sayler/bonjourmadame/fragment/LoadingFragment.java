@@ -444,6 +444,7 @@ public class LoadingFragment extends BaseFragment {
 
   private void loadingStartAnimations() {
     circularReveal.hide(true, true);
+    circularReveal.setClickable(true);
     refreshActionButton.loadingStartAnimation();
     mainActivity.hideToolbar();
 
@@ -463,6 +464,7 @@ public class LoadingFragment extends BaseFragment {
 
   private void loadingFinishAnimations() {
     circularReveal.reveal(true, false);
+    circularReveal.setClickable(false);
     refreshActionButton.loadingFinishAnimation();
     mainActivity.showToolbar();
 

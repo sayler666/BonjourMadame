@@ -112,13 +112,14 @@ public class RefreshActionButton extends ActionButton {
   }
 
   public void loadingStartAnimation() {
+    getProgressBarCircle().setVisibility(VISIBLE);
     getProgressBarCircle().startAnimation(fadeIn);
     setupLoadingColorAnimation();
     loadingColorAnimator.start();
     startAnimation(zoomInAnimation);
     getImageButton().setImageDrawable(getContext().getDrawable(android.R.color.transparent));
     getImageButton().setElevation(getResources().getDimension(R.dimen.elevation_high));
-    getImageButtonStroke().setVisibility(INVISIBLE);
+    getImageButtonStroke().setVisibility(GONE);
   }
 
   public void loadingFinishAnimation() {
@@ -137,6 +138,7 @@ public class RefreshActionButton extends ActionButton {
         public void onAnimationEnd(Animator animation) {
           setUpColors();
           getImageButtonStroke().setVisibility(VISIBLE);
+          ObjectAnimator.ofFloat(getImageButtonStroke(), "alpha", 0, 1).setDuration(1000).start();
         }
 
         @Override
@@ -152,6 +154,7 @@ public class RefreshActionButton extends ActionButton {
     } else {
       setUpColors();
       getImageButtonStroke().setVisibility(VISIBLE);
+      ObjectAnimator.ofFloat(getImageButtonStroke(), "alpha", 0, 1).setDuration(1000).start();
     }
 
     getImageButton().setElevation(getResources().getDimension(R.dimen.elevation_low));
