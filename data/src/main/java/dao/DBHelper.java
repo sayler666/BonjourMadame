@@ -22,7 +22,7 @@ public class DBHelper extends OrmLiteSqliteOpenHelper {
 
   private static final String TAG = "DBHelper";
   private static final String DATABASE_NAME = "bonjourmadame.db";
-  private static final int DATABASE_VERSION = 2;
+  private static final int DATABASE_VERSION = 5;
 
   public DBHelper(Context context) {
     super(context, DATABASE_NAME, null, DATABASE_VERSION);

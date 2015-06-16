@@ -59,6 +59,7 @@ public class LoadingFragment extends BaseFragment {
   public static final int DURATION_MEDIUM = 1000;
   public static final int DURATION_LONG = 1500;
   public static final String BITMAP_BUNDLE = "bitmap";
+  private static final String MADAME_BUNDLE = "madame";
   List<ActionButton> actionButtonList = new ArrayList<>();
   @InjectView(R.id.refreshActionButton)
   RefreshActionButton refreshActionButton;
@@ -82,12 +83,14 @@ public class LoadingFragment extends BaseFragment {
   private String imageTransitionName;
   private View rootView;
   private Bitmap currentBitmap;
+  private Madame currentMadame;
 
   /* ---------------------------------------------- FACTORY METHODS --------------------------------------------------*/
-  public static LoadingFragment newInstanceWithImage(Bitmap bitmap) {
+  public static LoadingFragment newInstanceWithImage(Bitmap bitmap, Madame madame) {
     LoadingFragment loadingFragment = new LoadingFragment();
     Bundle bundle = new Bundle();
     bundle.putParcelable(BITMAP_BUNDLE, bitmap);
+    bundle.putSerializable(MADAME_BUNDLE, madame);
 
     loadingFragment.setArguments(bundle);
 
@@ -123,6 +126,7 @@ public class LoadingFragment extends BaseFragment {
       startLoading();
     } else {
       showBitmap(getArguments().getParcelable(BITMAP_BUNDLE));
+      currentMadame = (Madame) getArguments().getSerializable(MADAME_BUNDLE);
     }
 
   }
@@ -222,9 +226,6 @@ public class LoadingFragment extends BaseFragment {
   }
 
   private void startLoading() {
-    /**
-     * hide main content
-     */
     isLoading = true;
     loadingStartAnimations();
     AppObservable.bindFragment(this, ((MainActivity) getBaseActivity()).getBonjourMadameAPI().getRandomMadame())
@@ -236,10 +237,8 @@ public class LoadingFragment extends BaseFragment {
   }
 
   private Madame storeInDb(Madame madame) {
-
-    MadameDataProvider madameDataProvider = new MadameDataProvider(mainActivity);
-    madameDataProvider.save(madame);
-
+    mainActivity.getMadameDataProvider().save(madame);
+    currentMadame = madame;
     return madame;
   }
 
@@ -300,6 +299,12 @@ public class LoadingFragment extends BaseFragment {
   @OnClick(R.id.setWallpaperActionButton)
   public void onSetWallpaperActionButtonClick() {
     setWallpaper();
+  }
+
+  @OnClick(R.id.favouriteImageActionButton)
+  public void onFavouriteImageActionButtonClick() {
+    currentMadame.setIsFavourite(true);
+    mainActivity.getMadameDataProvider().save(currentMadame);
   }
 
   /* ------------------------------------ REQUEST CALLBACKS ----------------------------------------------------------*/

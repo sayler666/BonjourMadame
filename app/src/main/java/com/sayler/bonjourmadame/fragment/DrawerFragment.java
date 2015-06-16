@@ -129,7 +129,7 @@ public class DrawerFragment extends BaseFragment {
   private List<NavigationItem> createNavigationList() {
     List<NavigationItem> navigationItems = new ArrayList<>();
     navigationItems.add(new NavigationItem(getResources().getDrawable(R.drawable.ic_refresh_image), "Start", () -> lateChangeFragment(LoadingFragment.newInstanceRandomLoad())));
-    navigationItems.add(new NavigationItem(getResources().getDrawable(R.drawable.ic_favourite_image), "Favourites", () -> Log.d("DrawerFragment", "Favourites")));
+    navigationItems.add(new NavigationItem(getResources().getDrawable(R.drawable.ic_favourite_image), "Favourites", () -> lateChangeFragment(new FavouritesFragment())));
     navigationItems.add(new NavigationItem(getResources().getDrawable(R.drawable.ic_history), "History", () -> lateChangeFragment(new HistoryFragment())));
     return navigationItems;
   }

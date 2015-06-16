@@ -30,7 +30,7 @@ public class HistoryFragment extends Fragment {
 
   @InjectView(R.id.history_list_recycler_view)
   public RecyclerView recyclerView;
-  private MainActivity mainActivity;
+  protected MainActivity mainActivity;
   private ImageAdapter adapter;
   private Bitmap chosenBitmap;
   private int chosenPosition = -1;
@@ -65,7 +65,7 @@ public class HistoryFragment extends Fragment {
       ((ImageAdapter.ViewHolder) holder).image.setImageBitmap(null);
     });
 
-    List<Madame> madameList = getMadameList();
+    List<Madame> madameList = loadMadameList();
     setupAdapter(madameList);
     recyclerView.setAdapter(adapter);
   }
@@ -81,7 +81,7 @@ public class HistoryFragment extends Fragment {
       setSharedElementReturnTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.image_transition));
       setExitTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.fade));
 
-      LoadingFragment loadingFragment = LoadingFragment.newInstanceWithImage(chosenBitmap);
+      LoadingFragment loadingFragment = LoadingFragment.newInstanceWithImage(chosenBitmap, madameList.get(position));
       loadingFragment.setSharedElementEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.image_transition));
       loadingFragment.setEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.fade));
       loadingFragment.setImageTransitionName(imageView.getTransitionName());
@@ -95,7 +95,7 @@ public class HistoryFragment extends Fragment {
   }
 
   @NonNull
-  private List<Madame> getMadameList() {
+  protected List<Madame> loadMadameList() {
     List<Madame> madameList = Collections.emptyList();
     try {
       madameList = mainActivity.getMadameDataProvider().getAll();

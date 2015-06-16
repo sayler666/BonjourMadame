@@ -9,12 +9,17 @@ import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable(tableName = "madame")
 public class Madame extends BaseEntity {
-  @DatabaseField()
+  public static final String TYPE_COL = "TYPE_COL";
+  @DatabaseField(columnName = TYPE_COL)
   private String type;
-  @DatabaseField()
+  public static final String NAME_COL = "NAME_COL";
+  @DatabaseField(columnName = NAME_COL)
   private String name;
-  @DatabaseField()
+  @DatabaseField(unique = true)
   private String url;
+  public static final String FAVOURITE_COL = "FAVOURITE_COL";
+  @DatabaseField(columnName = FAVOURITE_COL)
+  private boolean isFavourite;
 
   public Madame() {
   }
@@ -47,5 +52,13 @@ public class Madame extends BaseEntity {
 
   public void setUrl(String url) {
     this.url = url;
+  }
+
+  public boolean isFavourite() {
+    return isFavourite;
+  }
+
+  public void setIsFavourite(boolean isFavourite) {
+    this.isFavourite = isFavourite;
   }
 }
