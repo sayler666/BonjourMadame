@@ -5,7 +5,6 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -36,9 +35,6 @@ import com.sayler.bonjourmadame.util.WallpaperManager;
 import com.sayler.bonjourmadame.widget.ActionButton;
 import com.sayler.bonjourmadame.widget.CircularReveal;
 import com.sayler.bonjourmadame.widget.RefreshActionButton;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
-import dao.MadameDataProvider;
 import de.greenrobot.event.EventBus;
 import entity.Madame;
 import org.michaelevans.colorart.library.ColorArt;
@@ -184,28 +180,41 @@ public class LoadingFragment extends BaseFragment {
   private void afterSetWallpaper() {
     settingWallpaperFinishAnimations();
 
-    showBackToast();
+    showWallpaperSetBackToast();
 
     EventBus.getDefault().post(new RefreshDrawerTopImage());
   }
 
-  private void showBackToast() {
+  private void showWallpaperSetBackToast() {
     SuperActivityToast backToast = new SuperActivityToast(getActivity(), SuperToast.Type.BUTTON);
     backToast.setText(mainActivity.getString(R.string.wallpaper_set_toast_message));
     backToast.setButtonText(mainActivity.getString(R.string.undo_toast_text));
     backToast.setButtonIcon(SuperToast.Icon.Dark.UNDO);
     backToast.setDuration(SuperToast.Duration.EXTRA_LONG);
-    backToast.setOnClickWrapper(new OnClickWrapper("backToast", (view, parcelable) ->
+    backToast.setOnClickWrapper(new OnClickWrapper("wallpaperSetBackToast", (view, parcelable) ->
         AppObservable.bindFragment(this, Observable.just(0))
             .observeOn(Schedulers.io())
             .doOnNext(v -> wallpaperManager.setPreviousWallpaper())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(v -> afterSettingPreviousWallpaper())));
-    backToast.setOnDismissWrapper(new OnDismissWrapper("backToast", view -> afterBackToastDismiss()));
+    backToast.setOnDismissWrapper(new OnDismissWrapper("wallpaperSetBackToast", view -> afterSetWallpaperBackToastDismiss()));
     backToast.show();
   }
 
-  private void afterBackToastDismiss() {
+  private void showAddToFavouritesBackToast() {
+    SuperActivityToast backToast = new SuperActivityToast(getActivity(), SuperToast.Type.BUTTON);
+    backToast.setText(mainActivity.getString(R.string.wallpaper_added_to_favourites_toast_message));
+    backToast.setButtonText(mainActivity.getString(R.string.undo_toast_text));
+    backToast.setButtonIcon(SuperToast.Icon.Dark.UNDO);
+    backToast.setDuration(SuperToast.Duration.EXTRA_LONG);
+    backToast.setOnClickWrapper(new OnClickWrapper("addToFavouritesToast", (view, parcelable) -> {
+      currentMadame.setIsFavourite(false);
+      mainActivity.getMadameDataProvider().save(currentMadame);
+    }));
+    backToast.show();
+  }
+
+  private void afterSetWallpaperBackToastDismiss() {
     ObjectAnimator.ofFloat(loadedMadameImageView, "alpha", 0, 1).setDuration(DURATION_MEDIUM).start();
     loadedMadameImageView.setVisibility(View.VISIBLE);
     mainActivity.showToolbar();
@@ -305,6 +314,7 @@ public class LoadingFragment extends BaseFragment {
   public void onFavouriteImageActionButtonClick() {
     currentMadame.setIsFavourite(true);
     mainActivity.getMadameDataProvider().save(currentMadame);
+    showAddToFavouritesBackToast();
   }
 
   /* ------------------------------------ REQUEST CALLBACKS ----------------------------------------------------------*/

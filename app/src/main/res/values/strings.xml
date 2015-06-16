@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="wallpaper_set_toast_message">New wallpaper set!</string>
+    <string name="wallpaper_added_to_favourites_toast_message">Madame added to favourites!</string>
     <string name="previous_wallpaper_set_toast_message">Previous wallpaper set!</string>
     <string name="undo_toast_text">Undo</string>
 </resources>
