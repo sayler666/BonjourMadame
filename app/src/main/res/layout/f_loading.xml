@@ -13,7 +13,7 @@
             android:id="@+id/circuralReveal"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            Circle:barColor="@color/backgroundColor"
+            Circle:fillColor="@color/backgroundColor"
             />
     <RelativeLayout
             android:id="@+id/mainContainer"

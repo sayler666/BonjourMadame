@@ -8,12 +8,11 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.transition.TransitionInflater;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.ImageView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import com.bignerdranch.android.multiselector.MultiSelector;
 import com.sayler.bonjourmadame.R;
 import com.sayler.bonjourmadame.activity.MainActivity;
 import com.sayler.bonjourmadame.adapter.ImageAdapter;
@@ -27,9 +26,9 @@ import java.util.List;
  * History fragment.
  */
 public class HistoryFragment extends Fragment {
-
   @InjectView(R.id.history_list_recycler_view)
   public RecyclerView recyclerView;
+  private MultiSelector multiSelector = new MultiSelector();
   protected MainActivity mainActivity;
   private ImageAdapter adapter;
   private Bitmap chosenBitmap;
@@ -71,8 +70,7 @@ public class HistoryFragment extends Fragment {
   }
 
   private void setupAdapter(List<Madame> madameList) {
-    adapter = new ImageAdapter(madameList, recyclerView, chosenBitmap, chosenPosition);
-
+    adapter = new ImageAdapter(madameList, recyclerView, chosenBitmap, chosenPosition, multiSelector);
     adapter.setOnItemClickListener((view, position) -> {
       ImageView imageView = (ImageView) view.findViewById(R.id.image);
       chosenBitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();

@@ -106,7 +106,7 @@ public class CircularReveal extends View implements ValueAnimator.AnimatorUpdate
    * @param a the attributes to parse
    */
   private void parseAttributes(TypedArray a) {
-    fillColor = a.getColor(R.styleable.CircularReveal_barColor, fillColor);
+    fillColor = a.getColor(R.styleable.CircularReveal_fillColor, fillColor);
     a.recycle();
   }
 

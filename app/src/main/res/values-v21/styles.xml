@@ -13,6 +13,7 @@
         <item name="android:colorAccent">@android:color/white</item>
         <item name="android:statusBarColor">@color/mainAccent</item>
         <item name="android:navigationBarColor">@color/mainAccent</item>
+        <item name="windowActionModeOverlay">true</item>
     </style>
 
 </resources>

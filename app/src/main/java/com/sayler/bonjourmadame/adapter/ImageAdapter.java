@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import com.bignerdranch.android.multiselector.MultiSelector;
+import com.bignerdranch.android.multiselector.SwappingHolder;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.sayler.bonjourmadame.R;
 import entity.Madame;
@@ -24,22 +26,24 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
   private RecyclerView recyclerView;
   private final Bitmap chosenBitmap;
   private final int chosenPosition;
+  private MultiSelector multiSelector;
 
   public void setOnItemClickListener(ItemClickListener listener) {
     this.itemClickListener = listener;
   }
 
-  public ImageAdapter(List<Madame> madameList, RecyclerView recyclerView, Bitmap chosenBitmap, int chosenPosition) {
+  public ImageAdapter(List<Madame> madameList, RecyclerView recyclerView, Bitmap chosenBitmap, int chosenPosition, MultiSelector multiSelector) {
     this.madameList = madameList;
     this.recyclerView = recyclerView;
     this.chosenBitmap = chosenBitmap;
     this.chosenPosition = chosenPosition;
+    this.multiSelector = multiSelector;
   }
 
   @Override
   public ImageAdapter.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
     View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.i_history_row, null);
-    return new ViewHolder(view);
+    return new ViewHolder(view, multiSelector);
   }
 
   @Override
@@ -79,14 +83,21 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
     recyclerView.removeViews(0, count);
   }
 
-  public static class ViewHolder extends RecyclerView.ViewHolder {
+  public static class ViewHolder extends SwappingHolder {
+    private final MultiSelector multiSelector;
     public ImageView image;
     public View container;
 
-    public ViewHolder(View itemView) {
-      super(itemView);
+    public ViewHolder(View itemView, MultiSelector multiSelector) {
+      super(itemView, multiSelector);
+      this.multiSelector = multiSelector;
       image = (ImageView) itemView.findViewById(R.id.image);
       container = itemView.findViewById(R.id.container);
+      itemView.setOnLongClickListener(v -> {
+            ViewHolder.this.multiSelector.setSelectable(true);
+            return true;
+          }
+      );
     }
   }
 }
