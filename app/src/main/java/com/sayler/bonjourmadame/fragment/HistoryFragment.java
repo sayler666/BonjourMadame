@@ -8,14 +8,18 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.transition.TransitionInflater;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import com.bartoszlipinski.recyclerviewheader.RecyclerViewHeader;
 import com.bignerdranch.android.multiselector.MultiSelector;
 import com.sayler.bonjourmadame.R;
 import com.sayler.bonjourmadame.activity.MainActivity;
 import com.sayler.bonjourmadame.adapter.ImageAdapter;
+import com.sayler.bonjourmadame.util.ToolbarHiderHelper;
 import entity.Madame;
 
 import java.sql.SQLException;
@@ -55,7 +59,11 @@ public class HistoryFragment extends Fragment {
   }
 
   private void setupRecyclerView() {
+    ToolbarHiderHelper toolbarHiderHelper = new ToolbarHiderHelper(mainActivity.getToolbar(), recyclerView);
+    toolbarHiderHelper.startHidingToolbarOnScroll();
+    RecyclerViewHeader header = RecyclerViewHeader.fromXml(mainActivity, R.layout.i_recycler_view_header);
     recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
+    header.attachTo(recyclerView);
     recyclerView.setRecyclerListener(holder -> {
       BitmapDrawable bitmapDrawable = (BitmapDrawable) ((ImageAdapter.ViewHolder) holder).image.getDrawable();
       if (bitmapDrawable != null && bitmapDrawable.getBitmap() != null) {
