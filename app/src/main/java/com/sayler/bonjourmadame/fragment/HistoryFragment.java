@@ -61,12 +61,10 @@ public class HistoryFragment extends Fragment {
   private void setupRecyclerView() {
     ToolbarHiderHelper toolbarHiderHelper = new ToolbarHiderHelper(mainActivity.getToolbar(), recyclerView);
     toolbarHiderHelper.startHidingToolbarOnScroll();
-    RecyclerViewHeader header = RecyclerViewHeader.fromXml(mainActivity, R.layout.i_recycler_view_header);
     recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
-    header.attachTo(recyclerView);
     recyclerView.setRecyclerListener(holder -> {
       BitmapDrawable bitmapDrawable = (BitmapDrawable) ((ImageAdapter.ViewHolder) holder).image.getDrawable();
-      if (bitmapDrawable != null && bitmapDrawable.getBitmap() != null) {
+      if (bitmapDrawable != null && bitmapDrawable.getBitmap() != null && !bitmapDrawable.getBitmap().isRecycled()) {
         bitmapDrawable.getBitmap().recycle();
       }
       ((ImageAdapter.ViewHolder) holder).image.setImageBitmap(null);

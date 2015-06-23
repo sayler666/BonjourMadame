@@ -5,8 +5,10 @@
  */
 package com.sayler.bonjourmadame.util;
 
+import android.animation.ValueAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import com.sayler.bonjourmadame.R;
 
 /**
@@ -28,13 +30,51 @@ public class ToolbarHiderHelper {
 
     this.toolbar = toolbar;
     this.recyclerView = recyclerView;
-    toolbarHeight = (int) toolbar.getContext().getResources().getDimension(R.dimen.abc_action_bar_default_height_material);
+    toolbarHeight = toolbar.getHeight();
   }
 
   public void startHidingToolbarOnScroll() {
     this.recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+
+      @Override
+      public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+        super.onScrollStateChanged(recyclerView, newState);
+
+        switch (newState) {
+          case RecyclerView.SCROLL_STATE_IDLE:
+            Log.d(TAG, "stop scrolling: posY" + toolbar.getTranslationY() + " sign " + scrollSignum);
+
+            ValueAnimator va;
+            if (scrollSignum == 1) {
+              va = ValueAnimator.ofInt(((int) toolbar.getTranslationY()), -toolbarHeight);
+            } else {
+              va = ValueAnimator.ofInt(((int) toolbar.getTranslationY()), 0);
+            }
+            va.addUpdateListener(animation -> {
+              toolbar.setTranslationY((int) animation.getAnimatedValue());
+              if (scrollSignum == 1) {
+                tempHidingY = -toolbarHeight - (int) animation.getAnimatedValue();
+              }
+              if (scrollSignum == -1) {
+                tempShowingY = -toolbarHeight - (int) animation.getAnimatedValue();
+              }
+            });
+            va.setDuration(500);
+            va.start();
+            break;
+          default:
+        }
+
+      }
+
       @Override
       public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+        //ignore initial scroll
+        if (dy == 0 && scrollSignum == 0) {
+          tempHidingY = -toolbarHeight;
+          return;
+        }
+
         if (scrollSignum != (int) Math.signum(dy)) {
           if (scrollSignum == -1) {
             tempHidingY = tempShowingY;
@@ -48,25 +88,18 @@ public class ToolbarHiderHelper {
 
         //hiding scroll
         if (scrollSignum == 1) {
-          if (Math.abs(scrollAbsolutePosition) <= toolbarHeight && tempHidingY == 0) {
-            toolbar.setTranslationY(-scrollAbsolutePosition);
-          } else if (Math.abs(tempHidingY) <= toolbarHeight) {
+          if (Math.abs(tempHidingY) <= toolbarHeight) {
             if (Math.abs(tempHidingY + dy) <= toolbarHeight) {
               tempHidingY += dy;
               toolbar.setTranslationY(-toolbarHeight - tempHidingY);
             } else {
               toolbar.setTranslationY(-toolbarHeight);
             }
-          } else {
-            toolbar.setTranslationY(-toolbarHeight);
           }
-          tempShowingY = 0;
         }
         //showing scroll
         else {
-          if (scrollAbsolutePosition <= toolbarHeight && tempShowingY == 0) {
-            toolbar.setTranslationY(-scrollAbsolutePosition);
-          } else if (Math.abs(tempShowingY) <= toolbarHeight) {
+          if (Math.abs(tempShowingY) <= toolbarHeight) {
             if (Math.abs(tempShowingY + dy) <= toolbarHeight) {
               tempShowingY += dy;
               toolbar.setTranslationY(-toolbarHeight - tempShowingY);
@@ -74,7 +107,6 @@ public class ToolbarHiderHelper {
               toolbar.setTranslationY(0);
             }
           }
-          tempHidingY = 0;
         }
 
         super.onScrolled(recyclerView, dx, dy);
