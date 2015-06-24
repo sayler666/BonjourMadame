@@ -28,9 +28,14 @@ import com.sayler.bonjourmadame.event.InflateDrawerFragmentEvent;
 import com.sayler.bonjourmadame.event.RefreshDrawerTopImage;
 import com.sayler.bonjourmadame.model.NavigationItem;
 import de.greenrobot.event.EventBus;
+import rx.Observable;
+import rx.android.app.AppObservable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Main navigation drawer fragment
@@ -136,7 +141,11 @@ public class DrawerFragment extends BaseFragment {
 
   private void lateChangeFragment(Fragment newFragment) {
     fragmentToChange = newFragment;
-    EventBus.getDefault().post(new ForceCloseDrawerEvent());
+    AppObservable.bindFragment(this, Observable.just(0))
+        .observeOn(Schedulers.io())
+        .delay(250, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(v -> EventBus.getDefault().post(new ForceCloseDrawerEvent()));
   }
 
   private void changeFragment() {
