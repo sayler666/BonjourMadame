@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import com.bignerdranch.android.multiselector.MultiSelector;
 import com.bignerdranch.android.multiselector.SwappingHolder;
@@ -17,6 +18,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> {
+
+  private final int normalRowsHeight;
+  private int topRowsHeight;
+
   public interface ItemClickListener {
     void onItemClick(View view, int position);
   }
@@ -27,17 +32,21 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
   private final Bitmap chosenBitmap;
   private final int chosenPosition;
   private MultiSelector multiSelector;
+  private int spanCount;
 
   public void setOnItemClickListener(ItemClickListener listener) {
     this.itemClickListener = listener;
   }
 
-  public ImageAdapter(List<Madame> madameList, RecyclerView recyclerView, Bitmap chosenBitmap, int chosenPosition, MultiSelector multiSelector) {
+  public ImageAdapter(List<Madame> madameList, RecyclerView recyclerView, Bitmap chosenBitmap, int chosenPosition, MultiSelector multiSelector, int spanCount) {
     this.madameList = madameList;
     this.recyclerView = recyclerView;
     this.chosenBitmap = chosenBitmap;
     this.chosenPosition = chosenPosition;
     this.multiSelector = multiSelector;
+    this.spanCount = spanCount;
+    topRowsHeight = (int) recyclerView.getContext().getResources().getDimension(R.dimen.abc_action_bar_default_height_material);
+    normalRowsHeight = (int) recyclerView.getContext().getResources().getDimension(R.dimen.h_history_row);
   }
 
   @Override
@@ -48,17 +57,29 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
 
   @Override
   public void onBindViewHolder(ViewHolder viewHolder, final int i) {
-    viewHolder.container.setOnClickListener(view -> {
-      if (itemClickListener != null) {
-        itemClickListener.onItemClick(view, i);
-      }
-    });
-    viewHolder.image.setTransitionName("image" + i);
 
-    if (i == chosenPosition) {
-      viewHolder.image.setImageBitmap(chosenBitmap);
+    if (i < spanCount) {
+      viewHolder.image.setImageBitmap(null);
+      FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) viewHolder.image.getLayoutParams();
+      params.height = topRowsHeight;
+      viewHolder.image.setLayoutParams(params);
     } else {
-      ImageLoader.getInstance().displayImage(madameList.get(i).getUrl(), viewHolder.image);
+      FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) viewHolder.image.getLayoutParams();
+      params.height = normalRowsHeight;
+      viewHolder.image.setLayoutParams(params);
+
+      viewHolder.container.setOnClickListener(view -> {
+        if (itemClickListener != null) {
+          itemClickListener.onItemClick(view, i);
+        }
+      });
+      viewHolder.image.setTransitionName("image" + i);
+
+      if (i == chosenPosition) {
+        viewHolder.image.setImageBitmap(chosenBitmap);
+      } else {
+        ImageLoader.getInstance().displayImage(madameList.get(i).getUrl(), viewHolder.image);
+      }
     }
   }
 

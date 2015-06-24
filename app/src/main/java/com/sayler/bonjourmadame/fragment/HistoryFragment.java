@@ -30,6 +30,7 @@ import java.util.List;
  * History fragment.
  */
 public class HistoryFragment extends Fragment {
+  public static final int SPAN_COUNT = 3;
   @InjectView(R.id.history_list_recycler_view)
   public RecyclerView recyclerView;
   private MultiSelector multiSelector = new MultiSelector();
@@ -61,22 +62,14 @@ public class HistoryFragment extends Fragment {
   private void setupRecyclerView() {
     ToolbarHiderHelper toolbarHiderHelper = new ToolbarHiderHelper(mainActivity.getToolbar(), recyclerView);
     toolbarHiderHelper.startHidingToolbarOnScroll();
-    recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
-    recyclerView.setRecyclerListener(holder -> {
-      BitmapDrawable bitmapDrawable = (BitmapDrawable) ((ImageAdapter.ViewHolder) holder).image.getDrawable();
-      if (bitmapDrawable != null && bitmapDrawable.getBitmap() != null && !bitmapDrawable.getBitmap().isRecycled()) {
-        bitmapDrawable.getBitmap().recycle();
-      }
-      ((ImageAdapter.ViewHolder) holder).image.setImageBitmap(null);
-    });
-
+    recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), SPAN_COUNT));
     List<Madame> madameList = loadMadameList();
     setupAdapter(madameList);
     recyclerView.setAdapter(adapter);
   }
 
   private void setupAdapter(List<Madame> madameList) {
-    adapter = new ImageAdapter(madameList, recyclerView, chosenBitmap, chosenPosition, multiSelector);
+    adapter = new ImageAdapter(madameList, recyclerView, chosenBitmap, chosenPosition, multiSelector, SPAN_COUNT);
     adapter.setOnItemClickListener((view, position) -> {
       ImageView imageView = (ImageView) view.findViewById(R.id.image);
       chosenBitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
@@ -103,6 +96,9 @@ public class HistoryFragment extends Fragment {
     List<Madame> madameList = Collections.emptyList();
     try {
       madameList = mainActivity.getMadameDataProvider().getAll();
+      madameList.add(new Madame());
+      madameList.add(new Madame());
+      madameList.add(new Madame());
       Collections.reverse(madameList);
     } catch (SQLException e) {
       e.printStackTrace();
