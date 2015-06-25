@@ -3,8 +3,10 @@ package com.sayler.bonjourmadame.fragment;
 import android.animation.LayoutTransition;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -44,6 +46,11 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import uk.co.senab.photoview.PhotoViewAttacher;
 
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -54,8 +61,9 @@ public class LoadingFragment extends BaseFragment {
   public static final int DURATION_SHORT = 500;
   public static final int DURATION_MEDIUM = 1000;
   public static final int DURATION_LONG = 1500;
-  public static final String BITMAP_BUNDLE = "bitmap";
-  private static final String MADAME_BUNDLE = "madame";
+  private static final String BITMAP_BUNDLE = "BITMAP_BUNDLE";
+  private static final String MADAME_BUNDLE = "MADAME_BUNDLE";
+  private static final String URL_BUNDLE = "URL_BUNDLE";
   List<ActionButton> actionButtonList = new ArrayList<>();
   @InjectView(R.id.refreshActionButton)
   RefreshActionButton refreshActionButton;
@@ -82,7 +90,18 @@ public class LoadingFragment extends BaseFragment {
   private Madame currentMadame;
 
   /* ---------------------------------------------- FACTORY METHODS --------------------------------------------------*/
-  public static LoadingFragment newInstanceWithImage(Bitmap bitmap, Madame madame) {
+
+  public static LoadingFragment newInstanceWithUrl(String url) {
+    LoadingFragment loadingFragment = new LoadingFragment();
+    Bundle bundle = new Bundle();
+    bundle.putSerializable(URL_BUNDLE, url);
+
+    loadingFragment.setArguments(bundle);
+
+    return loadingFragment;
+  }
+
+  public static LoadingFragment newInstanceWithBitmap(Bitmap bitmap, Madame madame) {
     LoadingFragment loadingFragment = new LoadingFragment();
     Bundle bundle = new Bundle();
     bundle.putParcelable(BITMAP_BUNDLE, bitmap);
@@ -121,10 +140,26 @@ public class LoadingFragment extends BaseFragment {
     if (getArguments() == null) {
       startLoading();
     } else {
-      showBitmap(getArguments().getParcelable(BITMAP_BUNDLE));
-      currentMadame = (Madame) getArguments().getSerializable(MADAME_BUNDLE);
-    }
 
+      if (getArguments().containsKey(BITMAP_BUNDLE)) {
+        showBitmap(getArguments().getParcelable(BITMAP_BUNDLE));
+        currentMadame = (Madame) getArguments().getSerializable(MADAME_BUNDLE);
+      } else if (getArguments().containsKey(URL_BUNDLE)) {
+        isLoading = true;
+        loadingStartAnimations();
+        Madame madame = new Madame();
+        madame.setUrl(getArguments().getString(URL_BUNDLE));
+        AppObservable.bindFragment(this, Observable.just(madame))
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .delay(DURATION_SHORT, TimeUnit.MILLISECONDS)
+            .observeOn(AndroidSchedulers.mainThread())
+            .map(this::storeInDb)
+            .subscribe(this::onImageRequestFinishSuccessful, this::onErrorLoading);
+      } else {
+        startLoading();
+      }
+    }
   }
 
   private void showBitmap(Bitmap bitmap) {
@@ -246,6 +281,7 @@ public class LoadingFragment extends BaseFragment {
   }
 
   private Madame storeInDb(Madame madame) {
+    //TODO what if already stored in DB?
     mainActivity.getMadameDataProvider().save(madame);
     currentMadame = madame;
     return madame;
@@ -295,6 +331,11 @@ public class LoadingFragment extends BaseFragment {
 
   @OnClick(R.id.shareImageActionButton)
   public void onShareActionButtonClick() {
+    Intent sendIntent = new Intent();
+    sendIntent.setAction(Intent.ACTION_SEND);
+    sendIntent.putExtra(Intent.EXTRA_TEXT, currentMadame.getUrl());
+    sendIntent.setType("text/plain");
+    startActivity(sendIntent);
 
   }
 
@@ -326,8 +367,11 @@ public class LoadingFragment extends BaseFragment {
 
   private void onImageRequestFinishSuccessful(Madame madame) {
     Log.d(TAG, madame.getUrl());
-    ImageLoader.getInstance().loadImage(madame.getUrl(), imageDownloadTarget);
-    //Picasso.with(getBaseActivity()).load(madame.getUrl()).into(imageDownloadTarget);
+    loadImageFromUrl(madame.getUrl());
+  }
+
+  private void loadImageFromUrl(String url) {
+    ImageLoader.getInstance().loadImage(url, imageDownloadTarget);
   }
 
   private ImageLoadingListener imageDownloadTarget = new ImageLoadingListener() {

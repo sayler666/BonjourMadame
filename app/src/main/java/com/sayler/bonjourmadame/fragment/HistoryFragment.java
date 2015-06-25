@@ -78,7 +78,7 @@ public class HistoryFragment extends Fragment {
       setSharedElementReturnTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.image_transition));
       setExitTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.fade));
 
-      LoadingFragment loadingFragment = LoadingFragment.newInstanceWithImage(chosenBitmap, madameList.get(position));
+      LoadingFragment loadingFragment = LoadingFragment.newInstanceWithBitmap(chosenBitmap, madameList.get(position));
       loadingFragment.setSharedElementEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.image_transition));
       loadingFragment.setEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.fade));
       loadingFragment.setImageTransitionName(imageView.getTransitionName());

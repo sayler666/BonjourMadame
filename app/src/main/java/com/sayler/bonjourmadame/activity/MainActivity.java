@@ -1,6 +1,7 @@
 package com.sayler.bonjourmadame.activity;
 
 import android.animation.ValueAnimator;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -69,15 +70,34 @@ public class MainActivity extends BaseActivity {
      * restore state
      */
     if (savedInstanceState == null) {
-      getFragmentManager().beginTransaction()
-          .add(R.id.container, LoadingFragment.newInstanceRandomLoad())
-          .commit();
+      String imgUrl = getUrlFromIntent();
+      LoadingFragment loadingFragment;
 
+      if (imgUrl != null) {
+        loadingFragment = LoadingFragment.newInstanceWithUrl(imgUrl);
+      } else {
+        loadingFragment = LoadingFragment.newInstanceRandomLoad();
+      }
+
+      getFragmentManager().beginTransaction()
+          .add(R.id.container, loadingFragment)
+          .commit();
       getFragmentManager().beginTransaction()
           .add(R.id.drawerLayout, new DrawerFragment(), DrawerFragment.class.getSimpleName())
           .commit();
     }
 
+  }
+
+  private String getUrlFromIntent() {
+    String combine = null;
+    if (getIntent().getData() != null) {
+      Uri data = getIntent().getData();
+      String scheme = data.getScheme();
+      String fullPath = data.getEncodedSchemeSpecificPart();
+      combine = scheme + ":" + fullPath;
+    }
+    return combine;
   }
 
   @Override
