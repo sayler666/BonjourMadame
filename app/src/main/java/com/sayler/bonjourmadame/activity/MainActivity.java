@@ -7,7 +7,9 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import butterknife.ButterKnife;
@@ -96,6 +98,16 @@ public class MainActivity extends BaseActivity {
     overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
   }
 
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    switch (item.getItemId()) {
+      case android.R.id.home:
+        getFragmentManager().popBackStack();
+        return true;
+    }
+    return false;
+  }
+
   /* ---------------------------------------------- GETTERS & SETTERS ------------------------------------------------*/
 
   public Toolbar getToolbar() {
@@ -152,6 +164,22 @@ public class MainActivity extends BaseActivity {
 
   private void setupToolbar() {
     toolbar.setTitle(R.string.app_name);
+
+    toolbar.setNavigationOnClickListener(v -> {
+      if (getFragmentManager().getBackStackEntryCount() > 0) {
+        getFragmentManager().popBackStack();
+      } else {
+        drawer.openDrawer(Gravity.START);
+      }
+    });
+
+    getFragmentManager().addOnBackStackChangedListener(() -> {
+      if (getFragmentManager().getBackStackEntryCount() > 0) {
+        toggleActionBarIcon(ActionDrawableState.BURGER, drawerToggle, true);
+      } else {
+        toggleActionBarIcon(ActionDrawableState.ARROW, drawerToggle, true);
+      }
+    });
   }
 
   private void setupAnimation() {
@@ -181,4 +209,31 @@ public class MainActivity extends BaseActivity {
       EventBus.getDefault().post(new DrawerClosedEvent());
     }
   }
+
+  private enum ActionDrawableState {
+    BURGER, ARROW
+  }
+
+  private static void toggleActionBarIcon(ActionDrawableState state, final ActionBarDrawerToggle toggle, boolean animate) {
+    if (animate) {
+      float start = state == ActionDrawableState.BURGER ? 0f : 1.0f;
+      float end = Math.abs(start - 1);
+      ValueAnimator offsetAnimator = ValueAnimator.ofFloat(start, end);
+      offsetAnimator.setDuration(300);
+      offsetAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
+      offsetAnimator.addUpdateListener(animation -> {
+        float offset = (Float) animation.getAnimatedValue();
+        toggle.onDrawerSlide(null, offset);
+      });
+      offsetAnimator.start();
+
+    } else {
+      if (state == ActionDrawableState.BURGER) {
+        toggle.onDrawerClosed(null);
+      } else {
+        toggle.onDrawerOpened(null);
+      }
+    }
+  }
+
 }
