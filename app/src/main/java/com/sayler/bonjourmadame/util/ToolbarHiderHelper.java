@@ -17,6 +17,8 @@ import com.sayler.bonjourmadame.R;
  * @author sayler666
  */
 public class ToolbarHiderHelper {
+  private static final int SCROLLING_DOWN = 1;
+  private static final int SCROLLING_UP = -1;
   private final String TAG = getClass().getSimpleName();
   private final Toolbar toolbar;
   private final RecyclerView recyclerView;
@@ -44,23 +46,27 @@ public class ToolbarHiderHelper {
           case RecyclerView.SCROLL_STATE_IDLE:
             Log.d(TAG, "stop scrolling: posY" + toolbar.getTranslationY() + " sign " + scrollSignum);
 
-            ValueAnimator va;
-            if (scrollSignum == 1) {
-              va = ValueAnimator.ofInt(((int) toolbar.getTranslationY()), -toolbarHeight);
+            ValueAnimator va = null;
+            if (scrollSignum == SCROLLING_DOWN) {
+              if (scrollAbsolutePosition > toolbarHeight) {
+                va = ValueAnimator.ofInt(((int) toolbar.getTranslationY()), -toolbarHeight);
+              }
             } else {
               va = ValueAnimator.ofInt(((int) toolbar.getTranslationY()), 0);
             }
-            va.addUpdateListener(animation -> {
-              toolbar.setTranslationY((int) animation.getAnimatedValue());
-              if (scrollSignum == 1) {
-                tempHidingY = -toolbarHeight - (int) animation.getAnimatedValue();
-              }
-              if (scrollSignum == -1) {
-                tempShowingY = -toolbarHeight - (int) animation.getAnimatedValue();
-              }
-            });
-            va.setDuration(500);
-            va.start();
+            if (va != null) {
+              va.addUpdateListener(animation -> {
+                toolbar.setTranslationY((int) animation.getAnimatedValue());
+                if (scrollSignum == SCROLLING_DOWN) {
+                  tempHidingY = -toolbarHeight - (int) animation.getAnimatedValue();
+                }
+                if (scrollSignum == SCROLLING_UP) {
+                  tempShowingY = -toolbarHeight - (int) animation.getAnimatedValue();
+                }
+              });
+              va.setDuration(500);
+              va.start();
+            }
             break;
           default:
         }
@@ -76,10 +82,10 @@ public class ToolbarHiderHelper {
         }
 
         if (scrollSignum != (int) Math.signum(dy)) {
-          if (scrollSignum == -1) {
+          if (scrollSignum == SCROLLING_UP) {
             tempHidingY = tempShowingY;
           }
-          if (scrollSignum == 1) {
+          if (scrollSignum == SCROLLING_DOWN) {
             tempShowingY = tempHidingY;
           }
         }
@@ -87,7 +93,7 @@ public class ToolbarHiderHelper {
         scrollAbsolutePosition += dy;
 
         //hiding scroll
-        if (scrollSignum == 1) {
+        if (scrollSignum == SCROLLING_DOWN) {
           if (Math.abs(tempHidingY) <= toolbarHeight) {
             if (Math.abs(tempHidingY + dy) <= toolbarHeight) {
               tempHidingY += dy;
