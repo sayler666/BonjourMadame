@@ -6,6 +6,10 @@ import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.media.AudioFormat;
+import android.media.AudioManager;
+import android.media.AudioTrack;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -46,6 +50,8 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import uk.co.senab.photoview.PhotoViewAttacher;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -116,6 +122,46 @@ public class LoadingFragment extends BaseFragment {
     return new LoadingFragment();
   }
 
+
+  public boolean play() {
+
+    int nativeRate = AudioTrack.getNativeOutputSampleRate(AudioManager.STREAM_MUSIC);
+    Log.i("UI", "Native stream rate: " + nativeRate + " Hz");
+    int minBufferSize = AudioTrack.getMinBufferSize(96000,
+        AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
+    AudioTrack at;
+    int i = 0;
+    byte[] music = null;
+    InputStream is = null;
+    try {
+      //is = getActivity().getAssets().open("Yamaha-EX5-AnaChorus-C2.wav");
+      is = getActivity().getAssets().open("17-Benjamin.wav");
+
+      at = new AudioTrack(AudioManager.STREAM_MUSIC, 96000,
+          AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT,
+          minBufferSize, AudioTrack.MODE_STREAM);
+
+      try {
+        music = new byte[512];
+        at.play();
+
+        while ((i = is.read(music)) != -1)
+          at.write(music, 0, i);
+
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+
+      at.stop();
+      at.release();
+
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    return true;
+  }
+
   /* ---------------------------------------------- LIFECYCLE METHODS ------------------------------------------------*/
   public void setImageTransitionName(String imageTransitionName) {
     this.imageTransitionName = imageTransitionName;
@@ -160,6 +206,9 @@ public class LoadingFragment extends BaseFragment {
         startLoading();
       }
     }
+
+    //   play();
+
   }
 
   private void showBitmap(Bitmap bitmap) {
