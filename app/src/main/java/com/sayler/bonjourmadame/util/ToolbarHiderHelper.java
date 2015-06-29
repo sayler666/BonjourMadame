@@ -113,4 +113,15 @@ public class ToolbarHiderHelper {
       }
     });
   }
+
+  public void showToolbar() {
+    ValueAnimator va;
+    va = ValueAnimator.ofInt(((int) toolbar.getTranslationY()), 0);
+    va.addUpdateListener(animation -> {
+      toolbar.setTranslationY((int) animation.getAnimatedValue());
+      tempShowingY = -toolbarHeight - (int) animation.getAnimatedValue();
+    });
+    va.setDuration(500);
+    va.start();
+  }
 }

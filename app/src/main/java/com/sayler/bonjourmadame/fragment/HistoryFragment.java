@@ -38,6 +38,7 @@ public class HistoryFragment extends Fragment {
   private ImageAdapter adapter;
   private Bitmap chosenBitmap;
   private int chosenPosition = -1;
+  private ToolbarHiderHelper toolbarHiderHelper;
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -60,7 +61,7 @@ public class HistoryFragment extends Fragment {
   }
 
   private void setupRecyclerView() {
-    ToolbarHiderHelper toolbarHiderHelper = new ToolbarHiderHelper(mainActivity.getToolbar(), recyclerView);
+    toolbarHiderHelper = new ToolbarHiderHelper(mainActivity.getToolbar(), recyclerView);
     toolbarHiderHelper.startHidingToolbarOnScroll();
     recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), SPAN_COUNT));
     List<Madame> madameList = loadMadameList();
@@ -84,6 +85,8 @@ public class HistoryFragment extends Fragment {
       loadingFragment.setSharedElementEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.image_transition));
       loadingFragment.setEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.fade));
       loadingFragment.setImageTransitionName(imageView.getTransitionName());
+
+      toolbarHiderHelper.showToolbar();
 
       getFragmentManager().beginTransaction()
           .replace(R.id.container, loadingFragment)
