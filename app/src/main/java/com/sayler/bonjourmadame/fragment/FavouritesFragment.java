@@ -18,7 +18,6 @@ public class FavouritesFragment extends HistoryFragment {
     List<Madame> madameList = Collections.emptyList();
     try {
       madameList = mainActivity.getMadameDataProvider().getDao().queryForEq(Madame.FAVOURITE_COL, true);
-      Collections.reverse(madameList);
     } catch (SQLException e) {
       e.printStackTrace();
     }

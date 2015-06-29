@@ -64,6 +64,8 @@ public class HistoryFragment extends Fragment {
     toolbarHiderHelper.startHidingToolbarOnScroll();
     recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), SPAN_COUNT));
     List<Madame> madameList = loadMadameList();
+    addHeaderViews(madameList);
+    Collections.reverse(madameList);
     setupAdapter(madameList);
     recyclerView.setAdapter(adapter);
   }
@@ -96,14 +98,16 @@ public class HistoryFragment extends Fragment {
     List<Madame> madameList = Collections.emptyList();
     try {
       madameList = mainActivity.getMadameDataProvider().getAll();
-      madameList.add(new Madame());
-      madameList.add(new Madame());
-      madameList.add(new Madame());
-      Collections.reverse(madameList);
     } catch (SQLException e) {
       e.printStackTrace();
     }
     return madameList;
+  }
+
+  private void addHeaderViews(List<Madame> madameList) {
+    for (int i = 0; i < SPAN_COUNT; i++) {
+      madameList.add(new Madame());
+    }
   }
 
   @Override
