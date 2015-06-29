@@ -119,4 +119,10 @@ public class HistoryFragment extends Fragment {
     adapter.destroy();
     System.gc();
   }
+
+  public void clearOpenedBitmap() {
+    chosenBitmap = null;
+    chosenPosition = -1;
+  }
+
 }

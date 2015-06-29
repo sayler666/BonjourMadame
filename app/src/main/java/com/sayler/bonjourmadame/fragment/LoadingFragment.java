@@ -270,6 +270,7 @@ public class LoadingFragment extends BaseFragment {
   }
 
   private void startLoading() {
+    clearBitmapFromHistoryFragment();
     isLoading = true;
     loadingStartAnimations();
     AppObservable.bindFragment(this, ((MainActivity) getBaseActivity()).getBonjourMadameAPI().getRandomMadame())
@@ -278,6 +279,19 @@ public class LoadingFragment extends BaseFragment {
         .map(madamDto -> mainActivity.getMadamEntityDataMapper().transform(madamDto.getResult()))
         .map(this::storeInDb)
         .subscribe(this::onImageRequestFinishSuccessful, this::onErrorLoading);
+  }
+
+  private void clearBitmapFromHistoryFragment() {
+    HistoryFragment historyFragment = (HistoryFragment) getFragmentManager().findFragmentByTag(HistoryFragment.class.getSimpleName());
+    if (historyFragment != null) {
+      historyFragment.clearOpenedBitmap();
+    } else {
+      historyFragment = (HistoryFragment) getFragmentManager().findFragmentByTag(HistoryFragment.class.getSimpleName());
+      if (historyFragment != null) {
+        historyFragment.clearOpenedBitmap();
+      }
+    }
+    setSharedElementReturnTransition(null);
   }
 
   private Madame storeInDb(Madame madame) {
@@ -336,7 +350,6 @@ public class LoadingFragment extends BaseFragment {
     sendIntent.putExtra(Intent.EXTRA_TEXT, currentMadame.getUrl());
     sendIntent.setType("text/plain");
     startActivity(sendIntent);
-
   }
 
   @OnClick(R.id.refreshActionButton)
