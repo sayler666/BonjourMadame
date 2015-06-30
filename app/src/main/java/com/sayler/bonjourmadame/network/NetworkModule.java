@@ -10,8 +10,6 @@ import dagger.Provides;
 import retrofit.RestAdapter;
 import retrofit.converter.Converter;
 
-import javax.inject.Singleton;
-
 /**
  * Network module for Parse API
  *

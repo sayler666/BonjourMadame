@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import com.bartoszlipinski.recyclerviewheader.RecyclerViewHeader;
 import com.bignerdranch.android.multiselector.MultiSelector;
 import com.sayler.bonjourmadame.R;
 import com.sayler.bonjourmadame.activity.MainActivity;

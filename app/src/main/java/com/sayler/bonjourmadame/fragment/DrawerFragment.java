@@ -6,12 +6,10 @@
 package com.sayler.bonjourmadame.fragment;
 
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.app.WallpaperManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,8 +20,8 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.sayler.bonjourmadame.R;
 import com.sayler.bonjourmadame.adapter.NavigationAdapter;
-import com.sayler.bonjourmadame.event.ForceCloseDrawerEvent;
 import com.sayler.bonjourmadame.event.DrawerClosedEvent;
+import com.sayler.bonjourmadame.event.ForceCloseDrawerEvent;
 import com.sayler.bonjourmadame.event.InflateDrawerFragmentEvent;
 import com.sayler.bonjourmadame.event.RefreshDrawerTopImage;
 import com.sayler.bonjourmadame.model.NavigationItem;

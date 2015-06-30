@@ -9,7 +9,6 @@ import android.animation.ValueAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import com.sayler.bonjourmadame.R;
 
 /**
  * Helper class for hiding toolbar on list/recycler scroll
