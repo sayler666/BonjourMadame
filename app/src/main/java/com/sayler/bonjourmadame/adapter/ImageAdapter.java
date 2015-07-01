@@ -6,8 +6,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import com.bignerdranch.android.multiselector.MultiSelector;
 import com.bignerdranch.android.multiselector.SwappingHolder;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -58,13 +58,12 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
   @Override
   public void onBindViewHolder(ViewHolder viewHolder, final int i) {
 
+    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) viewHolder.image.getLayoutParams();
     if (i < spanCount) {
       viewHolder.image.setImageBitmap(null);
-      FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) viewHolder.image.getLayoutParams();
       params.height = topRowsHeight;
       viewHolder.image.setLayoutParams(params);
     } else {
-      FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) viewHolder.image.getLayoutParams();
       params.height = normalRowsHeight;
       viewHolder.image.setLayoutParams(params);
 
