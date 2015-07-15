@@ -6,6 +6,7 @@ import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,10 +30,7 @@ import com.sayler.bonjourmadame.R;
 import com.sayler.bonjourmadame.activity.MainActivity;
 import com.sayler.bonjourmadame.event.InflateDrawerFragmentEvent;
 import com.sayler.bonjourmadame.event.RefreshDrawerTopImage;
-import com.sayler.bonjourmadame.util.ActionButtonHelper;
-import com.sayler.bonjourmadame.util.ActionButtonLocation;
-import com.sayler.bonjourmadame.util.ColorUtils;
-import com.sayler.bonjourmadame.util.WallpaperManager;
+import com.sayler.bonjourmadame.util.*;
 import com.sayler.bonjourmadame.widget.ActionButton;
 import com.sayler.bonjourmadame.widget.CircularReveal;
 import com.sayler.bonjourmadame.widget.RefreshActionButton;
@@ -339,11 +337,21 @@ public class LoadingFragment extends BaseFragment {
 
   @OnClick(R.id.shareImageActionButton)
   public void onShareActionButtonClick() {
-    Intent sendIntent = new Intent();
-    sendIntent.setAction(Intent.ACTION_SEND);
-    sendIntent.putExtra(Intent.EXTRA_TEXT, currentMadame.getUrl());
-    sendIntent.setType("text/plain");
-    startActivity(sendIntent);
+    AppObservable.bindFragment(this, Observable.just(loadedMadameImageView))
+        .observeOn(Schedulers.io())
+        .map(BitmapHelper::getLocalBitmapUri)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(this::shareBitmapFromUriIntent);
+  }
+
+  private void shareBitmapFromUriIntent(Uri bitmapUri) {
+    if (bitmapUri != null) {
+      Intent shareIntent = new Intent();
+      shareIntent.setAction(Intent.ACTION_SEND);
+      shareIntent.putExtra(Intent.EXTRA_STREAM, bitmapUri);
+      shareIntent.setType("image/*");
+      startActivity(shareIntent);
+    }
   }
 
   @OnClick(R.id.refreshActionButton)
