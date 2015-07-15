@@ -74,24 +74,27 @@ public class HistoryFragment extends Fragment {
     adapter = new ImageAdapter(madameList, recyclerView, chosenBitmap, chosenPosition, multiSelector, SPAN_COUNT);
     adapter.setOnItemClickListener((view, position) -> {
       ImageView imageView = (ImageView) view.findViewById(R.id.image);
-      chosenBitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
-      chosenPosition = position;
+      BitmapDrawable bitmapDrawable = (BitmapDrawable) imageView.getDrawable();
+      if (bitmapDrawable != null) {
+        chosenBitmap = bitmapDrawable.getBitmap();
+        chosenPosition = position;
 
-      setSharedElementReturnTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.image_transition));
-      setExitTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.fade));
+        setSharedElementReturnTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.image_transition));
+        setExitTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.fade));
 
-      LoadingFragment loadingFragment = LoadingFragment.newInstanceWithBitmap(chosenBitmap, madameList.get(position));
-      loadingFragment.setSharedElementEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.image_transition));
-      loadingFragment.setEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.fade));
-      loadingFragment.setImageTransitionName(imageView.getTransitionName());
+        LoadingFragment loadingFragment = LoadingFragment.newInstanceWithBitmap(chosenBitmap, madameList.get(position));
+        loadingFragment.setSharedElementEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.image_transition));
+        loadingFragment.setEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.fade));
+        loadingFragment.setImageTransitionName(imageView.getTransitionName());
 
-      toolbarHiderHelper.showToolbar();
+        toolbarHiderHelper.showToolbar();
 
-      getFragmentManager().beginTransaction()
-          .replace(R.id.container, loadingFragment)
-          .addToBackStack(null)
-          .addSharedElement(imageView, imageView.getTransitionName())
-          .commit();
+        getFragmentManager().beginTransaction()
+            .replace(R.id.container, loadingFragment)
+            .addToBackStack(null)
+            .addSharedElement(imageView, imageView.getTransitionName())
+            .commit();
+      }
     });
   }
 
