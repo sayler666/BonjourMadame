@@ -34,7 +34,7 @@ public class RefreshActionButton extends ActionButton {
   private ObjectAnimator loadingColorAnimator;
   private int backgroundColor;
   private int loadingColor1 = getResources().getColor(R.color.mainLight);
-  private int loadingColor2 = getResources().getColor(R.color.mainLight2);
+  private int loadingColor2 = getResources().getColor(R.color.mainLight);
   private ObjectAnimator backgroundColorAnimator;
   private Animation fadeOut;
   private Animation fadeIn;
@@ -128,34 +128,11 @@ public class RefreshActionButton extends ActionButton {
     loadingColorAnimator.end();
     if (backgroundColorAnimator != null) {
       backgroundColorAnimator.start();
-      backgroundColorAnimator.addListener(new Animator.AnimatorListener() {
-        @Override
-        public void onAnimationStart(Animator animation) {
-          //not used
-        }
-
-        @Override
-        public void onAnimationEnd(Animator animation) {
-          setUpColors();
-          getImageButtonStroke().setVisibility(VISIBLE);
-          ObjectAnimator.ofFloat(getImageButtonStroke(), "alpha", 0, 1).setDuration(1000).start();
-        }
-
-        @Override
-        public void onAnimationCancel(Animator animation) {
-          //not used
-        }
-
-        @Override
-        public void onAnimationRepeat(Animator animation) {
-          //not used
-        }
-      });
-    } else {
-      setUpColors();
-      getImageButtonStroke().setVisibility(VISIBLE);
-      ObjectAnimator.ofFloat(getImageButtonStroke(), "alpha", 0, 1).setDuration(1000).start();
     }
+
+    setUpColors();
+    getImageButtonStroke().setVisibility(VISIBLE);
+    ObjectAnimator.ofFloat(getImageButtonStroke(), "alpha", 0, 1).setDuration(1000).start();
 
     getImageButton().setElevation(getResources().getDimension(R.dimen.elevation_low));
     startAnimation(zoomOutAnimation);

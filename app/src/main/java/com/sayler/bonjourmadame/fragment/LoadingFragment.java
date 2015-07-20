@@ -172,7 +172,7 @@ public class LoadingFragment extends BaseFragment {
 
     isLoading = false;
     loadedMadameImageView.setTransitionName(imageTransitionName);
-    updateThemeColorsFromBitmap(bitmap, true);
+    updateThemeColorsFromBitmap(new ColorArt(bitmap), true);
     loadedMadameImageView.setImageBitmap(bitmap);
     circularReveal.reveal(false, true);
 
@@ -402,8 +402,12 @@ public class LoadingFragment extends BaseFragment {
 
     @Override
     public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-      updateThemeColorsFromBitmap(loadedImage, false);
-      onLoadingFinishSuccessful(loadedImage);
+      AppObservable.bindFragment(LoadingFragment.this, Observable.just(loadedImage))
+          .observeOn(Schedulers.io())
+          .map(ColorArt::new)
+          .observeOn(AndroidSchedulers.mainThread())
+          .doOnNext(v -> updateThemeColorsFromBitmap(v, false))
+          .subscribe(v -> onLoadingFinishSuccessful(loadedImage));
     }
 
     @Override
@@ -460,8 +464,8 @@ public class LoadingFragment extends BaseFragment {
     layoutTransition.setInterpolator(LayoutTransition.CHANGING, new OvershootInterpolator());
   }
 
-  private void updateThemeColorsFromBitmap(Bitmap bitmap, boolean animation) {
-    currentColorArt = new ColorArt(bitmap);
+  private void updateThemeColorsFromBitmap(ColorArt currentColorArt, boolean animation) {
+    //currentColorArt = new ColorArt(bitmap);
     //1, 1.4, .8 are hsv factor that will make color slightly darker
     int darkenColor = ColorUtils.amendColor(currentColorArt.getBackgroundColor(), 1f, 1.4f, 0.8f);
     getBaseActivity().animateStatusBarColor(darkenColor, DURATION_LONG);
@@ -474,7 +478,7 @@ public class LoadingFragment extends BaseFragment {
     refreshActionButton.setBackgroundColorAfterFinishLoading(darkenColor);
     refreshActionButton.setRippleDrawableAfterFinishLoading(darkenColor, currentColorArt.getDetailColor());
     refreshActionButton.setStrokeGradientAfterFinishLoading(currentColorArt.getDetailColor(), darkenColor);
-    refreshActionButton.setLoadingColors(darkenColor, currentColorArt.getBackgroundColor());
+    refreshActionButton.setLoadingColors(darkenColor, darkenColor);
 
     if (animation) {
       refreshActionButton.setActionBackground(refreshActionButton.prepareRippleDrawable(darkenColor, currentColorArt.getDetailColor()));

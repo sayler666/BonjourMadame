@@ -11,8 +11,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/abc_action_bar_default_height_material"
                 android:background="@color/mainColor"
-                android:translationZ="5dp"
-                android:elevation="5dp"
+                android:elevation="1dp"
                 android:theme="@style/ThemeOverlay.AppCompat.Dark">
         </android.support.v7.widget.Toolbar>
 
