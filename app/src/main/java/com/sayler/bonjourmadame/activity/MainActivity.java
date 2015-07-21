@@ -1,8 +1,11 @@
 package com.sayler.bonjourmadame.activity;
 
 import android.animation.ValueAnimator;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
@@ -10,6 +13,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -45,6 +49,7 @@ public class MainActivity extends BaseActivity {
   private Animation toolbarDropOutAnimation;
   private Animation toolbarDropInAnimation;
   private int currentToolbarColor;
+  private int currentToolbarIconsColor;
   /* ---------------------------------------------- LIFECYCLE METHODS ------------------------------------------------*/
 
   @Override
@@ -128,6 +133,13 @@ public class MainActivity extends BaseActivity {
     return false;
   }
 
+  public View findActionModeView() {
+    int id = this.getResources().getIdentifier("action_mode_bar", "id", "android");
+    View actionModeView = findViewById(id);
+
+    return actionModeView;
+  }
+
   /* ---------------------------------------------- GETTERS & SETTERS ------------------------------------------------*/
 
   public Toolbar getToolbar() {
@@ -158,6 +170,7 @@ public class MainActivity extends BaseActivity {
 
   public void colorizeToolbarIcons(int color) {
     ToolbarColorizeHelper.colorizeToolbar(toolbar, color, MainActivity.this);
+    currentToolbarIconsColor = color;
   }
 
   public void colorizeToolbar(int color, int duration) {
@@ -168,7 +181,25 @@ public class MainActivity extends BaseActivity {
     currentToolbarColor = color;
   }
 
-  /* ---------------------------------------------- EVENTS -----------------------------------------------------------*/
+  public void colorizeToolbarActionModeIcons() {
+    View actionModeView = findActionModeView();
+    ToolbarColorizeHelper.colorizeToolbarActionMode((ViewGroup) actionModeView, getCurrentToolbarIconsColor(), this);
+  }
+
+  public void colorizeToolbarActionModeBackground() {
+    View actionModeView = findActionModeView();
+    Drawable drawable = new ColorDrawable(getCurrentToolbarColor());
+    actionModeView.setBackground(drawable);
+  }
+
+  public int getCurrentToolbarColor() {
+    return currentToolbarColor;
+  }
+
+  public int getCurrentToolbarIconsColor() {
+    return currentToolbarIconsColor;
+  }
+/* ---------------------------------------------- EVENTS -----------------------------------------------------------*/
 
   public void onEvent(ForceCloseDrawerEvent event) {
     closeDrawer();

@@ -8,9 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.transition.TransitionInflater;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.ImageView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -28,7 +26,7 @@ import java.util.List;
 /**
  * History fragment.
  */
-public class HistoryFragment extends Fragment {
+public class HistoryFragment extends Fragment implements ImageAdapter.MultiSelectorListener, ActionMode.Callback {
   public static final int SPAN_COUNT = 3;
   @InjectView(R.id.history_list_recycler_view)
   public RecyclerView recyclerView;
@@ -38,6 +36,7 @@ public class HistoryFragment extends Fragment {
   private Bitmap chosenBitmap;
   private int chosenPosition = -1;
   private ToolbarHiderHelper toolbarHiderHelper;
+  private ActionMode actionMode;
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -71,31 +70,40 @@ public class HistoryFragment extends Fragment {
   }
 
   private void setupAdapter(List<Madame> madameList) {
-    adapter = new ImageAdapter(madameList, recyclerView, chosenBitmap, chosenPosition, multiSelector, SPAN_COUNT);
+    adapter = new ImageAdapter(madameList, recyclerView, chosenBitmap, chosenPosition, multiSelector, SPAN_COUNT, this);
     adapter.setOnItemClickListener((view, position) -> {
-      ImageView imageView = (ImageView) view.findViewById(R.id.image);
-      BitmapDrawable bitmapDrawable = (BitmapDrawable) imageView.getDrawable();
-      if (bitmapDrawable != null) {
-        chosenBitmap = bitmapDrawable.getBitmap();
-        chosenPosition = position;
-
-        setSharedElementReturnTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.image_transition));
-        setExitTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.fade));
-
-        LoadingFragment loadingFragment = LoadingFragment.newInstanceWithBitmap(chosenBitmap, madameList.get(position));
-        loadingFragment.setSharedElementEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.image_transition));
-        loadingFragment.setEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.fade));
-        loadingFragment.setImageTransitionName(imageView.getTransitionName());
-
-        toolbarHiderHelper.showToolbar();
-
-        getFragmentManager().beginTransaction()
-            .replace(R.id.container, loadingFragment)
-            .addToBackStack(null)
-            .addSharedElement(imageView, imageView.getTransitionName())
-            .commit();
+      if (multiSelector.isSelectable()) {
+        multiSelector.setSelected(position, position, !multiSelector.isSelected(position, position));
+        multiSelector.refreshAllHolders();
+      } else {
+        showMadame(madameList, view, position);
       }
     });
+  }
+
+  private void showMadame(List<Madame> madameList, View view, int position) {
+    ImageView imageView = (ImageView) view.findViewById(R.id.image);
+    BitmapDrawable bitmapDrawable = (BitmapDrawable) imageView.getDrawable();
+    if (bitmapDrawable != null) {
+      toolbarHiderHelper.showToolbar();
+
+      chosenBitmap = bitmapDrawable.getBitmap();
+      chosenPosition = position;
+
+      setSharedElementReturnTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.image_transition));
+      setExitTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.fade));
+
+      LoadingFragment loadingFragment = LoadingFragment.newInstanceWithBitmap(chosenBitmap, madameList.get(position));
+      loadingFragment.setSharedElementEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.image_transition));
+      loadingFragment.setEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.fade));
+      loadingFragment.setImageTransitionName(imageView.getTransitionName());
+
+      getFragmentManager().beginTransaction()
+          .replace(R.id.container, loadingFragment)
+          .addToBackStack(null)
+          .addSharedElement(imageView, imageView.getTransitionName())
+          .commit();
+    }
   }
 
   @NonNull
@@ -127,4 +135,38 @@ public class HistoryFragment extends Fragment {
     chosenPosition = -1;
   }
 
+  @Override
+  public void onSelectableStart() {
+    mainActivity.getToolbar().startActionMode(this);
+  }
+
+  @Override
+  public void onSelectableFinish() {
+
+  }
+
+  @Override
+  public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+    getActivity().getMenuInflater().inflate(R.menu.history, menu);
+    mode.setTitle("Test");
+    mainActivity.colorizeToolbarActionModeBackground();
+    mainActivity.colorizeToolbarActionModeIcons();
+
+    return true;
+  }
+
+  @Override
+  public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+    return false;
+  }
+
+  @Override
+  public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+    return false;
+  }
+
+  @Override
+  public void onDestroyActionMode(ActionMode mode) {
+    multiSelector.setSelectable(false);
+  }
 }

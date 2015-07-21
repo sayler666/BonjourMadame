@@ -429,7 +429,7 @@ public class LoadingFragment extends BaseFragment {
 
   private void onLoadingFinishSuccessful(Bitmap bitmap) {
     /**
-     * set image and reveal main content
+     * set image and reveal history content
      */
 
     if (currentBitmap != null) {

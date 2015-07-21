@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import com.sayler.bonjourmadame.R;
 
 import java.util.ArrayList;
@@ -70,6 +71,68 @@ public class ToolbarColorizeHelper {
       //Step 4: Changing the color of the Overflow Menu icon.
       setOverflowButtonColor(activity, colorFilter);
     }
+  }
+
+  /**
+   * Use this method to colorize toolbar's action mode icons to the desired target color
+   *
+   * @param actionMode        toolbar's action mode view being colored
+   * @param toolbarIconsColor the target color of toolbar icons
+   * @param activity          reference to activity needed to register observers
+   */
+  public static void colorizeToolbarActionMode(ViewGroup actionMode, int toolbarIconsColor, Activity activity) {
+    final PorterDuffColorFilter colorFilter = new PorterDuffColorFilter(toolbarIconsColor, PorterDuff.Mode.SRC_ATOP);
+
+    actionMode.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+      @Override
+      public void onGlobalLayout() {
+        for (int i = 0; i < actionMode.getChildCount(); i++) {
+          final View v = actionMode.getChildAt(i);
+
+          //Step 1 : Changing the color of back button (or open drawer button).
+          if (v instanceof ImageButton) {
+            //Action Bar back button
+            ((ImageButton) v).getDrawable().setColorFilter(colorFilter);
+            v.invalidate();
+          }
+
+
+          if (v instanceof android.widget.ActionMenuView) {
+            for (int j = 0; j < ((android.widget.ActionMenuView) v).getChildCount(); j++) {
+
+              //Step 2: Changing the color of any ActionMenuViews - icons that are not back button, nor text, nor overflow menu icon.
+              //Colorize the ActionViews -> all icons that are NOT: back button | overflow menu
+              final View innerView = ((android.widget.ActionMenuView) v).getChildAt(j);
+              if (innerView instanceof TextView) {
+                for (int k = 0; k < ((TextView) innerView).getCompoundDrawables().length; k++) {
+                  if (((TextView) innerView).getCompoundDrawables()[k] != null) {
+                    final int finalK = k;
+
+                    //Important to set the color filter in seperate thread, by adding it to the message queue
+                    //Won't work otherwise.
+                    innerView.post(() -> ((TextView) innerView).getCompoundDrawables()[finalK].setColorFilter(colorFilter));
+                  }
+                }
+              }
+            }
+          }
+
+          //Step 3: Changing the color of title and subtitle.
+          int id = actionMode.getResources().getIdentifier("action_bar_title", "id", "android");
+          TextView title = (TextView) actionMode.findViewById(id);
+          if (title != null) {
+            title.setTextColor(toolbarIconsColor);
+          }
+
+          //Step 4: Changing the color of the Overflow Menu icon.
+          setOverflowButtonColor(activity, colorFilter);
+        }
+
+        removeOnGlobalLayoutListener(actionMode, this);
+      }
+    });
+
+
   }
 
   /**
