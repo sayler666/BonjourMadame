@@ -62,14 +62,14 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
   @Override
   public void onBindViewHolder(ViewHolder viewHolder, final int i) {
 
-    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) viewHolder.image.getLayoutParams();
+    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) viewHolder.sizeHolder.getLayoutParams();
     if (i < spanCount) {
       viewHolder.image.setImageBitmap(null);
       params.height = topRowsHeight;
-      viewHolder.image.setLayoutParams(params);
+      viewHolder.sizeHolder.setLayoutParams(params);
     } else {
       params.height = normalRowsHeight;
-      viewHolder.image.setLayoutParams(params);
+      viewHolder.sizeHolder.setLayoutParams(params);
 
       viewHolder.container.setOnClickListener(view -> {
         if (itemClickListener != null) {
@@ -84,9 +84,13 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         ImageLoader.getInstance().displayImage(madameList.get(i).getUrl(), viewHolder.image);
       }
 
-      if (multiSelector.isSelected(i, i)) {
-        Log.d(TAG, "selected id:" + i);
-      }
+      viewHolder.container.setOnLongClickListener(v -> {
+            multiSelector.setSelectable(true);
+            multiSelectorListener.onSelectableStart();
+            multiSelector.setSelected(i,i,true);
+            return true;
+          }
+      );
     }
   }
 
@@ -116,6 +120,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
     private MultiSelectorListener multiSelectorListener;
     public ImageView image;
     public View container;
+    public ViewGroup sizeHolder;
 
     public ViewHolder(View itemView, MultiSelector multiSelector, MultiSelectorListener multiSelectorListener) {
       super(itemView, multiSelector);
@@ -123,14 +128,9 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
       this.multiSelectorListener = multiSelectorListener;
       image = (ImageView) itemView.findViewById(R.id.image);
       container = itemView.findViewById(R.id.container);
-      itemView.setOnLongClickListener(v -> {
-            multiSelector.setSelectable(true);
-            multiSelectorListener.onSelectableStart();
-            return true;
-          }
-      );
-    }
+      sizeHolder = (ViewGroup) itemView.findViewById(R.id.sizeHolder);
 
+    }
 
   }
 

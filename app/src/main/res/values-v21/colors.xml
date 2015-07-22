@@ -5,7 +5,7 @@
     <color name="mainAccent">#ffdf6700</color>
     <color name="mainLight">#FFFFE082</color>
     <color name="mainLight2">#FFFFECB3</color>
-    <color name="gray">#ffe7e7e7</color>
+    <color name="graySemiTransparent">#67e7e7e7</color>
     <color name="white">#ffffff</color>
 
 </resources>

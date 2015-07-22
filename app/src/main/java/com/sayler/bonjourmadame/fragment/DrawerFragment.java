@@ -19,12 +19,14 @@ import android.widget.ListView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.sayler.bonjourmadame.R;
+import com.sayler.bonjourmadame.activity.MainActivity;
 import com.sayler.bonjourmadame.adapter.NavigationAdapter;
 import com.sayler.bonjourmadame.event.DrawerClosedEvent;
 import com.sayler.bonjourmadame.event.ForceCloseDrawerEvent;
 import com.sayler.bonjourmadame.event.InflateDrawerFragmentEvent;
 import com.sayler.bonjourmadame.event.RefreshDrawerTopImage;
 import com.sayler.bonjourmadame.model.NavigationItem;
+import com.sayler.bonjourmadame.util.Constants;
 import de.greenrobot.event.EventBus;
 import rx.Observable;
 import rx.android.app.AppObservable;
@@ -46,6 +48,7 @@ public class DrawerFragment extends BaseFragment {
   ViewStub viewStub;
   private DynamicViewStub dynamicViewStub;
   private Fragment fragmentToChange;
+  private MainActivity mainActivity;
 
   public class DynamicViewStub {
     @InjectView(R.id.navigationListView)
@@ -76,6 +79,7 @@ public class DrawerFragment extends BaseFragment {
 
   @Override
   public void onActivityCreated(Bundle savedInstanceState) {
+    mainActivity = ((MainActivity) getActivity());
     super.onActivityCreated(savedInstanceState);
   }
 
@@ -131,9 +135,9 @@ public class DrawerFragment extends BaseFragment {
 
   private List<NavigationItem> createNavigationList() {
     List<NavigationItem> navigationItems = new ArrayList<>();
-    navigationItems.add(new NavigationItem(getResources().getDrawable(R.drawable.ic_refresh_image), "Start", () -> lateChangeFragment(LoadingFragment.newInstanceRandomLoad())));
-    navigationItems.add(new NavigationItem(getResources().getDrawable(R.drawable.ic_favourite_image), "Favourites", () -> lateChangeFragment(new FavouritesFragment())));
-    navigationItems.add(new NavigationItem(getResources().getDrawable(R.drawable.ic_history), "History", () -> lateChangeFragment(new HistoryFragment())));
+    navigationItems.add(new NavigationItem(getResources().getDrawable(R.drawable.ic_refresh_image), mainActivity.getString(R.string.start), () -> lateChangeFragment(LoadingFragment.newInstanceRandomLoad())));
+    navigationItems.add(new NavigationItem(getResources().getDrawable(R.drawable.ic_favourite_image), mainActivity.getString(R.string.favourites), () -> lateChangeFragment(new FavouritesFragment())));
+    navigationItems.add(new NavigationItem(getResources().getDrawable(R.drawable.ic_history), mainActivity.getString(R.string.history), () -> lateChangeFragment(new HistoryFragment())));
     return navigationItems;
   }
 
@@ -141,7 +145,7 @@ public class DrawerFragment extends BaseFragment {
     fragmentToChange = newFragment;
     AppObservable.bindFragment(this, Observable.just(0))
         .observeOn(Schedulers.io())
-        .delay(250, TimeUnit.MILLISECONDS)
+        .delay(Constants.DURATION_SHORT, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(v -> EventBus.getDefault().post(new ForceCloseDrawerEvent()));
   }
@@ -149,12 +153,10 @@ public class DrawerFragment extends BaseFragment {
   private void changeFragment() {
     if (fragmentToChange != null) {
       fragmentToChange.setAllowEnterTransitionOverlap(true);
-
       getFragmentManager().beginTransaction()
           .setCustomAnimations(R.animator.slide_in, R.animator.slide_out)
           .replace(R.id.container, fragmentToChange, fragmentToChange.getClass().getSimpleName())
           .commit();
-
       fragmentToChange = null;
     }
   }

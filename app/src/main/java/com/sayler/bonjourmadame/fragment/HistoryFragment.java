@@ -36,7 +36,6 @@ public class HistoryFragment extends Fragment implements ImageAdapter.MultiSelec
   private Bitmap chosenBitmap;
   private int chosenPosition = -1;
   private ToolbarHiderHelper toolbarHiderHelper;
-  private ActionMode actionMode;
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -148,10 +147,8 @@ public class HistoryFragment extends Fragment implements ImageAdapter.MultiSelec
   @Override
   public boolean onCreateActionMode(ActionMode mode, Menu menu) {
     getActivity().getMenuInflater().inflate(R.menu.history, menu);
-    mode.setTitle("Test");
     mainActivity.colorizeToolbarActionModeBackground();
     mainActivity.colorizeToolbarActionModeIcons();
-
     return true;
   }
 
@@ -167,6 +164,7 @@ public class HistoryFragment extends Fragment implements ImageAdapter.MultiSelec
 
   @Override
   public void onDestroyActionMode(ActionMode mode) {
+    multiSelector.clearSelections();
     multiSelector.setSelectable(false);
   }
 }
