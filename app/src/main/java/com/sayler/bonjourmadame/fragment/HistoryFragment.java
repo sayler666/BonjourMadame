@@ -20,6 +20,7 @@ import com.sayler.bonjourmadame.util.ToolbarHiderHelper;
 import entity.Madame;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -36,6 +37,7 @@ public class HistoryFragment extends Fragment implements ImageAdapter.MultiSelec
   private Bitmap chosenBitmap;
   private int chosenPosition = -1;
   private ToolbarHiderHelper toolbarHiderHelper;
+  private ActionMode actionMode;
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -72,12 +74,20 @@ public class HistoryFragment extends Fragment implements ImageAdapter.MultiSelec
     adapter = new ImageAdapter(madameList, recyclerView, chosenBitmap, chosenPosition, multiSelector, SPAN_COUNT, this);
     adapter.setOnItemClickListener((view, position) -> {
       if (multiSelector.isSelectable()) {
-        multiSelector.setSelected(position, position, !multiSelector.isSelected(position, position));
-        multiSelector.refreshAllHolders();
+        boolean newState = !multiSelector.isSelected(position, position);
+        multiSelector.setSelected(position, position, newState);
+        //work-around issue with multiSelector not setting active state after notifyItemRangeChanged
+        view.setActivated(newState);
+        setActionModeTitle();
       } else {
         showMadame(madameList, view, position);
       }
     });
+  }
+
+  private void setActionModeTitle() {
+    int size = multiSelector.getSelectedPositions().size();
+    actionMode.setTitle(size + " " + mainActivity.getResources().getQuantityString(R.plurals.items_selected, size));
   }
 
   private void showMadame(List<Madame> madameList, View view, int position) {
@@ -136,12 +146,16 @@ public class HistoryFragment extends Fragment implements ImageAdapter.MultiSelec
 
   @Override
   public void onSelectableStart() {
-    mainActivity.getToolbar().startActionMode(this);
+    if (actionMode == null) {
+      actionMode = mainActivity.getToolbar().startActionMode(this);
+      setActionModeTitle();
+    }
   }
 
   @Override
   public void onSelectableFinish() {
-
+    multiSelector.clearSelections();
+    multiSelector.setSelectable(false);
   }
 
   @Override
@@ -159,12 +173,32 @@ public class HistoryFragment extends Fragment implements ImageAdapter.MultiSelec
 
   @Override
   public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+    ArrayList<Integer> positions = new ArrayList<>(multiSelector.getSelectedPositions());
+    Collections.reverse(positions);
+    switch (item.getItemId()) {
+      case R.id.action_remove:
+        for (Integer integer : positions) {
+          handleItemRemove(adapter.getMadamAtPosition(integer));
+          adapter.removeItemOnPosition(integer);
+        }
+        mode.finish();
+        multiSelector.clearSelections();
+        return true;
+      default:
+        break;
+    }
     return false;
+  }
+
+  @NonNull
+  protected void handleItemRemove(Madame madamOnPosition) {
+    mainActivity.getMadameDataProvider().delete(madamOnPosition);
   }
 
   @Override
   public void onDestroyActionMode(ActionMode mode) {
     multiSelector.clearSelections();
     multiSelector.setSelectable(false);
+    actionMode = null;
   }
 }

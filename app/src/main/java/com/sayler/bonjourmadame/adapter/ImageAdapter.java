@@ -3,8 +3,8 @@ package com.sayler.bonjourmadame.adapter;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -23,11 +23,6 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
   private static final String TAG = "ImageAdapter";
   private final int normalRowsHeight;
   private int topRowsHeight;
-
-  public interface ItemClickListener {
-    void onItemClick(View view, int position);
-  }
-
   private ItemClickListener itemClickListener;
   private List<Madame> madameList = new ArrayList<>();
   private RecyclerView recyclerView;
@@ -36,6 +31,10 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
   private MultiSelector multiSelector;
   private int spanCount;
   private MultiSelectorListener multiSelectorListener;
+
+  public interface ItemClickListener {
+    void onItemClick(View view, int position);
+  }
 
   public void setOnItemClickListener(ItemClickListener listener) {
     this.itemClickListener = listener;
@@ -51,6 +50,12 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
     this.multiSelectorListener = multiSelectorListener;
     topRowsHeight = (int) recyclerView.getContext().getResources().getDimension(R.dimen.abc_action_bar_default_height_material);
     normalRowsHeight = (int) recyclerView.getContext().getResources().getDimension(R.dimen.h_history_row);
+  }
+
+  public void removeItemOnPosition(int position) {
+    madameList.remove(position);
+    notifyItemRemoved(position);
+    notifyItemRangeChanged(position, madameList.size());
   }
 
   @Override
@@ -86,12 +91,18 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
 
       viewHolder.container.setOnLongClickListener(v -> {
             multiSelector.setSelectable(true);
+            multiSelector.setSelected(i, i, true);
+            //work-around issue with multiSelector not setting active state after notifyItemRangeChanged
+            viewHolder.container.setActivated(true);
             multiSelectorListener.onSelectableStart();
-            multiSelector.setSelected(i,i,true);
             return true;
           }
       );
     }
+  }
+
+  public Madame getMadamAtPosition(int position) {
+    return madameList.get(position);
   }
 
   @Override

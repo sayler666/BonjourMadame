@@ -7,4 +7,9 @@
     <string name="start">Start</string>
     <string name="favourites">Favourites</string>
     <string name="history">History</string>
+    <plurals name="items_selected">
+        <item quantity="one">item</item>
+        <item quantity="zero">items</item>
+        <item quantity="other">items</item>
+    </plurals>
 </resources>

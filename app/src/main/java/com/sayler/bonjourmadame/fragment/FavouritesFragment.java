@@ -23,4 +23,10 @@ public class FavouritesFragment extends HistoryFragment {
     }
     return madameList;
   }
+
+  @NonNull
+  protected void handleItemRemove(Madame madame) {
+    madame.setIsFavourite(false);
+    mainActivity.getMadameDataProvider().save(madame);
+  }
 }
