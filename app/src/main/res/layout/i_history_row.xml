@@ -22,11 +22,17 @@
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"/>
         <View
-                android:visibility="gone"
                 android:duplicateParentState="true"
+                android:layout_centerInParent="true"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/row_selector"/>
+        <View
+                android:duplicateParentState="true"
+                android:layout_centerInParent="true"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/checked_icon_selector"/>
     </RelativeLayout>
 
 </RelativeLayout>

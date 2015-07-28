@@ -29,7 +29,7 @@
                 ActionButton:diameter="@dimen/diameter"
                 ActionButton:diameterStroke="@dimen/diameterStroke"
                 ActionButton:tint="@android:color/white"
-                android:elevation="2dp"
+                android:elevation="1dp"
                 style="@style/refreshActionButtonStyle"/>
 
         <com.sayler.bonjourmadame.widget.ActionButton

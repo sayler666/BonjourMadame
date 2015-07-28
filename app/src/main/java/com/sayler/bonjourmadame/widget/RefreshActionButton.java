@@ -112,6 +112,9 @@ public class RefreshActionButton extends ActionButton {
   }
 
   public void loadingStartAnimation() {
+    if (backgroundColorAnimator != null) {
+      backgroundColorAnimator.cancel();
+    }
     getProgressBarCircle().setVisibility(VISIBLE);
     getProgressBarCircle().startAnimation(fadeIn);
     setupLoadingColorAnimation();
@@ -128,11 +131,34 @@ public class RefreshActionButton extends ActionButton {
     loadingColorAnimator.end();
     if (backgroundColorAnimator != null) {
       backgroundColorAnimator.start();
-    }
+      backgroundColorAnimator.addListener(new Animator.AnimatorListener() {
+        @Override
+        public void onAnimationStart(Animator animation) {
 
-    setUpColors();
-    getImageButtonStroke().setVisibility(VISIBLE);
-    ObjectAnimator.ofFloat(getImageButtonStroke(), "alpha", 0, 1).setDuration(1000).start();
+        }
+
+        @Override
+        public void onAnimationEnd(Animator animation) {
+          getImageButtonStroke().setVisibility(VISIBLE);
+          ObjectAnimator.ofFloat(getImageButtonStroke(), "alpha", 0, 1).setDuration(1000).start();
+          setUpColors();
+        }
+
+        @Override
+        public void onAnimationCancel(Animator animation) {
+
+        }
+
+        @Override
+        public void onAnimationRepeat(Animator animation) {
+
+        }
+      });
+    } else {
+      getImageButtonStroke().setVisibility(VISIBLE);
+      ObjectAnimator.ofFloat(getImageButtonStroke(), "alpha", 0, 1).setDuration(1000).start();
+      setUpColors();
+    }
 
     getImageButton().setElevation(getResources().getDimension(R.dimen.elevation_low));
     startAnimation(zoomOutAnimation);
