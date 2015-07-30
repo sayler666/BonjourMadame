@@ -355,13 +355,19 @@ public class LoadingFragment extends BaseFragment {
   @OnClick(R.id.refreshActionButton)
   public void onRefreshActionButtonClick() {
     if (!isLoading) {
-      startLoading();
+      AppObservable.bindFragment(this, Observable.just(0))
+          .delay(Constants.DURATION_VERY_SHORT, TimeUnit.MILLISECONDS)
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(v -> startLoading());
     }
   }
 
   @OnClick(R.id.setWallpaperActionButton)
   public void onSetWallpaperActionButtonClick() {
-    setWallpaper();
+    AppObservable.bindFragment(this, Observable.just(0))
+        .delay(Constants.DURATION_VERY_SHORT, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(v -> setWallpaper());
   }
 
   @OnClick(R.id.favouriteImageActionButton)

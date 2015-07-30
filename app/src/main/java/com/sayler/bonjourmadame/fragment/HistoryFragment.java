@@ -16,13 +16,18 @@ import com.bignerdranch.android.multiselector.MultiSelector;
 import com.sayler.bonjourmadame.R;
 import com.sayler.bonjourmadame.activity.MainActivity;
 import com.sayler.bonjourmadame.adapter.ImageAdapter;
+import com.sayler.bonjourmadame.util.Constants;
 import com.sayler.bonjourmadame.util.ToolbarHiderHelper;
 import entity.Madame;
+import rx.Observable;
+import rx.android.app.AppObservable;
+import rx.android.schedulers.AndroidSchedulers;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * History fragment.
@@ -80,7 +85,7 @@ public class HistoryFragment extends Fragment implements ImageAdapter.MultiSelec
         view.setActivated(newState);
         setActionModeTitle();
       } else {
-        showMadame(madameList, view, position);
+        onMadameClick(madameList, view, position);
       }
     });
   }
@@ -90,7 +95,14 @@ public class HistoryFragment extends Fragment implements ImageAdapter.MultiSelec
     actionMode.setTitle(size + " " + mainActivity.getResources().getQuantityString(R.plurals.items_selected, size));
   }
 
-  private void showMadame(List<Madame> madameList, View view, int position) {
+  private void onMadameClick(List<Madame> madameList, View view, int position) {
+    AppObservable.bindFragment(this, Observable.just(view))
+        .delay(Constants.DURATION_VERY_SHORT, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(v -> openMadame(madameList, v, position));
+  }
+
+  private void openMadame(List<Madame> madameList, View view, int position) {
     ImageView imageView = (ImageView) view.findViewById(R.id.image);
     BitmapDrawable bitmapDrawable = (BitmapDrawable) imageView.getDrawable();
     if (bitmapDrawable != null) {
