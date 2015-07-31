@@ -9,16 +9,16 @@
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:backgroundDimEnabled">false</item>
-        <item name="colorPrimary">@color/mainLight</item>
-        <item name="colorPrimaryDark">@color/mainLight2</item>
-        <item name="colorAccent">@color/white</item>
-        <item name="android:statusBarColor">@color/mainAccent</item>
-        <item name="android:navigationBarColor">@color/mainAccent</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:statusBarColor">@color/colorAccent</item>
+        <item name="android:navigationBarColor">@color/colorAccent</item>
         <item name="windowActionModeOverlay">true</item>
         <item name="android:windowActionModeOverlay">true</item>
         <item name="actionModeStyle">@style/Widget.ActionMode</item>
     </style>
     <style name="Widget.ActionMode" parent="@style/Widget.AppCompat.ActionMode">
-        <item name="android:background">@color/mainColor</item>
+        <item name="android:background">@color/colorPrimary</item>
     </style>
 </resources>

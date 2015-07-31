@@ -33,8 +33,8 @@ public class RefreshActionButton extends ActionButton {
   private Animation zoomOutAnimation;
   private ObjectAnimator loadingColorAnimator;
   private int backgroundColor;
-  private int loadingColor1 = getResources().getColor(R.color.mainLight);
-  private int loadingColor2 = getResources().getColor(R.color.mainLight);
+  private int loadingColor1 = getResources().getColor(R.color.colorAccent);
+  private int loadingColor2 = getResources().getColor(R.color.colorAccent);
   private ObjectAnimator backgroundColorAnimator;
   private Animation fadeOut;
   private Animation fadeIn;

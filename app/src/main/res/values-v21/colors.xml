@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="backgroundColor">#FFCA28</color>
-    <color name="mainColor">#FF6F00</color>
-    <color name="mainAccent">#ffdf6700</color>
-    <color name="mainLight">#FFFFE082</color>
-    <color name="mainLight2">#FFFFECB3</color>
+    <color name="backgroundColor">#8D6E63</color>
+    <color name="colorPrimary">#5D4037</color>
+    <color name="colorPrimaryDark">#3E2723</color>
+    <color name="colorAccent">#5D4037</color>
     <color name="whiteSemiTransparent">#67fdfdfd</color>
     <color name="white">#ffffff</color>
 
